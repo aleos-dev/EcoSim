@@ -1,0 +1,51 @@
+1. **RandomUtil**:
+   - Generates random numbers, directions, or selections.
+   - For instance, deciding if a predator successfully hunts prey, choosing a random direction for an animal to move, or determining if a plant grows in a specific cell.
+
+2. **ConfigLoader**:
+   - Loads configuration or parameters for the simulation, possibly from a properties file or JSON file.
+   - Helps in changing simulation parameters without modifying the code, e.g., initial counts of animals, island dimensions, etc.
+
+3. **SimulationLogger**:
+   - Custom logger for the simulation.
+   - Allows you to log specific events or statistics in a desired format.
+
+4. **FileUtil**:
+   - Helps with any file-related operations, like reading initial setup from a file, writing statistics to a file, etc.
+
+5. **ValidationUtil**:
+   - Provides methods to validate certain conditions, like checking if a cell is within island boundaries.
+
+6. **ConversionUtil** (if needed):
+   - Helps in converting between different data types, formats, or units.
+
+7. **Constants**:
+   - A class or interface that contains constant values used throughout the simulation, e.g., maximum number of animals per cell, weight thresholds for animals, etc.
+
+Example of a **RandomUtil** class:
+
+```java
+package utils;
+
+import java.util.Random;
+
+public class RandomUtil {
+    private static final Random random = new Random();
+
+    public static int getRandomInt(int lowerBound, int upperBound) {
+        return random.nextInt(upperBound - lowerBound) + lowerBound;
+    }
+
+    public static double getRandomDouble() {
+        return random.nextDouble();
+    }
+
+    public static boolean getRandomBoolean() {
+        return random.nextBoolean();
+    }
+
+    // ... other methods ...
+}
+```
+
+The classes in the `utils` package should be designed to be reusable and generic so that they can be easily used across different parts of the application.
