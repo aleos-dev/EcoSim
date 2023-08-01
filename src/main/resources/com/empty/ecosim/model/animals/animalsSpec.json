@@ -1,0 +1,25 @@
+{
+  "Wolf": {
+    "weight": "50",
+    "speed": "3",
+    "maxSatiety": "8",
+    "edibleTypes": {
+      "Wolf": "-",
+      "Boa": "0",
+      "Fox": "0",
+      "Bear": "0",
+      "Eagle": "0",
+      "Horse": "10",
+      "Deer": "15",
+      "Rabbit": "60",
+      "Mouse": "80",
+      "Goat": "60",
+      "Sheep": "70",
+      "Boar": "15",
+      "Buffalo": "10",
+      "Duck": "40",
+      "Goose": "0",
+      "Plants": "0"
+    }
+  }
+}
