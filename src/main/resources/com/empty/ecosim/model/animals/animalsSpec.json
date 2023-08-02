@@ -1,25 +1,48 @@
 {
-  "Wolf": {
+  "WOLF": {
     "weight": "50",
     "speed": "3",
     "maxSatiety": "8",
     "edibleTypes": {
-      "Wolf": "-",
-      "Boa": "0",
-      "Fox": "0",
-      "Bear": "0",
-      "Eagle": "0",
-      "Horse": "10",
-      "Deer": "15",
-      "Rabbit": "60",
-      "Mouse": "80",
-      "Goat": "60",
-      "Sheep": "70",
-      "Boar": "15",
-      "Buffalo": "10",
-      "Duck": "40",
-      "Goose": "0",
-      "Plants": "0"
+      "WOLF": "-",
+      "BOA": "0",
+      "FOX": "0",
+      "BEAR": "0",
+      "EAGLE": "0",
+      "HORSE": "10",
+      "DEER": "15",
+      "RABBIT": "60",
+      "MOUSE": "80",
+      "GOAT": "60",
+      "SHEEP": "70",
+      "BOAR": "15",
+      "BUFFALO": "10",
+      "DUCK": "40",
+      "GOOSE": "0",
+      "PLANTS": "0"
+    }
+  },
+  "HORSE": {
+    "weight": "50",
+    "speed": "3",
+    "maxSatiety": "8",
+    "edibleTypes": {
+      "WOLF": "0",
+      "BOA": "0",
+      "FOX": "0",
+      "BEAR": "0",
+      "EAGLE": "0",
+      "HORSE": "-",
+      "DEER": "0",
+      "RABBIT": "0",
+      "MOUSE": "0",
+      "GOAT": "0",
+      "SHEEP": "0",
+      "BOAR": "0",
+      "BUFFALO": "0",
+      "DUCK": "0",
+      "GOOSE": "0",
+      "PLANTS": "100"
     }
   }
 }

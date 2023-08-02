@@ -1,15 +1,17 @@
 package com.empty.ecosim.model.animals;
 
-import com.empty.ecosim.model.animals.AnimalBaseSpecification.AnimalSpec;
+import com.empty.ecosim.model.Edible;
+
+import java.util.Map;
 
 public abstract class Animal {
-    enum Type {
-        WOLF
+    protected int weight;
+    protected int speed;
+    protected Map<Animal.Type, String> edibleTypes;
+    public enum Type implements Edible {
+        WOLF, HORSE
     }
 
-    public static void main(String[] args) {
-        AnimalSpec as = AnimalBaseSpecification.getSpec(Type.WOLF);
-    }
     public abstract void eat();
     public abstract void reproduce();
     public abstract void move();
