@@ -7,4 +7,5 @@ module com.empty.ecosim {
     opens com.empty.ecosim.model.plants;
     opens com.empty.ecosim to javafx.fxml;
     exports com.empty.ecosim;
+    opens com.empty.ecosim.model.configuration;
 }

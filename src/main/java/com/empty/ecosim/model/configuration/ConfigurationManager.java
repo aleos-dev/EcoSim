@@ -1,4 +1,4 @@
-package com.empty.ecosim.utils;
+package com.empty.ecosim.model.configuration;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -6,15 +6,20 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.empty.ecosim.model.configuration.ConfigurationManager.ResourceType.ANIMAL;
+import static com.empty.ecosim.model.configuration.ConfigurationManager.ResourceType.PLANT;
 
 public class ConfigurationManager {
     public static final ConfigurationManager INSTANCE = new ConfigurationManager();
     private static final String INTERNAL_ANIMAL_RESOURCE_PATH = "com/empty/ecosim/model/animals/animalsSpec.json";
     private static final String INTERNAL_PLANT_RESOURCE_PATH = "com/empty/ecosim/model/plants/plantsSpec.json";
     private static final String APP_NAME = "Eco-Sim";
-    public final Path pathToAnimalsSpecificationResource;
-    public final Path pathToPlantsSpecificationResource;
-    public final Path pathToCellSpecificationResource;
+
+    public enum ResourceType { ANIMAL, PLANT, CELL}
+    private final Map<ResourceType, Path> resources = new HashMap<>();
 
 
     private ConfigurationManager() {
@@ -26,22 +31,24 @@ public class ConfigurationManager {
             throw new RuntimeException("Could not create directories for path: " + pathToConfigFolder, e);
         }
 
-        pathToAnimalsSpecificationResource = Paths.get(pathToConfigFolder.toString(), "animalsSpec.json");
+        Path pathToAnimalsSpecificationResource = Paths.get(pathToConfigFolder.toString(), "animalsSpec.json");
         ensureConfigFileExists(pathToAnimalsSpecificationResource, INTERNAL_ANIMAL_RESOURCE_PATH);
+        resources.put(ANIMAL, pathToAnimalsSpecificationResource);
 
-        pathToPlantsSpecificationResource = Paths.get(pathToConfigFolder.toString(), "plantsSpec.json");
+        Path pathToPlantsSpecificationResource = Paths.get(pathToConfigFolder.toString(), "plantsSpec.json");
         ensureConfigFileExists(pathToPlantsSpecificationResource, INTERNAL_PLANT_RESOURCE_PATH);
+        resources.put(PLANT, pathToPlantsSpecificationResource);
 
-        pathToCellSpecificationResource = Paths.get(pathToConfigFolder.toString(), "cellSpec.json");
+        Path pathToCellSpecificationResource = Paths.get(pathToConfigFolder.toString(), "cellSpec.json");
 
     }
 
-    public String getResource(Path path) throws IOException {
-        return Files.readString(path);
+    public String getResource(ResourceType resourceType) throws IOException {
+        return Files.readString(resources.get(resourceType));
     }
 
-    public void saveResource(Path path, String resource) throws IOException {
-        Files.writeString(path, resource);
+    public void saveResource(ResourceType resourceType, String resource) throws IOException {
+        Files.writeString(resources.get(resourceType), resource);
     }
 
     private void ensureConfigFileExists(Path pathToFile, String internalResourcePath) {
