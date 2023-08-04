@@ -6,87 +6,103 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.empty.ecosim.model.configuration.ConfigurationManager.ResourceType.ANIMAL;
-import static com.empty.ecosim.model.configuration.ConfigurationManager.ResourceType.PLANT;
-
 public class ConfigurationManager {
+    public enum ResourceType {
+        ANIMAL("animalsSpec.json", "com/empty/ecosim/model/animals/animalsSpec.json"),
+        PLANT("plantsSpec.json", "com/empty/ecosim/model/plants/plantsSpec.json");
+        //        CELL("cellsSpec.json", );
+        private final String configFileName;
+        private final String defaultResourcePath;
+
+        ResourceType(String configFileName, String defaultResourcePath) {
+            this.configFileName = configFileName;
+            this.defaultResourcePath = defaultResourcePath;
+        }
+
+        public String getConfigFileName() {
+            return configFileName;
+        }
+
+        public String getDefaultResourcePath() {
+            return defaultResourcePath;
+        }
+    }
+
     public static final ConfigurationManager INSTANCE = new ConfigurationManager();
-    private static final String INTERNAL_ANIMAL_RESOURCE_PATH = "com/empty/ecosim/model/animals/animalsSpec.json";
-    private static final String INTERNAL_PLANT_RESOURCE_PATH = "com/empty/ecosim/model/plants/plantsSpec.json";
+
     private static final String APP_NAME = "Eco-Sim";
 
-    public enum ResourceType { ANIMAL, PLANT, CELL}
-    private final Map<ResourceType, Path> resources = new HashMap<>();
+    private static Path configFolderPath;
+
+    private final Map<ResourceType, Path> resourceFileMapping = new HashMap<>();
 
 
     private ConfigurationManager() {
-        Path pathToConfigFolder = getPathToConfigFolder();
+        ensureConfigDirectoryExists();
+
+        Arrays.stream(ResourceType.values()).forEach(this::setupResourcePath);
+    }
+
+    private void setupResourcePath(ResourceType resourceType) {
+
+        Path filePath = Paths.get(configFolderPath.toString(), resourceType.getConfigFileName());
+        createFileIfAbsentAt(filePath, resourceType.getDefaultResourcePath());
+        this.resourceFileMapping.put(resourceType, filePath);
+    }
+
+    private void ensureConfigDirectoryExists() {
+        configFolderPath = determineConfigFolderPath();
 
         try {
-            Files.createDirectories(pathToConfigFolder);
+            Files.createDirectories(configFolderPath);
         } catch (IOException e) {
-            throw new RuntimeException("Could not create directories for path: " + pathToConfigFolder, e);
+            throw new RuntimeException("Could not create directories for path: " + configFolderPath, e);
         }
-
-        Path pathToAnimalsSpecificationResource = Paths.get(pathToConfigFolder.toString(), "animalsSpec.json");
-        ensureConfigFileExists(pathToAnimalsSpecificationResource, INTERNAL_ANIMAL_RESOURCE_PATH);
-        resources.put(ANIMAL, pathToAnimalsSpecificationResource);
-
-        Path pathToPlantsSpecificationResource = Paths.get(pathToConfigFolder.toString(), "plantsSpec.json");
-        ensureConfigFileExists(pathToPlantsSpecificationResource, INTERNAL_PLANT_RESOURCE_PATH);
-        resources.put(PLANT, pathToPlantsSpecificationResource);
-
-        Path pathToCellSpecificationResource = Paths.get(pathToConfigFolder.toString(), "cellSpec.json");
-
     }
 
-    public String getResource(ResourceType resourceType) throws IOException {
-        return Files.readString(resources.get(resourceType));
+    public String readResource(ResourceType resourceType) throws IOException {
+        return Files.readString(resourceFileMapping.get(resourceType));
     }
 
-    public void saveResource(ResourceType resourceType, String resource) throws IOException {
-        Files.writeString(resources.get(resourceType), resource);
+    public void writeResource(ResourceType resourceType, String data) throws IOException {
+        Files.writeString(resourceFileMapping.get(resourceType), data);
     }
 
-    private void ensureConfigFileExists(Path pathToFile, String internalResourcePath) {
-        if (!Files.exists(pathToFile)) {
-            try (InputStream inputStream = loadResourceAsStream(internalResourcePath)){
+    private void createFileIfAbsentAt(Path targetPath, String defaultResource) {
+        if (!Files.exists(targetPath)) {
+            try (InputStream inputStream = loadResourceStream(defaultResource)) {
 
-                    Files.write(pathToFile, inputStream.readAllBytes());
+                Files.write(targetPath, inputStream.readAllBytes());
             } catch (IOException e) {
-                throw new RuntimeException("Failed to write to " + pathToFile, e);
+                throw new RuntimeException("Failed to write to " + targetPath, e);
             }
         }
     }
 
-    private static Path getPathToConfigFolder() {
-        String operatingSystem = System.getProperty("os.name").toLowerCase();
-        String homeDir = System.getProperty("user.home");
-        Path pathToConfigFolder;
-
-        if (operatingSystem.contains("win")) {
-            pathToConfigFolder = Paths.get(homeDir, "AppData", "Local", APP_NAME);
-        } else if (operatingSystem.contains("nux") || operatingSystem.contains("nix")) {
-            pathToConfigFolder = Paths.get(homeDir, ".config", APP_NAME);
-        } else if (operatingSystem.contains("mac")) {
-            pathToConfigFolder = Paths.get(homeDir, "Library", "Application Support", APP_NAME);
-        } else {
-            throw new UnsupportedOperationException("Unsupported operating system");
+    private InputStream loadResourceStream(String resourcePath) throws FileNotFoundException {
+        InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
+        if (resourceStream == null) {
+            throw new FileNotFoundException("Unable to locate resource: " + resourcePath);
         }
-        return pathToConfigFolder;
+        return resourceStream;
     }
 
-    private InputStream loadResourceAsStream(String fileName) throws FileNotFoundException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(fileName);
+    private static Path determineConfigFolderPath() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        String userHomeDir = System.getProperty("user.home");
 
-        if (inputStream == null) {
-            throw new FileNotFoundException("file not found! " + fileName);
+        if (osName.contains("win")) {
+            return Paths.get(userHomeDir, "AppData", "Local", APP_NAME);
+        } else if (osName.contains("nux") || osName.contains("nix")) {
+            return Paths.get(userHomeDir, ".config", APP_NAME);
+        } else if (osName.contains("mac")) {
+            return Paths.get(userHomeDir, "Library", "Application Support", APP_NAME);
         } else {
-            return inputStream;
+            throw new UnsupportedOperationException("Unsupported operating system: " + osName);
         }
     }
 }

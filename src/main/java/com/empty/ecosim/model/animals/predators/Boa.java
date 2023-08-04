@@ -2,8 +2,7 @@ package com.empty.ecosim.model.animals.predators;
 
 import com.empty.ecosim.model.animals.Animal;
 
-public class Wolf extends Animal {
-
+public class Boa extends Animal {
     @Override
     public void eat() {
     }

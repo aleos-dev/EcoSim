@@ -19,6 +19,7 @@ public interface EntityType {
                     .anyMatch(e -> e.name().equals(key))) {
                 return PlantType.valueOf(key);
             }
+            System.out.println("Log: unknown entity type " + key + " will be ignored.");
             return null;
         }
     }

@@ -1,8 +1,8 @@
-package com.empty.ecosim.model.animals.predators;
+package com.empty.ecosim.model.animals.herbivores;
 
 import com.empty.ecosim.model.animals.Animal;
 
-public class Wolf extends Animal {
+public class Duck extends Animal {
 
     @Override
     public void eat() {

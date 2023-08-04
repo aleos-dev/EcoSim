@@ -18,7 +18,6 @@
       "BOAR": "15",
       "BUFFALO": "10",
       "DUCK": "40",
-      "GOOSE": "0",
       "CATERPILLAR": "0",
       "GRASS": "0"
     }
@@ -141,7 +140,7 @@
   "RABBIT": {
     "weight": "2",
     "speed": "2",
-    "maxSatiety": "0,45",
+    "maxSatiety": "0.45",
     "edibleTypes": {
       "WOLF": "0",
       "BOA": "0",
@@ -164,7 +163,7 @@
   "MOUSE": {
     "weight": "0.05",
     "speed": "1",
-    "maxSatiety": "0,01",
+    "maxSatiety": "0.01",
     "edibleTypes": {
       "WOLF": "0",
       "BOA": "0",

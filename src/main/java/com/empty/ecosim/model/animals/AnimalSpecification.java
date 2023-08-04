@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 public record AnimalSpecification(
-        @JsonProperty("weight") int weight,
+        @JsonProperty("weight") double weight,
         @JsonProperty("speed") int speed,
-        @JsonProperty("maxSatiety") int maxSatiety,
+        @JsonProperty("maxSatiety") double maxSatiety,
         @JsonProperty("edibleTypes") Map<EntityType, String> edibleTypes
 ) implements TypeSpecification {
         public AnimalSpecification {
