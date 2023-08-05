@@ -1,14 +1,15 @@
 package com.empty.ecosim.model.plants;
 
-import com.empty.ecosim.model.EntityType;
+import com.empty.ecosim.model.Entity;
 
-public abstract class Plant implements EntityType {
-
-    protected int weight;
+public abstract class Plant extends Entity {
 
     public abstract void reproduce();
 
-    public int getWeight() {
+    @Override
+    public abstract PlantType getType();
+
+    public double getWeight() {
         return weight;
     }
 
@@ -18,8 +19,9 @@ public abstract class Plant implements EntityType {
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "{" +
-                "weight=" + weight +
+        return "Plant{" +
+                "isAlive=" + isAlive +
+                ", weight=" + weight +
                 '}';
     }
 }

@@ -27,4 +27,9 @@ public class Island extends Territory {
             }
         }
     }
+
+    @Override
+    public void clean() {
+
+    }
 }

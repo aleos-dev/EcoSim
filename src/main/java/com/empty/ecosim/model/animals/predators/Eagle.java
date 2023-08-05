@@ -1,11 +1,12 @@
 package com.empty.ecosim.model.animals.predators;
 
-import com.empty.ecosim.model.animals.Animal;
+import com.empty.ecosim.model.Entity;
+import com.empty.ecosim.model.animals.AnimalType;
 
-public class Eagle extends Animal {
+public class Eagle extends Predator {
 
     @Override
-    public void eat() {
+    public void eat(Entity entity) {
     }
 
     @Override
@@ -16,6 +17,11 @@ public class Eagle extends Animal {
     @Override
     public void move() {
 
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.EAGLE;
     }
 
 }

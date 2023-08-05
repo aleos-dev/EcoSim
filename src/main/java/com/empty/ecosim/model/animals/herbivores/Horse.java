@@ -1,11 +1,12 @@
 package com.empty.ecosim.model.animals.herbivores;
 
-import com.empty.ecosim.model.plants.PlantType;
+import com.empty.ecosim.model.Entity;
+import com.empty.ecosim.model.animals.AnimalType;
 
 public class Horse extends Herbivores {
 
     @Override
-    public void eat() {
+    public void eat(Entity entity) {
     }
 
     @Override
@@ -16,5 +17,10 @@ public class Horse extends Herbivores {
     @Override
     public void move() {
 
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.HORSE;
     }
 }

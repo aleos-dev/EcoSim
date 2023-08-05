@@ -1,5 +1,6 @@
 package com.empty.ecosim.model.configuration;
 
+import com.empty.ecosim.model.EntityType;
 import com.empty.ecosim.model.animals.AnimalSpecification;
 import com.empty.ecosim.model.configuration.ConfigurationManager.ResourceType;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -8,14 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Represents the specification of entities based on a given resource.
  *
  * @param <EntityTypeKey> the type of entity
- * @param <SpecType> the specification type
+ * @param <SpecType>      the specification type
  */
 public class EntitySpecificationLoader<EntityTypeKey, SpecType extends TypeSpecification> {
 
@@ -37,8 +40,15 @@ public class EntitySpecificationLoader<EntityTypeKey, SpecType extends TypeSpeci
             String jsonContent = ConfigurationManager.INSTANCE.readResource(resourceType);
             Map<EntityTypeKey, SpecType> map = objectMapper.readValue(jsonContent, typeRef);
             map.remove(null);
+
             if (resourceType == ResourceType.ANIMAL) {
-                map.values().forEach(x -> ((AnimalSpecification) x).edibleTypes().remove(null));
+                map.values().forEach(v -> ((AnimalSpecification) v).edibleTypes().remove(null));
+
+                map = map.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey,
+                                (entry -> ((AnimalSpecification) entry.getValue()).sortSpecificationByValueDescendingOrder()),
+                                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
             }
             return map;
 

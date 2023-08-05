@@ -37,6 +37,7 @@ public class SimpleAnimalFactory extends AnimalFactory{
         animal.setWeight(spec.weight());
         animal.setSpeed(spec.speed());
         animal.setSatiety(spec.maxSatiety());
+        animal.setEdibleTypes(ANIMAL_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
 
         return animal;
     }

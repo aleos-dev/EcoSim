@@ -5,4 +5,7 @@ import java.util.List;
 
 public abstract class Territory {
     List<Cell> cells = new ArrayList<>();
+
+
+    public abstract void clean();
 }

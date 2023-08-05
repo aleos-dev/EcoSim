@@ -5,4 +5,10 @@ public class Grass extends Plant {
     public void reproduce() {
 
     }
+
+    @Override
+    public PlantType getType() {
+        return PlantType.GRASS;
+    }
+
 }
