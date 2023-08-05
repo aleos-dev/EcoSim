@@ -1,6 +1,5 @@
 package com.empty.ecosim.model.configuration;
 
-import com.empty.ecosim.model.EntityType;
 import com.empty.ecosim.model.animals.AnimalSpecification;
 import com.empty.ecosim.model.configuration.ConfigurationManager.ResourceType;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -42,13 +41,13 @@ public class EntitySpecificationLoader<EntityTypeKey, SpecType extends TypeSpeci
             map.remove(null);
 
             if (resourceType == ResourceType.ANIMAL) {
-                map.values().forEach(v -> ((AnimalSpecification) v).edibleTypes().remove(null));
-
                 map = map.entrySet().stream()
-                        .collect(Collectors.toMap(Map.Entry::getKey,
-                                (entry -> ((AnimalSpecification) entry.getValue()).sortSpecificationByValueDescendingOrder()),
-                                (oldValue, newValue) -> oldValue, LinkedHashMap::new));
-
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> (SpecType) ((AnimalSpecification) entry.getValue()).cleanAndSortEdibleTypes(),
+                                (oldValue, newValue) -> oldValue,
+                                LinkedHashMap::new)
+                        );
             }
             return map;
 

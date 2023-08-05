@@ -10,7 +10,7 @@ import com.empty.ecosim.model.configuration.EntitySpecificationLoader;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class SimpleAnimalFactory extends AnimalFactory{
-    private static final EntitySpecificationLoader<AnimalType, AnimalSpecification> ANIMAL_SPECIFICATION = new EntitySpecificationLoader<>(
+    private static final EntitySpecificationLoader<AnimalType, AnimalSpecification> ANIMALS_SPECIFICATION = new EntitySpecificationLoader<>(
             ConfigurationManager.ResourceType.ANIMAL, new TypeReference<>(){}
     );
 
@@ -33,11 +33,12 @@ public class SimpleAnimalFactory extends AnimalFactory{
             case CATERPILLAR -> new Caterpillar();
         };
 
-        var spec = ANIMAL_SPECIFICATION.getSpecificationForType(animalType);
+        var spec = ANIMALS_SPECIFICATION.getSpecificationForType(animalType);
         animal.setWeight(spec.weight());
         animal.setSpeed(spec.speed());
         animal.setSatiety(spec.maxSatiety());
-        animal.setEdibleTypes(ANIMAL_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
+        animal.setBaseSpecification(spec);
+        animal.setEdibleTypes(ANIMALS_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
 
         return animal;
     }

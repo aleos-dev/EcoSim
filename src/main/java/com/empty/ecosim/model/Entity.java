@@ -18,5 +18,13 @@ public abstract class Entity {
         return isAlive.get();
     }
 
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
 
 }

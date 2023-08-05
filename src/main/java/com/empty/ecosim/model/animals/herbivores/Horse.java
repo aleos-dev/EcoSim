@@ -15,7 +15,7 @@ public class Horse extends Herbivores {
     }
 
     @Override
-    public void move() {
+    public Direction move() {
 
     }
 

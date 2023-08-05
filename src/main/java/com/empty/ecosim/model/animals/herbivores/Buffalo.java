@@ -16,7 +16,7 @@ public class Buffalo extends Animal {
     }
 
     @Override
-    public void move() {
+    public Direction move() {
 
     }
 

@@ -16,7 +16,7 @@ public class Duck extends Animal {
     }
 
     @Override
-    public void move() {
+    public Direction move() {
 
     }
 

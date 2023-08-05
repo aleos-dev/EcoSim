@@ -2,26 +2,17 @@ package com.empty.ecosim.model.island;
 
 import com.empty.ecosim.model.Entity;
 import com.empty.ecosim.model.EntityType;
-import com.empty.ecosim.model.animals.Animal;
-import com.empty.ecosim.model.animals.AnimalType;
-import com.empty.ecosim.model.plants.Plant;
-import com.empty.ecosim.model.plants.PlantType;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Cell {
     private final Map<EntityType, Set<Entity>> entityMap = new HashMap<>();
-
-
 
     public Map<EntityType, Set<Entity>> getEntityMap() {
         return entityMap;
     }
 
-    public <T extends EntityType> Set<? extends Entity>  getEntitiesFor(T type) {
+    public <T extends EntityType> Set<Entity>  getEntitiesFor(T type) {
         return entityMap.get(type);
     }
 
@@ -30,7 +21,19 @@ public class Cell {
     }
 
     public boolean remove(Entity entity) {
-        return entityMap.get(entity.getType()).remove(entity);
+        Set<Entity> entities = entityMap.get(entity.getType());
+        if (entities == null) {
+            return false;
+        }
+        entities.remove(entity);
+        if (entities.size() == 0) {
+            entityMap.remove(entity.getType());
+        }
+        return true;
+    }
+
+    public boolean isTypePresent(EntityType entityType) {
+        return entityMap.containsKey(entityType);
     }
 
     @Override

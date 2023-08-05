@@ -14,7 +14,7 @@ public class Boa extends Predator {
     }
 
     @Override
-    public void move() {
+    public Direction move() {
 
     }
     @Override
