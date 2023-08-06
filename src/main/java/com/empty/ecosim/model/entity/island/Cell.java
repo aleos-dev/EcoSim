@@ -6,22 +6,30 @@ import com.empty.ecosim.model.entity.organism.OrganismType;
 import java.util.*;
 
 public class Cell {
-    private final Map<OrganismType, Set<Organism>> residents = new HashMap<>();
+    private final int x;
+    private final int y;
+    private final Map<OrganismType, List<Organism>> residents = new HashMap<>();
 
-    public Map<OrganismType, Set<Organism>> getResidents() {
+
+    public Cell(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public Map<OrganismType, List<Organism>> getResidents() {
         return residents;
     }
 
-    public <T extends OrganismType> Set<Organism>  getEntitiesFor(T type) {
+    public <T extends OrganismType> List<Organism> getResidentIfPresent(T type) {
         return residents.get(type);
     }
 
-    public void addEntity(Organism organism) {
-        residents.computeIfAbsent(organism.getType(), k -> new HashSet<>()).add(organism);
+    public void addResident(Organism organism) {
+        residents.computeIfAbsent(organism.getType(), k -> new ArrayList<>()).add(organism);
     }
 
     public boolean remove(Organism organism) {
-        Set<Organism> entities = residents.get(organism.getType());
+        List<Organism> entities = residents.get(organism.getType());
         if (entities == null) {
             return false;
         }
@@ -36,6 +44,14 @@ public class Cell {
         return residents.containsKey(residentType);
     }
 
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
     @Override
     public String toString() {
         return "Cell{" +

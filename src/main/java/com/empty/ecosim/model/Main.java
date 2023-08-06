@@ -27,18 +27,18 @@ public class Main {
         Grass grass = (Grass) plantFactory.createPlant(GRASS);
 
 
-        Cell cell = new Cell();
-        cell.addEntity(wolf);
-        cell.addEntity(sheep);
-        cell.addEntity(horse);
-        cell.addEntity(grass);
+        Cell cell = new Cell(0, 0);
+        cell.addResident(wolf);
+        cell.addResident(sheep);
+        cell.addResident(horse);
+        cell.addResident(grass);
 
         System.out.println(cell);
 
-        System.out.println(cell.getEntitiesFor(AnimalType.WOLF));
+        System.out.println(cell.getResidentIfPresent(AnimalType.WOLF));
         wolf.setSatiety(4);
-        wolf.findFood(cell);
-        AnimalType.valueOf(wolf.getType().name());
+        wolf.tryToFindFoodAround(cell);
+        System.out.println(wolf.getSatiety());
 
     }
 }

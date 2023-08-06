@@ -2,7 +2,7 @@ package com.empty.ecosim.model.entity.organism.animals.predators;
 
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 
-public class Fox extends Predator {
+public class Fox extends PredatorAnimal {
 
 
     @Override

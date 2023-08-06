@@ -1,63 +1,35 @@
 package com.empty.ecosim.model.entity.organism.animals;
 
 import com.empty.ecosim.model.entity.island.Territory;
-import com.empty.ecosim.model.entity.organism.Consumer;
+import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Direction;
 import com.empty.ecosim.model.entity.organism.Movable;
-import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
 
 
-public abstract class Animal extends Organism implements Movable, Consumer {
+public abstract class Animal extends Organism implements Movable, Eater {
 
     protected double speed;
     protected double satiety;
     protected AnimalSpecification baseSpecification;
     protected List<OrganismType> edibleTypes;
 
-
-    public Cell move(Cell coordinate) {
-        cell.get
-        Direction.getRandomDirection();
-    }
-
-    public void findFood(Cell cell) {
-        double maxSatiety = baseSpecification.maxSatiety();
-        if (satiety > maxSatiety * 0.8) {
-            return;
+    public void move(Territory territory, Cell currentCell) {
+        Cell destinationCell = currentCell;
+        for (int i = 0; i < speed; i++) {
+            Cell tempCell = territory.getAdjasentCellAtDirection(destinationCell, Direction.getRandomDirection());
+            if (tempCell != null) {
+                destinationCell = tempCell;
+            }
         }
-
-        var preyType = RandomGenerator.getRandomType(edibleTypes);
-//        preyType = AnimalType.SHEEP;
-        Set<Organism> preys = cell.getEntitiesFor(preyType);
-        if (preys == null || RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(preyType))) {
-            return;
-        }
-
-        Iterator<Organism> preyIterator = preys.iterator();
-        while (preyIterator.hasNext() && satiety < maxSatiety) {
-            Organism prey = preyIterator.next();
-//            System.out.println("Iterator - prey is: " + prey);
-//            System.out.println("Satiety before is: " + satiety);
-            satiety += prey.getWeight();
-//            System.out.println("Satiety after is: " + satiety);
-            cell.remove(prey);
-        }
-
-        satiety = Math.min(satiety, maxSatiety);
-//        System.out.println("Satiety end is: " + satiety);
+        territory.moveResidentFromTo(this, currentCell, destinationCell);
     }
 
-    public void consume(Organism organism) {
-
-    }
-
-    public void eat(Organism organism) {
-    }
+    public abstract boolean tryToFindFoodAround(Cell cell);
 
     public Animal reproduce() {
         return null;
@@ -65,7 +37,6 @@ public abstract class Animal extends Organism implements Movable, Consumer {
 
     @Override
     public abstract AnimalType getType();
-
 
     public double getSpeed() {
         return speed;
@@ -98,7 +69,6 @@ public abstract class Animal extends Organism implements Movable, Consumer {
     public void setBaseSpecification(AnimalSpecification baseSpecification) {
         this.baseSpecification = baseSpecification;
     }
-
 
     @Override
     public String toString() {
