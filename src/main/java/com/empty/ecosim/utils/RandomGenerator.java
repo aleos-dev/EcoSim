@@ -1,14 +1,14 @@
 package com.empty.ecosim.utils;
 
-import com.empty.ecosim.model.EntityType;
-import com.empty.ecosim.model.island.Direction;
+import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.model.entity.island.Direction;
 
 import java.util.List;
 import java.util.Random;
 
 public class RandomGenerator {
     private static final Random random = new Random();
-    public static <T extends EntityType> T getRandomType(List<T> entityTypes) {
+    public static <T extends OrganismType> T getRandomType(List<T> entityTypes) {
         return entityTypes.get(random.nextInt(entityTypes.size()));
     }
 

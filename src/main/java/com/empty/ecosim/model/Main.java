@@ -1,18 +1,18 @@
 package com.empty.ecosim.model;
 
-import com.empty.ecosim.model.animals.AnimalType;
-import com.empty.ecosim.model.animals.factory.AnimalFactory;
-import com.empty.ecosim.model.animals.factory.SimpleAnimalFactory;
-import com.empty.ecosim.model.animals.herbivores.Horse;
-import com.empty.ecosim.model.animals.herbivores.Sheep;
-import com.empty.ecosim.model.animals.predators.Wolf;
-import com.empty.ecosim.model.island.Cell;
-import com.empty.ecosim.model.plants.Grass;
-import com.empty.ecosim.model.plants.factory.PlantFactory;
-import com.empty.ecosim.model.plants.factory.SimplePlantFactory;
+import com.empty.ecosim.model.entity.organism.animals.AnimalType;
+import com.empty.ecosim.model.entity.organism.animals.factory.AnimalFactory;
+import com.empty.ecosim.model.entity.organism.animals.factory.SimpleAnimalFactory;
+import com.empty.ecosim.model.entity.organism.animals.herbivores.Horse;
+import com.empty.ecosim.model.entity.organism.animals.herbivores.Sheep;
+import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
+import com.empty.ecosim.model.entity.island.Cell;
+import com.empty.ecosim.model.entity.organism.plants.Grass;
+import com.empty.ecosim.model.entity.organism.plants.factory.PlantFactory;
+import com.empty.ecosim.model.entity.organism.plants.factory.SimplePlantFactory;
 
-import static com.empty.ecosim.model.animals.AnimalType.*;
-import static com.empty.ecosim.model.plants.PlantType.GRASS;
+import static com.empty.ecosim.model.entity.organism.animals.AnimalType.*;
+import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
 
 public class Main {
 
@@ -38,6 +38,7 @@ public class Main {
         System.out.println(cell.getEntitiesFor(AnimalType.WOLF));
         wolf.setSatiety(4);
         wolf.findFood(cell);
+        AnimalType.valueOf(wolf.getType().name());
 
     }
 }
