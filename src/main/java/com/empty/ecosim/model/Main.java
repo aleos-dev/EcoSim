@@ -28,7 +28,7 @@ public class Main {
         Wolf wolf = new Wolf();
         island.getCells().get(0).addResident(wolf);
         System.out.println(island);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             allMove(island);
             System.out.println(wolf);
         }
@@ -38,8 +38,10 @@ public class Main {
         island.getCells().forEach(cell -> {
             List<AnimalType> animalTypes = Arrays.asList(AnimalType.values());
             animalTypes.forEach(type -> {
+
                 List<Organism> list = cell.getResidentListIfPresent(type);
                 if (list != null) {
+
                     for (int i = list.size() - 1; i >= 0; i--) {
                         Organism o = list.get(i);
                         if (o instanceof Animal animal) {

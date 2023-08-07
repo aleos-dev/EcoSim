@@ -22,11 +22,9 @@ public class Cell {
     }
 
     public  List<Organism> getResidentListIfPresent(OrganismType type) {
-        lock.lock();
         try {
             return residents.get(type);
         } finally {
-            lock.unlock();
         }
     }
     // Add a generic method to retrieve a specific type of organism list
@@ -44,10 +42,8 @@ public class Cell {
 //    }
 
     public void addResident(Organism organism) {
-        lock.lock();
         residents.computeIfAbsent(organism.getType(), k -> new ArrayList<>()).add(organism);
 
-        lock.unlock();
     }
 
     public List<Organism> getAllOrganismAsList() {
@@ -58,7 +54,6 @@ public class Cell {
 
     public Organism getAnyAndRemove(OrganismType type) {
 
-        lock.lock();
         var list = residents.get(type);
         if (list == null || list.isEmpty()) {
             return null;
@@ -67,7 +62,6 @@ public class Cell {
         int size = list.size();
 
         Organism organism =  list.remove(size - 1);
-        lock.unlock();
         return organism;
     }
 
@@ -81,13 +75,11 @@ public class Cell {
             return false;
         }
 
-        lock.lock();
         entities.remove(organism);
         if (entities.size() == 0) {
             residents.remove(organism.getType());
         }
 
-        lock.unlock();
         return true;
     }
 

@@ -31,7 +31,7 @@ public class Island extends Territory {
         // Initialize each cell in the matrix, assuming you have an appropriate constructor in Cell class
         for(int i = 0; i < height; i++) {
             for(int j = 0; j < width; j++) {
-                matrix[i][j] = new Cell(j, i);
+                matrix[i][j] = new Cell(i, j);
             }
         }
     }
@@ -65,8 +65,12 @@ public class Island extends Territory {
     }
 
     private Cell getCell(int x, int y) {
-        if(isCoordinateValid(x, y)) {
-            return matrix[x][y];
+        try {
+            if (isCoordinateValid(x, y)) {
+                return matrix[y][x];
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println();
         }
         return null;
     }
