@@ -1,7 +1,7 @@
 package com.empty.ecosim.model.entity.organism.animals;
 
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.configuration.OrganismSpecification;
+import com.empty.ecosim.model.configuration.EntitySpecification;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Comparator;
@@ -15,7 +15,7 @@ public record AnimalSpecification(
         @JsonProperty("speed") int speed,
         @JsonProperty("maxSatiety") double maxSatiety,
         @JsonProperty("edibleTypes") Map<OrganismType, Double> edibleTypes
-) implements OrganismSpecification {
+) implements EntitySpecification {
     public AnimalSpecification {
         if (weight < 0 || speed < 0 || maxSatiety < 0) {
             throw new IllegalArgumentException("Fields of AnimalSpec must be positive");

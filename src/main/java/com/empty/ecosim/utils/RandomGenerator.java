@@ -1,5 +1,6 @@
 package com.empty.ecosim.utils;
 
+import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.island.Direction;
 
@@ -17,6 +18,11 @@ public class RandomGenerator {
     }
 
     public static Direction getDirection() {
+        
         return Direction.values()[random.nextInt(4)];
+    }
+
+    public static int getRandomInt(int bound) {
+        return random.nextInt(bound);
     }
 }

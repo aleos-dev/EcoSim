@@ -14,30 +14,24 @@ public abstract class PredatorAnimal extends Animal {
             return false;
         }
 
-        List<Organism> preyList = getPreyToHunt(cell);
-        if (preyList == null || preyList.size() == 0) {
+        Organism prey = getPreyToHunt(cell);
+        if (prey == null) {
             return false;
         }
 
-        Organism prey = preyList.get(0);
         consume(prey);
-
-//        cell.remove() preys.remove dont delete residents list if it equals 0
-        preyList.remove(0);
 
         return true;
     }
 
-    protected List<Organism> getPreyToHunt(Cell cell) {
+    protected Organism getPreyToHunt(Cell cell) {
         var preyType = getRandomPreyType();
 
 //        preyType = AnimalType.SHEEP;
-
-        List<Organism> preys = cell.getResidentIfPresent(preyType);
-        if (preys == null || RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(preyType))) {
+        if (RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(preyType))) {
             return null;
         }
-        return preys;
+        return cell.getAnyAndRemove(preyType);
     }
 
     protected void consume(Organism food) {

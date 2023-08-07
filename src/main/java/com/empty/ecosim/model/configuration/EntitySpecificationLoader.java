@@ -14,18 +14,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class OrganismSpecificationLoader<OrganismTypeKey, SpecType extends OrganismSpecification> {
+public class EntitySpecificationLoader<EntityTypeKey, SpecType extends EntitySpecification> {
 
-    private final Map<OrganismTypeKey, SpecType> organismSpecifications;
-    public OrganismSpecificationLoader(ResourceType resourceType, TypeReference<Map<OrganismTypeKey, SpecType>> typeRef) {
-        this.organismSpecifications = initializeSpecificationMap(resourceType, typeRef);
+    private final Map<EntityTypeKey, SpecType> entitySpecification;
+    public EntitySpecificationLoader(ResourceType resourceType, TypeReference<Map<EntityTypeKey, SpecType>> typeRef) {
+        this.entitySpecification = initializeSpecificationMap(resourceType, typeRef);
     }
 
-    private Map<OrganismTypeKey, SpecType> initializeSpecificationMap(ResourceType resourceType, TypeReference<Map<OrganismTypeKey, SpecType>> typeRef) {
+    private Map<EntityTypeKey, SpecType> initializeSpecificationMap(ResourceType resourceType, TypeReference<Map<EntityTypeKey, SpecType>> typeRef) {
         try {
             ObjectMapper objectMapper = configureObjectMapper();
             String jsonContent = ConfigurationManager.INSTANCE.readResource(resourceType);
-            Map<OrganismTypeKey, SpecType> map = objectMapper.readValue(jsonContent, typeRef);
+            Map<EntityTypeKey, SpecType> map = objectMapper.readValue(jsonContent, typeRef);
             map.remove(null);
 
             if (resourceType == ResourceType.ANIMAL) {
@@ -53,8 +53,8 @@ public class OrganismSpecificationLoader<OrganismTypeKey, SpecType extends Organ
         return objectMapper;
     }
 
-    public SpecType getSpecificationForType(OrganismTypeKey type) {
-        return Optional.ofNullable(organismSpecifications.get(type)).orElseThrow(
+    public SpecType getSpecificationForType(EntityTypeKey type) {
+        return Optional.ofNullable(entitySpecification.get(type)).orElseThrow(
                 () -> new SpecificationNotFoundException("No specification for type: " + type)
         );
     }

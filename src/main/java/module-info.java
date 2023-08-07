@@ -5,6 +5,7 @@ module com.empty.ecosim {
 
     opens com.empty.ecosim.model.entity.organism.animals;
     opens com.empty.ecosim.model.entity.organism.plants;
+    opens com.empty.ecosim.model.entity.island;
     opens com.empty.ecosim to javafx.fxml;
     exports com.empty.ecosim;
     opens com.empty.ecosim.model.configuration;

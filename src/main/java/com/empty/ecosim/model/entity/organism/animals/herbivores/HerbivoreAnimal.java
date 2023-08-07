@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class HerbivoreAnimal extends Animal {
     @Override
     public boolean tryToFindFoodAround(Cell cell) {
-        List<Organism> grassList = cell.getResidentIfPresent(PlantType.GRASS);
+        List<Organism> grassList = cell.getResidentListIfPresent(PlantType.GRASS);
         if (grassList == null || grassList.isEmpty()) {
             return false;
         }

@@ -6,11 +6,11 @@ import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.model.entity.organism.animals.herbivores.*;
 import com.empty.ecosim.model.entity.organism.animals.predators.*;
 import com.empty.ecosim.model.configuration.ConfigurationManager;
-import com.empty.ecosim.model.configuration.OrganismSpecificationLoader;
+import com.empty.ecosim.model.configuration.EntitySpecificationLoader;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class SimpleAnimalFactory extends AnimalFactory{
-    private static final OrganismSpecificationLoader<AnimalType, AnimalSpecification> ANIMALS_SPECIFICATION = new OrganismSpecificationLoader<>(
+    private static final EntitySpecificationLoader<AnimalType, AnimalSpecification> ANIMALS_SPECIFICATION = new EntitySpecificationLoader<>(
             ConfigurationManager.ResourceType.ANIMAL, new TypeReference<>(){}
     );
 

@@ -1,19 +1,25 @@
 package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.Organism;
+import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.empty.ecosim.model.entity.island.TerritoryType.ISLAND;
+
 public class Island extends Territory {
-    private int width;
-    private int height;
+
+    private final int width;
+    private final int height;
     private Cell[][] matrix;
+    private final IslandSpecification islandSpecification = TERRITORY_SPECIFICATION.getSpecificationForType(TerritoryType.ISLAND);
 
-
-    public Island(int width, int height) {
-        this.width = width;
-        this.height = height;
+    public Island() {
+        this.width = islandSpecification.width();
+        this.height = islandSpecification.height();
 
         initializeMatrix();
         super.cells = Arrays.stream(matrix).flatMap(Arrays::stream).collect(Collectors.toList());
@@ -32,20 +38,22 @@ public class Island extends Territory {
 
     @Override
     public void moveResidentFromTo(Organism resident, Cell sourceCell, Cell destinationCell) {
+        if (destinationCell.getResidentNumber(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
+          return;
+        }
+
         if (sourceCell.remove(resident)) {
             destinationCell.addResident(resident);
         }
-
     }
 
     @Override
-    public Cell getAdjasentCellAtDirection(Cell cell, Direction direction) {
-        int x = cell.getX();
-        int y = cell.getY();
-        x = x + x * direction.x;
-        y = y + y * direction.y;
-
-        return getCell(x, y);
+    public Cell getPossibleDestinationBasedOnSpeed(Cell cell, int speed) {
+        int bound = speed * 2 + 1;
+        int x = speed - RandomGenerator.getRandomInt(bound);
+        bound = Math.abs((speed - Math.abs(x))) * 2 + 1;
+        int y = speed - RandomGenerator.getRandomInt(bound);
+        return getCell(x + cell.getX(), y + cell.getY());
     }
 
 
@@ -61,5 +69,14 @@ public class Island extends Territory {
             return matrix[x][y];
         }
         return null;
+    }
+
+
+    public Set<OrganismType> getInhabitantTypes() {
+        return TERRITORY_SPECIFICATION.getSpecificationForType(ISLAND).organismCapacity().keySet();
+    }
+
+    public int getMaxResidentNumber(OrganismType type) {
+        return islandSpecification.organismCapacity().get(type);
     }
 }

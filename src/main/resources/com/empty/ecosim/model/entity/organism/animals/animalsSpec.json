@@ -137,6 +137,29 @@
       "GRASS": "100"
     }
   },
+  "DEER": {
+    "weight": "300",
+    "speed": "4",
+    "maxSatiety": "50",
+    "edibleTypes": {
+      "WOLF": "0",
+      "BOA": "0",
+      "FOX": "0",
+      "BEAR": "0",
+      "EAGLE": "0",
+      "HORSE": "0",
+      "DEER": "-1",
+      "RABBIT": "0",
+      "MOUSE": "0",
+      "GOAT": "0",
+      "SHEEP": "0",
+      "BOAR": "0",
+      "BUFFALO": "0",
+      "DUCK": "0",
+      "CATERPILLAR": "0",
+      "GRASS": "100"
+    }
+  },
   "RABBIT": {
     "weight": "2",
     "speed": "2",

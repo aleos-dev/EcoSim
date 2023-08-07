@@ -5,7 +5,6 @@ import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.island.Cell;
-import com.empty.ecosim.model.entity.island.Direction;
 import com.empty.ecosim.model.entity.organism.Movable;
 
 import java.util.*;
@@ -19,12 +18,10 @@ public abstract class Animal extends Organism implements Movable, Eater {
     protected List<OrganismType> edibleTypes;
 
     public void move(Territory territory, Cell currentCell) {
-        Cell destinationCell = currentCell;
-        for (int i = 0; i < speed; i++) {
-            Cell tempCell = territory.getAdjasentCellAtDirection(destinationCell, Direction.getRandomDirection());
-            if (tempCell != null) {
-                destinationCell = tempCell;
-            }
+
+        Cell destinationCell = territory.getPossibleDestinationBasedOnSpeed(currentCell, (int) speed);
+        if (destinationCell == null || destinationCell == currentCell) {
+            return;
         }
         territory.moveResidentFromTo(this, currentCell, destinationCell);
     }

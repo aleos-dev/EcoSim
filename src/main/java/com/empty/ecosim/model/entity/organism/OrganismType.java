@@ -1,5 +1,6 @@
 package com.empty.ecosim.model.entity.organism;
 
+import com.empty.ecosim.model.entity.EntityType;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.model.entity.organism.plants.PlantType;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -7,7 +8,7 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 
 import java.util.Arrays;
 
-public interface OrganismType {
+public interface OrganismType extends EntityType {
 
     class OrganismTypeKeyDeserializer extends KeyDeserializer {
         @Override

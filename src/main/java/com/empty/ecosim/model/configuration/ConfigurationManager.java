@@ -12,8 +12,10 @@ import java.util.Map;
 
 public class ConfigurationManager {
     public enum ResourceType {
-        ANIMAL("animalsSpec.json", "com/empty/ecosim/model/animals/animalsSpec.json"),
-        PLANT("plantsSpec.json", "com/empty/ecosim/model/plants/plantsSpec.json");
+        ANIMAL("animalsSpec.json", "com/empty/ecosim/model/entity/organism/animals/animalsSpec.json"),
+        PLANT("plantsSpec.json", "com/empty/ecosim/model/entity/organism/plants/plantsSpec.json"),
+
+        ISLAND("islandSpec.json", "com/empty/ecosim/model/entity/island/islandSpec.json");
         //        CELL("cellsSpec.json", );
         private final String configFileName;
         private final String defaultResourcePath;
