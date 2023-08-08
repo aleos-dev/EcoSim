@@ -4,5 +4,5 @@ import com.empty.ecosim.model.entity.organism.plants.Plant;
 import com.empty.ecosim.model.entity.organism.plants.PlantType;
 
 public abstract class PlantFactory {
-    public abstract Plant createPlant(PlantType type);
+    public abstract Plant create(PlantType type);
 }

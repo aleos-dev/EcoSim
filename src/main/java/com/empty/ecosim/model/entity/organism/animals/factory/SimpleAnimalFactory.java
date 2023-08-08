@@ -9,29 +9,51 @@ import com.empty.ecosim.model.configuration.ConfigurationManager;
 import com.empty.ecosim.model.configuration.EntitySpecificationLoader;
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SimpleAnimalFactory extends AnimalFactory{
     private static final EntitySpecificationLoader<AnimalType, AnimalSpecification> ANIMALS_SPECIFICATION = new EntitySpecificationLoader<>(
             ConfigurationManager.ResourceType.ANIMAL, new TypeReference<>(){}
     );
 
-    public Animal createAnimal(AnimalType animalType) {
-        Animal animal = switch (animalType) {
-            case WOLF -> new Wolf();
-            case BOA -> new Boa();
-            case FOX -> new Fox();
-            case BEAR -> new Bear();
-            case EAGLE -> new Eagle();
-            case HORSE -> new Horse();
-            case DEER -> new Deer();
-            case RABBIT -> new Rabbit();
-            case MOUSE -> new Mouse();
-            case GOAT -> new Goat();
-            case SHEEP -> new Sheep();
-            case BOAR -> new Boar();
-            case BUFFALO -> new Buffalo();
-            case DUCK -> new Duck();
-            case CATERPILLAR -> new Caterpillar();
-        };
+    private final Map<AnimalType, AnimalCreator> animalCreators = new HashMap<>();
+
+    // Interface for animal creators
+    private interface AnimalCreator {
+        Animal create();
+    }
+
+    public SimpleAnimalFactory() {
+        // Register animal creators for each animal type
+        registerAnimalCreator(AnimalType.WOLF, Wolf::new);
+        registerAnimalCreator(AnimalType.BOA, Boa::new);
+        registerAnimalCreator(AnimalType.FOX, Fox::new);
+        registerAnimalCreator(AnimalType.BEAR, Bear::new);
+        registerAnimalCreator(AnimalType.HORSE, Horse::new);
+        registerAnimalCreator(AnimalType.DEER, Deer::new);
+        registerAnimalCreator(AnimalType.EAGLE, Eagle::new);
+        registerAnimalCreator(AnimalType.RABBIT, Rabbit::new);
+        registerAnimalCreator(AnimalType.MOUSE, Mouse::new);
+        registerAnimalCreator(AnimalType.GOAT, Goat::new);
+        registerAnimalCreator(AnimalType.SHEEP, Sheep::new);
+        registerAnimalCreator(AnimalType.BUFFALO, Buffalo::new);
+        registerAnimalCreator(AnimalType.BOAR, Boar::new);
+        registerAnimalCreator(AnimalType.DUCK, Duck::new);
+        registerAnimalCreator(AnimalType.CATERPILLAR, Caterpillar::new);
+    }
+
+    private void registerAnimalCreator(AnimalType type, AnimalCreator creator) {
+        animalCreators.put(type, creator);
+    }
+
+    public Animal create(AnimalType animalType) {
+        AnimalCreator creator = animalCreators.get(animalType);
+        if (creator == null) {
+            throw new IllegalArgumentException("AnimalType " + animalType + " is not supported by this factory.");
+        }
+
+        Animal animal = creator.create();
 
         var spec = ANIMALS_SPECIFICATION.getSpecificationForType(animalType);
         animal.setWeight(spec.weight());

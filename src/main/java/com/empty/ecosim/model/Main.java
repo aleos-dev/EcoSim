@@ -2,7 +2,6 @@ package com.empty.ecosim.model;
 
 import com.empty.ecosim.model.entity.island.Island;
 import com.empty.ecosim.model.entity.island.Territory;
-import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.model.entity.organism.animals.factory.AnimalFactory;
@@ -11,12 +10,13 @@ import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
 import com.empty.ecosim.model.entity.organism.plants.PlantType;
 import com.empty.ecosim.model.entity.organism.plants.factory.PlantFactory;
 import com.empty.ecosim.model.entity.organism.plants.factory.SimplePlantFactory;
+import com.empty.ecosim.statistics.IslandStatistic;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public class Main {
 
@@ -25,31 +25,58 @@ public class Main {
 
         Territory island = new Island();
         initiateIsland(island);
-        Wolf wolf = new Wolf();
-        island.getCells().get(0).addResident(wolf);
-        System.out.println(island);
-        for (int i = 0; i < 100; i++) {
+
+        for (int i = 0; i < 30; i++) {
+            IslandStatistic stat = new IslandStatistic();
+            System.out.println(stat.calculateIslandStatistic(island));
+            System.out.println("Animals: " + stat.getNumberOfAnimals());
+            System.out.println("Plants: " + stat.getNumberOfPlants());
             allMove(island);
-            System.out.println(wolf);
+            allEat(island);
+            clear(island);
         }
+    }
+
+    public static void clear(Territory island) {
+        island.getCells().forEach(cell -> {
+            Arrays.stream(AnimalType.values())
+                    .map(cell::getResidentsByType)
+                    .filter(Objects::nonNull)
+                    .forEach(list -> list.stream()
+                            .map(o -> (Animal) o)
+                            .forEach(animal -> {
+                                if (!animal.isAlive()) {
+                                    cell.removeResidentFromCell(animal);
+                                }
+                            })
+                    );
+        });
+
     }
 
     public static void allMove(Territory island) {
         island.getCells().forEach(cell -> {
-            List<AnimalType> animalTypes = Arrays.asList(AnimalType.values());
-            animalTypes.forEach(type -> {
+            Arrays.stream(AnimalType.values())
+                    .map(cell::getResidentsByType)
+                    .filter(Objects::nonNull)
+                    .forEach(list -> list.stream()
+                            .filter(o -> o instanceof Animal)
+                            .map(o -> (Animal) o)
+                            .forEach(animal -> animal.move(island, cell))
+                    );
+        });
+    }
 
-                List<Organism> list = cell.getResidentListIfPresent(type);
-                if (list != null) {
-
-                    for (int i = list.size() - 1; i >= 0; i--) {
-                        Organism o = list.get(i);
-                        if (o instanceof Animal animal) {
-                            animal.move(island, cell);
-                        }
-                    }
-                }
-            });
+    public static void allEat(Territory island) {
+        island.getCells().forEach(cell -> {
+            Arrays.stream(AnimalType.values())
+                    .map(cell::getResidentsByType)
+                    .filter(Objects::nonNull)
+                    .forEach(list -> list.stream()
+                            .filter(o -> o instanceof Animal)
+                            .map(o -> (Animal) o)
+                            .forEach(animal -> animal.tryToFindFoodAround(cell))
+                    );
         });
     }
 
@@ -59,26 +86,28 @@ public class Main {
 
         List<AnimalType> animalTypes = Arrays.asList(AnimalType.values());
         List<PlantType> plantTypes = Arrays.asList(PlantType.values());
-        island.getCells().stream().forEach(cell -> {
-            Collections.shuffle(animalTypes);
-            int varietyTypeNumber = RandomGenerator.getRandomInt(animalTypes.size() + 1);
 
-            animalTypes.stream().limit(varietyTypeNumber).forEach(type -> {
-                int typeNumber = RandomGenerator.getRandomInt(island.getMaxResidentNumber(type));
-                for (int i = 0; i < typeNumber; i++) {
-                    cell.addResident(animalFactory.createAnimal(type));
+        island.getCells().forEach(cell -> {
+
+            Collections.shuffle(animalTypes);
+            int varietyAnimalTypes = RandomGenerator.getRandomInt(animalTypes.size() + 1);
+            animalTypes.stream().limit(varietyAnimalTypes).forEach(animalType -> {
+                int animalsNumber = RandomGenerator.getRandomInt(island.getMaxResidentCountForOrganismType(animalType));
+                for (int i = 0; i < animalsNumber; i++) {
+                    cell.addResident(animalFactory.create(animalType));
                 }
             });
 
-            varietyTypeNumber = plantTypes.size();
-            plantTypes.stream().forEach(type -> {
-                int typeNumber = RandomGenerator.getRandomInt(island.getMaxResidentNumber(type));
-                for (int i = 0; i < typeNumber; i++) {
-                    cell.addResident(plantFactory.createPlant(type));
+            Collections.shuffle(plantTypes);
+            int varietyPlantTypes = RandomGenerator.getRandomInt(plantTypes.size() + 1);
+            plantTypes.stream().limit(varietyPlantTypes).forEach(plantType -> {
+                int plantsNumber = RandomGenerator.getRandomInt(island.getMaxResidentCountForOrganismType(plantType));
+                for (int i = 0; i < plantsNumber; i++) {
+                    cell.addResident(plantFactory.create(plantType));
                 }
             });
 
         });
-
     }
+
 }

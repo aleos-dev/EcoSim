@@ -18,12 +18,12 @@ public abstract class Animal extends Organism implements Movable, Eater {
     protected List<OrganismType> edibleTypes;
 
     public void move(Territory territory, Cell currentCell) {
-
-        Cell destinationCell = territory.getPossibleDestinationBasedOnSpeed(currentCell, (int) speed);
+        sufferFromHunger();
+        Cell destinationCell = territory.getRandomPossibleDestination(currentCell, (int) speed);
         if (destinationCell == null || destinationCell == currentCell) {
             return;
         }
-        territory.moveResidentFromTo(this, currentCell, destinationCell);
+        territory.moveOrganismFromSourceToDestination(this, currentCell, destinationCell);
     }
 
     public abstract boolean tryToFindFoodAround(Cell cell);
@@ -67,6 +67,12 @@ public abstract class Animal extends Organism implements Movable, Eater {
         this.baseSpecification = baseSpecification;
     }
 
+    protected void sufferFromHunger() {
+        satiety -= baseSpecification.maxSatiety() / 20;
+        if (satiety < 0) {
+            isAlive.set(false);
+        }
+    }
     @Override
     public String toString() {
         return "Animal{" +

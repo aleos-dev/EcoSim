@@ -21,11 +21,11 @@ public class Island extends Territory {
         this.width = islandSpecification.width();
         this.height = islandSpecification.height();
 
-        initializeMatrix();
+        initializeCellsMatrix();
         super.cells = Arrays.stream(matrix).flatMap(Arrays::stream).collect(Collectors.toList());
     }
 
-    private void initializeMatrix() {
+    private void initializeCellsMatrix() {
         matrix = new Cell[height][width];
 
         // Initialize each cell in the matrix, assuming you have an appropriate constructor in Cell class
@@ -37,23 +37,23 @@ public class Island extends Territory {
     }
 
     @Override
-    public void moveResidentFromTo(Organism resident, Cell sourceCell, Cell destinationCell) {
-        if (destinationCell.getResidentNumber(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
+    public void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell) {
+        if (destinationCell.getResidentCountByType(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
           return;
         }
 
-        if (sourceCell.remove(resident)) {
+        if (sourceCell.removeResidentFromCell(resident)) {
             destinationCell.addResident(resident);
         }
     }
 
     @Override
-    public Cell getPossibleDestinationBasedOnSpeed(Cell cell, int speed) {
+    public Cell getRandomPossibleDestination(Cell cell, int speed) {
         int bound = speed * 2 + 1;
         int x = speed - RandomGenerator.getRandomInt(bound);
         bound = Math.abs((speed - Math.abs(x))) * 2 + 1;
         int y = speed - RandomGenerator.getRandomInt(bound);
-        return getCell(x + cell.getX(), y + cell.getY());
+        return getCellAtCoordinate(x + cell.getX(), y + cell.getY());
     }
 
 
@@ -64,23 +64,20 @@ public class Island extends Territory {
         return y >= 0 && y < height;
     }
 
-    private Cell getCell(int x, int y) {
-        try {
+    private Cell getCellAtCoordinate(int x, int y) {
             if (isCoordinateValid(x, y)) {
                 return matrix[y][x];
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println();
-        }
+
         return null;
     }
 
 
-    public Set<OrganismType> getInhabitantTypes() {
+    public Set<OrganismType> getResidentOrganismTypes() {
         return TERRITORY_SPECIFICATION.getSpecificationForType(ISLAND).organismCapacity().keySet();
     }
 
-    public int getMaxResidentNumber(OrganismType type) {
+    public int getMaxResidentCountForOrganismType(OrganismType type) {
         return islandSpecification.organismCapacity().get(type);
     }
 }

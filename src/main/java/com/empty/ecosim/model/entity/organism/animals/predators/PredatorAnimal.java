@@ -6,10 +6,10 @@ import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.utils.RandomGenerator;
 
-import java.util.List;
-
 public abstract class PredatorAnimal extends Animal {
     public boolean tryToFindFoodAround(Cell cell) {
+        sufferFromHunger();
+
         if (satiety > baseSpecification.maxSatiety() * 0.8) {
             return false;
         }
@@ -24,6 +24,7 @@ public abstract class PredatorAnimal extends Animal {
         return true;
     }
 
+
     protected Organism getPreyToHunt(Cell cell) {
         var preyType = getRandomPreyType();
 
@@ -31,7 +32,7 @@ public abstract class PredatorAnimal extends Animal {
         if (RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(preyType))) {
             return null;
         }
-        return cell.getAnyAndRemove(preyType);
+        return cell.retrieveAndRemoveAnyResidentByType(preyType);
     }
 
     protected void consume(Organism food) {

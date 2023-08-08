@@ -13,7 +13,7 @@ public class SimplePlantFactory extends PlantFactory {
             ConfigurationManager.ResourceType.PLANT, new TypeReference<>(){}
     );
 
-    public Plant createPlant(PlantType plantType) {
+    public Plant create(PlantType plantType) {
         Plant plant = switch (plantType) {
             case GRASS -> new Grass();
         };
