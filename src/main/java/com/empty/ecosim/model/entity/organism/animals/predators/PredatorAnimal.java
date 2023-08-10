@@ -8,7 +8,6 @@ import com.empty.ecosim.utils.RandomGenerator;
 
 public abstract class PredatorAnimal extends Animal {
     public boolean tryToFindFoodAround(Cell cell) {
-        sufferFromHunger();
 
         if (satiety > baseSpecification.maxSatiety() * 0.8) {
             return false;
@@ -22,6 +21,11 @@ public abstract class PredatorAnimal extends Animal {
         consume(prey);
 
         return true;
+    }
+
+    @Override
+    public int maxOffspring() {
+        return 4;
     }
 
 

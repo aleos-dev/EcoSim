@@ -12,10 +12,26 @@ public class Cell {
     private final int y;
     private final ReentrantLock lock = new ReentrantLock();
     private final Map<OrganismType, List<Organism>> residents = new HashMap<>();
+    private int dieOfHunger;
+
+
+    private int becameFood;
 
     public Cell(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Map<OrganismType, List<Organism>> getResidentsMap() {
+        return residents;
+    }
+
+    public void initializeOrganismListByType(OrganismType type) {
+        residents.put(type, new ArrayList<>());
+    }
+
+    public void addAllResidents(OrganismType type, List<Organism> newcomers) {
+        residents.put(type, newcomers);
     }
 
     public List<Organism> getResidentsByType(OrganismType type) {
@@ -59,7 +75,7 @@ public class Cell {
         if (residentsOfType == null || residentsOfType.isEmpty()) {
             return null;
         }
-
+        becameFood++;
         return residentsOfType.remove(residentsOfType.size() - 1);
     }
 
@@ -90,6 +106,22 @@ public class Cell {
 
     public int getY() {
         return y;
+    }
+
+    public int getDieOfHunger() {
+        return dieOfHunger;
+    }
+
+    public int getBecameFood() {
+        return becameFood;
+    }
+
+    public void setDieOfHunger(int dieOfHunger) {
+        this.dieOfHunger = dieOfHunger;
+    }
+
+    public void setBecameFood(int becameFood) {
+        this.becameFood = becameFood;
     }
 
     @Override

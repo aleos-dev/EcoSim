@@ -2,11 +2,11 @@ package com.empty.ecosim.model.entity.organism.plants;
 
 import com.empty.ecosim.model.entity.organism.Organism;
 
+import java.util.Set;
+
 public abstract class Plant extends Organism {
 
-    public Plant reproduce(){
-        return null;
-    }
+    public abstract Set<? extends Plant> reproduce();
     @Override
     public abstract PlantType getType();
 

@@ -10,9 +10,9 @@ import com.empty.ecosim.model.entity.organism.plants.PlantType;
 import java.util.List;
 
 public abstract class HerbivoreAnimal extends Animal {
+
     @Override
     public boolean tryToFindFoodAround(Cell cell) {
-        sufferFromHunger();
 
         if (satiety > baseSpecification.maxSatiety() * 0.8) {
             return false;
@@ -33,12 +33,8 @@ public abstract class HerbivoreAnimal extends Animal {
         return true;
     }
 
-    public static class Caterpillar extends PredatorAnimal {
-
-
-        @Override
-        public AnimalType getType() {
-            return AnimalType.FOX;
-        }
+    @Override
+    public int maxOffspring() {
+        return 6;
     }
 }

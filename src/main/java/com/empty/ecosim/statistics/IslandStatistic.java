@@ -13,6 +13,8 @@ public class IslandStatistic implements Statistic {
     private Map<PlantType, Integer> plants = new HashMap<>();
     private int numberOfAnimals;
     private int numberOfPlants;
+    private int becameFood;
+    private int dieOfHunger;
     public IslandStatistic calculateIslandStatistic(Territory island) {
         Arrays.stream(AnimalType.values()).forEach(type -> animals.put(type, 0));
 
@@ -20,6 +22,10 @@ public class IslandStatistic implements Statistic {
                 .forEach(cell -> {
                    Arrays.stream(AnimalType.values())
                            .forEach(animalType -> animals.compute(animalType, (type, count) -> count + cell.getResidentCountByType(type)));
+                   becameFood += cell.getBecameFood();
+                   cell.setBecameFood(0);
+                   dieOfHunger += cell.getDieOfHunger();
+                   cell.setDieOfHunger(0);
                 });
 
 
@@ -41,6 +47,14 @@ public class IslandStatistic implements Statistic {
     public long getNumberOfPlants() {
         numberOfPlants = plants.values().stream().mapToInt(Integer::intValue).sum();
         return numberOfPlants;
+    }
+
+    public int getBecameFood() {
+        return becameFood;
+    }
+
+    public int getDieOfHunger() {
+        return dieOfHunger;
     }
 
     @Override

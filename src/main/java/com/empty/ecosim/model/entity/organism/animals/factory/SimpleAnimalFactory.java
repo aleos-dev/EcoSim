@@ -7,6 +7,7 @@ import com.empty.ecosim.model.entity.organism.animals.herbivores.*;
 import com.empty.ecosim.model.entity.organism.animals.predators.*;
 import com.empty.ecosim.model.configuration.ConfigurationManager;
 import com.empty.ecosim.model.configuration.EntitySpecificationLoader;
+import com.empty.ecosim.utils.RandomGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.HashMap;
@@ -59,7 +60,9 @@ public class SimpleAnimalFactory extends AnimalFactory{
         animal.setWeight(spec.weight());
         animal.setSpeed(spec.speed());
         animal.setSatiety(spec.maxSatiety());
+        animal.setGender(RandomGenerator.generateGender());
         animal.setBaseSpecification(spec);
+
         animal.setEdibleTypes(ANIMALS_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
 
         return animal;

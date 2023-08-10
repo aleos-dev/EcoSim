@@ -2,6 +2,7 @@ package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.Arrays;
@@ -14,38 +15,61 @@ public class Island extends Territory {
 
     private final int width;
     private final int height;
-    private Cell[][] matrix;
+    private Cell[][] grid;
+    private Cell[][] onTravelGrid;
     private final IslandSpecification islandSpecification = TERRITORY_SPECIFICATION.getSpecificationForType(TerritoryType.ISLAND);
 
     public Island() {
         this.width = islandSpecification.width();
         this.height = islandSpecification.height();
 
-        initializeCellsMatrix();
-        super.cells = Arrays.stream(matrix).flatMap(Arrays::stream).collect(Collectors.toList());
+
+        initializeCellGrids();
+        super.cells = Arrays.stream(grid).flatMap(Arrays::stream).collect(Collectors.toList());
+
     }
 
-    private void initializeCellsMatrix() {
-        matrix = new Cell[height][width];
+    private void initializeCellGrids() {
+        grid = new Cell[height][width];
+        onTravelGrid = new Cell[height][width];
 
-        // Initialize each cell in the matrix, assuming you have an appropriate constructor in Cell class
         for(int i = 0; i < height; i++) {
             for(int j = 0; j < width; j++) {
-                matrix[i][j] = new Cell(i, j);
+                grid[i][j] = new Cell(i, j);
+                onTravelGrid[i][j] = new Cell(i, j);
             }
         }
     }
 
     @Override
-    public void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell) {
-        if (destinationCell.getResidentCountByType(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
-          return;
-        }
+    public void beginTravel(Organism resident, Cell from, Cell to) {
+//        if (to.getResidentCountByType(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
+//            return;
+//        }
 
-        if (sourceCell.removeResidentFromCell(resident)) {
-            destinationCell.addResident(resident);
+        if (from.removeResidentFromCell(resident)) {
+            onTravelGrid[to.getX()][to.getY()].addResident(resident);
+
         }
     }
+
+    @Override
+    public void finishTravel() {
+            Arrays.stream(onTravelGrid).flatMap(Arrays::stream).
+                    forEach(onTravelCell -> {
+                        Arrays.stream(AnimalType.values())
+                                .filter(type -> onTravelCell.getResidentCountByType(type) > 0)
+                                .forEach(type -> {
+                                    //todo: correct this y -x to x -y
+                           Cell destinationCell = getCellAtCoordinate(onTravelCell.getY(), onTravelCell.getX());
+                           if (destinationCell.getResidentsByType(type) == null) {
+                               destinationCell.initializeOrganismListByType(type);
+                           }
+                           destinationCell.getResidentsMap().get(type).addAll(onTravelCell.getResidentsByType(type));
+                        });
+                    });
+    }
+
 
     @Override
     public Cell getRandomPossibleDestination(Cell cell, int speed) {
@@ -54,6 +78,11 @@ public class Island extends Territory {
         bound = Math.abs((speed - Math.abs(x))) * 2 + 1;
         int y = speed - RandomGenerator.getRandomInt(bound);
         return getCellAtCoordinate(x + cell.getX(), y + cell.getY());
+    }
+
+    @Override
+    public void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell) {
+
     }
 
 
@@ -66,18 +95,19 @@ public class Island extends Territory {
 
     private Cell getCellAtCoordinate(int x, int y) {
             if (isCoordinateValid(x, y)) {
-                return matrix[y][x];
+                return grid[y][x];
             }
 
         return null;
     }
 
 
-    public Set<OrganismType> getResidentOrganismTypes() {
+    public Set<OrganismType> getResidentsTypes() {
         return TERRITORY_SPECIFICATION.getSpecificationForType(ISLAND).organismCapacity().keySet();
     }
 
     public int getMaxResidentCountForOrganismType(OrganismType type) {
         return islandSpecification.organismCapacity().get(type);
     }
+
 }

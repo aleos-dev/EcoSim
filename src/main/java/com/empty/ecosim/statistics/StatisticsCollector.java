@@ -4,13 +4,13 @@ import java.util.List;
 
 public class StatisticsCollector {
     private List<IslandStatistic> islandStatistics;
-    private List<AnimalStatistic> animalStatistics;
+    private List<OrganismStatistic> organismStatistics;
 
     public void collectIslandStatistic(IslandStatistic statistic) {
         islandStatistics.add(statistic);
     }
 
-    public void collectAnimalStatistic(AnimalStatistic statistic) {
-        animalStatistics.add(statistic);
+    public void collectAnimalStatistic(OrganismStatistic statistic) {
+        organismStatistics.add(statistic);
     }
 }
