@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Fox extends PredatorAnimal{
+public class Fox extends PredatorAnimal {
     @Override
     public Set<? extends Animal> reproduce() {
 
-        if (gender == Gender.MALE) {
+        if (gender == Gender.MALE || RandomGenerator.getRandomInt(getFertilePeriod()) > 0) {
             return Collections.emptySet();
         }
 
@@ -32,6 +32,7 @@ public class Fox extends PredatorAnimal{
                 .limit(RandomGenerator.getRandomInt(maxOffspring()))
                 .collect(Collectors.toSet());
     }
+
     @Override
     public AnimalType getType() {
         return AnimalType.FOX;

@@ -1,6 +1,5 @@
 package com.empty.ecosim.model;
 
-import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Island;
 import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Organism;
@@ -9,52 +8,41 @@ import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.model.entity.organism.animals.factory.AnimalFactory;
 import com.empty.ecosim.model.entity.organism.animals.factory.SimpleAnimalFactory;
-import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
 import com.empty.ecosim.model.entity.organism.plants.PlantType;
 import com.empty.ecosim.model.entity.organism.plants.factory.PlantFactory;
 import com.empty.ecosim.model.entity.organism.plants.factory.SimplePlantFactory;
-import com.empty.ecosim.statistics.IslandStatistic;
-import com.empty.ecosim.statistics.OrganismStatistic;
+import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Main {
 
-    static OrganismStatistic organismStatistic = new OrganismStatistic();
 
     public static void main(String[] args) throws IllegalArgumentException {
 
 
+        StatisticsCollector statColl = new StatisticsCollector();
         Territory island = new Island();
+        statColl.calculateTerritoryStatistic(island);
         initiateIsland(island);
 
-        for (int i = 0; i < 30; i++) {
-            IslandStatistic stat = new IslandStatistic();
-            IslandStatistic stat2 = new IslandStatistic();
-            organismStatistic = new OrganismStatistic();
-            System.out.println("Stat: " + stat.calculateIslandStatistic(island));
-            System.out.println("Stat2: " +stat2.calculateIslandStatistic(island));
-            System.out.println("Animals: " + stat.getNumberOfAnimals() + " - " + stat2.getNumberOfAnimals());
-            System.out.println("Plants: " + stat.getNumberOfPlants() + " - " + stat2.getNumberOfPlants());
+        for (int i = 0; i < 300; i++) {
+
+            statColl.calculateTerritoryStatistic(island);
+//            System.out.println("Organism Statistic: " + statColl.getOrganismTypePopulation());
+//            System.out.println("Animal Statistic: " + statColl.getNumberOfAnimals());
+//            System.out.println("Plant Statistic: " + statColl.getNumberOfPlants());
             allEat(island);
-
-            stat = new IslandStatistic();
-            System.out.println("AFTER EAT Stat: " + stat.calculateIslandStatistic(island));
             allReproduce(island);
-
-
-            stat = new IslandStatistic();
-            System.out.println("AFTER REPRODUCE Stat: " + stat.calculateIslandStatistic(island));
             allMove(island);
 
-            stat = new IslandStatistic();
-            System.out.println("AFTER MOVE Stat: " + stat.calculateIslandStatistic(island));
+            System.out.println(statColl);
 
-            System.out.println("Became Food: " + stat.getBecameFood());
-            System.out.println("Died of hunger: " + stat.getDieOfHunger());
-            System.out.println("newborns: " + organismStatistic);
+//            System.out.println("Predation Statistic: " + StatisticsCollector.getAndResetPredationProcessCollector());
+//            System.out.println("Starving to death Statistic: " + StatisticsCollector.getAndResetStarvingProcessCollector());
+//            System.out.println("Newborn Statistic: " + StatisticsCollector.getAndResetNewbornStatistic());
+
         }
     }
 
@@ -62,20 +50,29 @@ public class Main {
         island.getCells().stream()
                 .flatMap(cell -> cell.getResidentsMap().entrySet().stream())
                 .forEach(entry -> {
-                    OrganismType k = entry.getKey();
+                    OrganismType residentType = entry.getKey();
                     List<Organism> residents = entry.getValue();
-
+                    int maximumAvailableCapacity = island.getMaximumCapacityFor(residentType) - residents.size();
+                    if (maximumAvailableCapacity <= 0) {
+                        return;
+                    }
                     List<Organism> newborns = new ArrayList<>();
+
                     Organism organism = null;
-                    for (int i = 0; i < residents.size(); i++) {
-                        organism = residents.get(i);
+                    for (Organism resident : residents) {
+                        organism = resident;
                         newborns.addAll(organism.reproduce());
+                        if (newborns.size() > maximumAvailableCapacity) {
+                            newborns = newborns.subList(0, maximumAvailableCapacity);
+                            break;
+                        }
                     }
                     if (organism == null) return;
                     residents.addAll(newborns);
-                    organismStatistic.addNewbornStatistic(organism.getType(), newborns.size());
+                    StatisticsCollector.addNewbornStatistic(organism.getType(), newborns.size());
                 });
-    }
+}
+
 
     public static void allMove(Territory island) {
         island.getCells().forEach(cell -> {
@@ -100,7 +97,7 @@ public class Main {
                     .forEach(list -> list.stream()
                             .filter(o -> o instanceof Animal)
                             .map(o -> (Animal) o)
-                            .forEach(animal -> animal.tryToFindFoodAround(cell))
+                            .forEach(animal -> animal.findFoodAt(cell))
                     );
         });
     }

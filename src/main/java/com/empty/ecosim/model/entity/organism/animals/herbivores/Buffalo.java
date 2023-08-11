@@ -15,7 +15,7 @@ public class Buffalo extends HerbivoreAnimal {
     @Override
     public Set<? extends Animal> reproduce() {
 
-        if (gender == Gender.MALE) {
+        if (gender == Gender.MALE || RandomGenerator.getRandomInt(getFertilePeriod()) > 0) {
             return Collections.emptySet();
         }
 
@@ -34,6 +34,7 @@ public class Buffalo extends HerbivoreAnimal {
                 .limit(5)
                 .collect(Collectors.toSet());
     }
+
     @Override
     public AnimalType getType() {
         return AnimalType.BUFFALO;

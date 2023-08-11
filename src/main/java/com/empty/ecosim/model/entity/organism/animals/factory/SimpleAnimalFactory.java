@@ -59,7 +59,7 @@ public class SimpleAnimalFactory extends AnimalFactory{
         var spec = ANIMALS_SPECIFICATION.getSpecificationForType(animalType);
         animal.setWeight(spec.weight());
         animal.setSpeed(spec.speed());
-        animal.setSatiety(spec.maxSatiety());
+        animal.setSatiety(spec.maxSatiety() / 2);
         animal.setGender(RandomGenerator.generateGender());
         animal.setBaseSpecification(spec);
 

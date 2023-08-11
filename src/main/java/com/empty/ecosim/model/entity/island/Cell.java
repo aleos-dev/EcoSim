@@ -2,20 +2,16 @@ package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.statistics.StatisticsCollector;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 
 public class Cell {
     private final int x;
     private final int y;
     private final ReentrantLock lock = new ReentrantLock();
     private final Map<OrganismType, List<Organism>> residents = new HashMap<>();
-    private int dieOfHunger;
-
-
-    private int becameFood;
 
     public Cell(int x, int y) {
         this.x = x;
@@ -45,46 +41,6 @@ public class Cell {
 
     }
 
-    public int getAndRemoveNumberOfResidentsByType(int number, OrganismType type) {
-        lock.lock();
-        int inStock = getResidentCountByType(type);
-        if (inStock == 0) {
-            return 0;
-        }
-
-        if (inStock <= number) {
-            residents.remove(type);
-            return inStock;
-        }
-
-        List<Organism> sublist = residents.get(type).subList(0, inStock - number);
-        residents.put(type, sublist);
-        lock.unlock();
-
-        return number;
-    }
-
-   public List<? extends Organism> getAllResidents() {
-    return residents.values().stream()
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
-}
-
-    public Organism retrieveAndRemoveAnyResidentByType(OrganismType type) {
-        List<Organism> residentsOfType = residents.get(type);
-        if (residentsOfType == null || residentsOfType.isEmpty()) {
-            return null;
-        }
-        becameFood++;
-        return residentsOfType.remove(residentsOfType.size() - 1);
-    }
-
-    public int getResidentCountByType(OrganismType type) {
-        List<Organism> residentsOfType = residents.get(type);
-        return residentsOfType == null ? 0 : residentsOfType.size();
-    }
-
-
     public boolean removeResidentFromCell(Organism organism) {
         List<Organism> residentsOfType = residents.get(organism.getType());
         if (residentsOfType == null) {
@@ -99,6 +55,53 @@ public class Cell {
         return true;
     }
 
+    // good
+    public int handleConsumptionProcess(int amountOfFood, OrganismType typeOfFood) {
+        lock.lock();
+        int inStock = getResidentCountByType(typeOfFood);
+        if (inStock == 0) {
+            return 0;
+        }
+
+        if (inStock <= amountOfFood) {
+            residents.remove(typeOfFood);
+            return inStock;
+        }
+
+        List<Organism> sublist = residents.get(typeOfFood).subList(0, inStock - amountOfFood);
+        residents.put(typeOfFood, sublist);
+        lock.unlock();
+
+        return amountOfFood;
+    }
+
+    // good
+    public Organism handlePredationProcess(OrganismType type) {
+        if (getResidentCountByType(type) <= 0) {
+            return null;
+        }
+        List<Organism> requestedResidents = residents.get(type);
+        StatisticsCollector.registerPredationProcess(1);
+        
+        return requestedResidents.remove(requestedResidents.size() - 1);
+    }
+
+    // good
+    public int getResidentCountByType(OrganismType type) {
+        List<Organism> residentsOfType = residents.get(type);
+        return residentsOfType == null ? 0 : residentsOfType.size();
+    }
+
+
+
+    // good
+    public Set<OrganismType> getPresentTypes() {
+        return residents.keySet();
+    }
+
+
+
+
 
     public int getX() {
         return x;
@@ -108,21 +111,6 @@ public class Cell {
         return y;
     }
 
-    public int getDieOfHunger() {
-        return dieOfHunger;
-    }
-
-    public int getBecameFood() {
-        return becameFood;
-    }
-
-    public void setDieOfHunger(int dieOfHunger) {
-        this.dieOfHunger = dieOfHunger;
-    }
-
-    public void setBecameFood(int becameFood) {
-        this.becameFood = becameFood;
-    }
 
     @Override
     public String toString() {

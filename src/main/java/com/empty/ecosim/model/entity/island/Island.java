@@ -33,41 +33,47 @@ public class Island extends Territory {
         grid = new Cell[height][width];
         onTravelGrid = new Cell[height][width];
 
-        for(int i = 0; i < height; i++) {
-            for(int j = 0; j < width; j++) {
-                grid[i][j] = new Cell(i, j);
-                onTravelGrid[i][j] = new Cell(i, j);
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                grid[i][j] = new Cell(j, i);
+                onTravelGrid[i][j] = new Cell(j, i);
             }
         }
     }
 
     @Override
     public void beginTravel(Organism resident, Cell from, Cell to) {
-//        if (to.getResidentCountByType(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
-//            return;
-//        }
+        if (to.getResidentCountByType(resident.getType()) >= islandSpecification.organismCapacity().get(resident.getType())) {
+            return;
+        }
 
         if (from.removeResidentFromCell(resident)) {
-            onTravelGrid[to.getX()][to.getY()].addResident(resident);
+            onTravelGrid[to.getY()][to.getX()].addResident(resident);
 
         }
     }
 
     @Override
     public void finishTravel() {
-            Arrays.stream(onTravelGrid).flatMap(Arrays::stream).
-                    forEach(onTravelCell -> {
-                        Arrays.stream(AnimalType.values())
-                                .filter(type -> onTravelCell.getResidentCountByType(type) > 0)
-                                .forEach(type -> {
-                                    //todo: correct this y -x to x -y
-                           Cell destinationCell = getCellAtCoordinate(onTravelCell.getY(), onTravelCell.getX());
-                           if (destinationCell.getResidentsByType(type) == null) {
-                               destinationCell.initializeOrganismListByType(type);
-                           }
-                           destinationCell.getResidentsMap().get(type).addAll(onTravelCell.getResidentsByType(type));
-                        });
-                    });
+        Arrays.stream(onTravelGrid).flatMap(Arrays::stream).
+                forEach(onTravelCell -> {
+                    Arrays.stream(AnimalType.values())
+                            .filter(type -> onTravelCell.getResidentCountByType(type) > 0)
+                            .forEach(type -> {
+
+                                Cell destinationCell = getCellAtCoordinate(onTravelCell.getX(), onTravelCell.getY());
+                                if (destinationCell.getResidentsByType(type) == null) {
+                                    destinationCell.initializeOrganismListByType(type);
+                                }
+                                destinationCell.getResidentsMap().get(type).addAll(onTravelCell.getResidentsByType(type));
+                            });
+                    onTravelCell.getResidentsMap().clear();
+                });
+    }
+
+    @Override
+    public TerritoryType getType() {
+        return ISLAND;
     }
 
 
@@ -77,14 +83,26 @@ public class Island extends Territory {
         int x = speed - RandomGenerator.getRandomInt(bound);
         bound = Math.abs((speed - Math.abs(x))) * 2 + 1;
         int y = speed - RandomGenerator.getRandomInt(bound);
-        return getCellAtCoordinate(x + cell.getX(), y + cell.getY());
+
+
+        Cell newCell = getCellAtCoordinate(x + cell.getX(), y + cell.getY());
+        if (newCell != null && newCell.getY() == 20) {
+            System.out.println("ALERT");
+        }
+        return newCell;
     }
 
     @Override
     public void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell) {
 
     }
+    private Cell getCellAtCoordinate(int x, int y) {
+        if (isCoordinateValid(x, y)) {
+            return grid[y][x];
+        }
 
+        return null;
+    }
 
     private boolean isCoordinateValid(int x, int y) {
         if (x < 0 || x >= width) {
@@ -93,13 +111,7 @@ public class Island extends Territory {
         return y >= 0 && y < height;
     }
 
-    private Cell getCellAtCoordinate(int x, int y) {
-            if (isCoordinateValid(x, y)) {
-                return grid[y][x];
-            }
 
-        return null;
-    }
 
 
     public Set<OrganismType> getResidentsTypes() {

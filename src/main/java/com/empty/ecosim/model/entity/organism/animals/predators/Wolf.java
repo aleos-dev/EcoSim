@@ -13,7 +13,7 @@ public class Wolf extends PredatorAnimal {
     @Override
     public Set<? extends Animal> reproduce() {
 
-        if (gender == Gender.MALE) {
+        if (gender == Gender.MALE || RandomGenerator.getRandomInt(getFertilePeriod()) > 0) {
             return Collections.emptySet();
         }
 
@@ -32,6 +32,7 @@ public class Wolf extends PredatorAnimal {
                 .limit(RandomGenerator.getRandomInt(maxOffspring()))
                 .collect(Collectors.toSet());
     }
+
     @Override
     public AnimalType getType() {
         return AnimalType.WOLF;

@@ -6,10 +6,16 @@ import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.utils.RandomGenerator;
 
-public abstract class PredatorAnimal extends Animal {
-    public boolean tryToFindFoodAround(Cell cell) {
+import java.util.ArrayList;
 
-        if (satiety > baseSpecification.maxSatiety() * 0.8) {
+import static com.empty.ecosim.utils.RandomGenerator.getRandomOrganismType;
+
+public abstract class PredatorAnimal extends Animal {
+    private static final double HUNGER_THRESHOLD = 0.95;
+    private static final int MAX_OFFSPRING = 2;
+    private static final int FERTILE_PERIOD = 5;
+    public boolean findFoodAt(Cell cell) {
+        if (satiety > baseSpecification.maxSatiety() * HUNGER_THRESHOLD) {
             return false;
         }
 
@@ -23,29 +29,35 @@ public abstract class PredatorAnimal extends Animal {
         return true;
     }
 
-    @Override
-    public int maxOffspring() {
-        return 4;
-    }
-
-
     protected Organism getPreyToHunt(Cell cell) {
-        var preyType = getRandomPreyType();
+        var presentTypes = new ArrayList<>(cell.getPresentTypes());
+        presentTypes.retainAll(edibleTypes);
 
-//        preyType = AnimalType.SHEEP;
-        if (RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(preyType))) {
+        if (presentTypes.isEmpty()) {
             return null;
         }
-        return cell.retrieveAndRemoveAnyResidentByType(preyType);
+
+        var targetType = getRandomOrganismType(presentTypes);
+        return isHuntFailed(targetType) ? null : cell.handlePredationProcess(targetType);
     }
+    @Override
+    public int getFertilePeriod() {
+        return FERTILE_PERIOD;
+    }
+
+    @Override
+    public int maxOffspring() {
+        return MAX_OFFSPRING;
+    }
+
+    private boolean isHuntFailed(OrganismType targetType) {
+        return RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(targetType));
+    }
+
 
     protected void consume(Organism food) {
         if (food == null) return;
         satiety = Math.min(satiety + food.getWeight(), baseSpecification.maxSatiety());
     }
-
-   private OrganismType getRandomPreyType() {
-        return RandomGenerator.getRandomType(edibleTypes);
-   }
 
 }

@@ -1,5 +1,6 @@
 package com.empty.ecosim.utils;
 
+import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
 
@@ -8,8 +9,13 @@ import java.util.Random;
 
 public class RandomGenerator {
     private static final Random random = new Random();
-    public static <T extends OrganismType> T getRandomType(List<T> entityTypes) {
-        return entityTypes.get(random.nextInt(entityTypes.size()));
+
+    public static <T extends OrganismType> T getRandomOrganismType(List<T> types) {
+        if (types.size() <= 0) {
+            System.out.println("ALERT");
+        }
+        int index = random.nextInt(types.size());
+        return types.get(index);
     }
 
     public static boolean isHuntFailed(double chance) {

@@ -6,6 +6,7 @@ import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.organism.Movable;
+import com.empty.ecosim.statistics.StatisticsCollector;
 
 import java.util.*;
 
@@ -24,7 +25,8 @@ public abstract class Animal extends Organism implements Movable, Eater {
         sufferFromHunger();
         if(!isAlive()) {
             currentCell.removeResidentFromCell(this);
-            currentCell.setDieOfHunger(currentCell.getDieOfHunger() + 1);
+            int amountOfDeadOrganism = 1;
+            StatisticsCollector.registerStarvingProcess(amountOfDeadOrganism);
             return;
         }
 
@@ -32,10 +34,11 @@ public abstract class Animal extends Organism implements Movable, Eater {
         if (destinationCell == null || destinationCell == currentCell) {
             return;
         }
+
         territory.beginTravel(this, currentCell, destinationCell);
     }
 
-    public abstract boolean tryToFindFoodAround(Cell cell);
+    public abstract boolean findFoodAt(Cell cell);
 
     public abstract Set<? extends Animal> reproduce();
 
@@ -74,6 +77,8 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public void setBaseSpecification(AnimalSpecification baseSpecification) {
         this.baseSpecification = baseSpecification;
     }
+
+    public abstract int getFertilePeriod();
 
     protected void sufferFromHunger() {
 

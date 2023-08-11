@@ -18,6 +18,9 @@ public abstract class Territory {
     List<Cell> cells = new ArrayList<>();
 
 
+    public int getMaximumCapacityFor(OrganismType organismType) {
+        return TERRITORY_SPECIFICATION.getSpecificationForType(this.getType()).organismCapacity().get(organismType);
+    }
     public abstract Cell getRandomPossibleDestination(Cell cell, int speed);
 
     public abstract void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell);
@@ -29,8 +32,11 @@ public abstract class Territory {
     public abstract Set<OrganismType> getResidentsTypes();
     public abstract int getMaxResidentCountForOrganismType(OrganismType type);
 
+
     public abstract void beginTravel(Organism organism, Cell from, Cell to);
     public abstract void finishTravel();
+
+    public abstract TerritoryType getType();
 
 
 }
