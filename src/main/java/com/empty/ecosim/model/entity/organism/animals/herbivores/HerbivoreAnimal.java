@@ -37,6 +37,7 @@ public abstract class HerbivoreAnimal extends Animal {
                 return false;
             }
 
+            // exceed
             Organism grass = grassList.get(0);
             double nutrition = grass.getWeight();
             int maxIntake = (int) ((baseSpecification.maxSatiety() - satiety) / nutrition) + 1;
@@ -45,7 +46,6 @@ public abstract class HerbivoreAnimal extends Animal {
             StatisticsCollector.registerPredationCount(PlantType.GRASS, numberOfFood);
             satiety = Math.min(satiety + nutrition * numberOfFood, baseSpecification.maxSatiety());
 
-            return true;
         } else {
             if (isHuntFailed(targetType)) {
                 return false;
@@ -57,8 +57,8 @@ public abstract class HerbivoreAnimal extends Animal {
             }
 
             consume(prey);
-            return true;
         }
+        return true;
     }
 
     @Override
