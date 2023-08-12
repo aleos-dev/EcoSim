@@ -19,15 +19,7 @@ public class Duck extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Duck child = new Duck();
-
-                    child.setWeight(baseSpecification.weight());
-                    child.setSpeed(baseSpecification.speed());
-                    child.setSatiety(baseSpecification.maxSatiety());
-                    child.setBaseSpecification(baseSpecification);
-                    child.setGender(RandomGenerator.generateGender());
-                    child.setEdibleTypes(baseSpecification.edibleTypes());
-
-                    return child;
+                    return copyGenesTo(child);
                 })
                 .limit(RandomGenerator.getRandomInt(maxOffspring()))
                 .collect(Collectors.toSet());

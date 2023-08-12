@@ -43,16 +43,16 @@ public class Cell {
 
     public boolean removeResidentFromCell(Organism organism) {
         List<Organism> residentsOfType = residents.get(organism.getType());
-        if (residentsOfType == null) {
-            return false;
+        boolean result = false;
+        if (residentsOfType != null) {
+            result = residentsOfType.remove(organism);
         }
 
-        residentsOfType.remove(organism);
         if (residentsOfType.size() == 0) {
             residents.remove(organism.getType());
         }
 
-        return true;
+        return result;
     }
 
     // good
@@ -81,7 +81,7 @@ public class Cell {
             return null;
         }
         List<Organism> requestedResidents = residents.get(type);
-        StatisticsCollector.registerPredationProcess(1);
+        StatisticsCollector.registerPredationCount(type);
         
         return requestedResidents.remove(requestedResidents.size() - 1);
     }
@@ -92,16 +92,10 @@ public class Cell {
         return residentsOfType == null ? 0 : residentsOfType.size();
     }
 
-
-
     // good
     public Set<OrganismType> getPresentTypes() {
         return residents.keySet();
     }
-
-
-
-
 
     public int getX() {
         return x;
@@ -110,7 +104,6 @@ public class Cell {
     public int getY() {
         return y;
     }
-
 
     @Override
     public String toString() {

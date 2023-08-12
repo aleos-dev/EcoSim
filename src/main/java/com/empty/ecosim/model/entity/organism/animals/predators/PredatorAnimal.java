@@ -29,17 +29,6 @@ public abstract class PredatorAnimal extends Animal {
         return true;
     }
 
-    protected Organism getPreyToHunt(Cell cell) {
-        var presentTypes = new ArrayList<>(cell.getPresentTypes());
-        presentTypes.retainAll(edibleTypes);
-
-        if (presentTypes.isEmpty()) {
-            return null;
-        }
-
-        var targetType = getRandomOrganismType(presentTypes);
-        return isHuntFailed(targetType) ? null : cell.handlePredationProcess(targetType);
-    }
     @Override
     public int getFertilePeriod() {
         return FERTILE_PERIOD;
@@ -50,14 +39,26 @@ public abstract class PredatorAnimal extends Animal {
         return MAX_OFFSPRING;
     }
 
-    private boolean isHuntFailed(OrganismType targetType) {
-        return RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(targetType));
-    }
+    protected Organism getPreyToHunt(Cell cell) {
+        var presentTypes = new ArrayList<>(cell.getPresentTypes());
+        presentTypes.retainAll(getEdibleTypes());
 
+        if (presentTypes.isEmpty()) {
+            return null;
+        }
+
+        var targetType = getRandomOrganismType(presentTypes);
+        return isHuntFailed(targetType) ? null : cell.handlePredationProcess(targetType);
+    }
 
     protected void consume(Organism food) {
         if (food == null) return;
         satiety = Math.min(satiety + food.getWeight(), baseSpecification.maxSatiety());
     }
+
+    private boolean isHuntFailed(OrganismType targetType) {
+        return RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(targetType));
+    }
+
 
 }

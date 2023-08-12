@@ -7,6 +7,7 @@ import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.statistics.StatisticsCollector;
+import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
 
@@ -25,8 +26,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         sufferFromHunger();
         if(!isAlive()) {
             currentCell.removeResidentFromCell(this);
-            int amountOfDeadOrganism = 1;
-            StatisticsCollector.registerStarvingProcess(amountOfDeadOrganism);
+            StatisticsCollector.registerStarvingCount(this.getType());
             return;
         }
 
@@ -83,7 +83,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
     protected void sufferFromHunger() {
 
         satiety -= baseSpecification.maxSatiety() / 10;
-        if (satiety < 0) {
+        if (satiety <= 0) {
             isAlive.set(false);
         }
     }
@@ -94,6 +94,17 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    protected <T extends Animal> Animal copyGenesTo(T child) {
+        child.setWeight(baseSpecification.weight());
+        child.setSpeed(baseSpecification.speed());
+        child.setSatiety(baseSpecification.maxSatiety());
+        child.setBaseSpecification(baseSpecification);
+        child.setGender(RandomGenerator.generateGender());
+        child.setEdibleTypes(baseSpecification.edibleTypes());
+
+        return child;
     }
 
     @Override

@@ -20,15 +20,7 @@ public class Boar extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Boar child = new Boar();
-
-                    child.setWeight(baseSpecification.weight());
-                    child.setSpeed(baseSpecification.speed());
-                    child.setSatiety(baseSpecification.maxSatiety());
-                    child.setBaseSpecification(baseSpecification);
-                    child.setGender(RandomGenerator.generateGender());
-                    child.setEdibleTypes(baseSpecification.edibleTypes());
-
-                    return child;
+                    return copyGenesTo(child);
                 })
                 .limit(RandomGenerator.getRandomInt(maxOffspring()))
                 .collect(Collectors.toSet());
@@ -38,5 +30,4 @@ public class Boar extends HerbivoreAnimal {
     public AnimalType getType() {
         return AnimalType.BOAR;
     }
-
 }

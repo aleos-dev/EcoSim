@@ -19,17 +19,9 @@ public class Caterpillar extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Caterpillar child = new Caterpillar();
-
-                    child.setWeight(baseSpecification.weight());
-                    child.setSpeed(baseSpecification.speed());
-                    child.setSatiety(baseSpecification.maxSatiety());
-                    child.setBaseSpecification(baseSpecification);
-                    child.setGender(RandomGenerator.generateGender());
-                    child.setEdibleTypes(baseSpecification.edibleTypes());
-
-                    return child;
+                    return copyGenesTo(child);
                 })
-                .limit(RandomGenerator.getRandomInt(maxOffspring()))
+                .limit(RandomGenerator.getRandomInt(maxOffspring() + 1))
                 .collect(Collectors.toSet());
     }
 

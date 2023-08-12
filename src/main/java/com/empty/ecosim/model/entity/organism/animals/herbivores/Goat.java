@@ -19,15 +19,7 @@ public class Goat extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Goat child = new Goat();
-
-                    child.setWeight(baseSpecification.weight());
-                    child.setSpeed(baseSpecification.speed());
-                    child.setSatiety(baseSpecification.maxSatiety());
-                    child.setBaseSpecification(baseSpecification);
-                    child.setGender(RandomGenerator.generateGender());
-                    child.setEdibleTypes(baseSpecification.edibleTypes());
-
-                    return child;
+                    return copyGenesTo(child);
                 })
                 .limit(RandomGenerator.getRandomInt(maxOffspring()))
                 .collect(Collectors.toSet());

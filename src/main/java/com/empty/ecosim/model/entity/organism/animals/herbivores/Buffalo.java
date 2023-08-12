@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 public class Buffalo extends HerbivoreAnimal {
 
-
     @Override
     public Set<? extends Animal> reproduce() {
 
@@ -21,15 +20,7 @@ public class Buffalo extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Buffalo child = new Buffalo();
-
-                    child.setWeight(baseSpecification.weight());
-                    child.setSpeed(baseSpecification.speed());
-                    child.setSatiety(baseSpecification.maxSatiety());
-                    child.setBaseSpecification(baseSpecification);
-                    child.setGender(RandomGenerator.generateGender());
-                    child.setEdibleTypes(baseSpecification.edibleTypes());
-
-                    return child;
+                    return copyGenesTo(child);
                 })
                 .limit(5)
                 .collect(Collectors.toSet());

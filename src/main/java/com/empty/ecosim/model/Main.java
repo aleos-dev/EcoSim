@@ -21,27 +21,19 @@ public class Main {
 
     public static void main(String[] args) throws IllegalArgumentException {
 
-
         StatisticsCollector statColl = new StatisticsCollector();
         Territory island = new Island();
-        statColl.calculateTerritoryStatistic(island);
+        statColl.calculateTerritoryStatistics(island);
         initiateIsland(island);
 
         for (int i = 0; i < 300; i++) {
+            statColl.calculateTerritoryStatistics(island);
 
-            statColl.calculateTerritoryStatistic(island);
-//            System.out.println("Organism Statistic: " + statColl.getOrganismTypePopulation());
-//            System.out.println("Animal Statistic: " + statColl.getNumberOfAnimals());
-//            System.out.println("Plant Statistic: " + statColl.getNumberOfPlants());
             allEat(island);
             allReproduce(island);
             allMove(island);
 
             System.out.println(statColl);
-
-//            System.out.println("Predation Statistic: " + StatisticsCollector.getAndResetPredationProcessCollector());
-//            System.out.println("Starving to death Statistic: " + StatisticsCollector.getAndResetStarvingProcessCollector());
-//            System.out.println("Newborn Statistic: " + StatisticsCollector.getAndResetNewbornStatistic());
 
         }
     }
@@ -52,26 +44,30 @@ public class Main {
                 .forEach(entry -> {
                     OrganismType residentType = entry.getKey();
                     List<Organism> residents = entry.getValue();
-                    int maximumAvailableCapacity = island.getMaximumCapacityFor(residentType) - residents.size();
-                    if (maximumAvailableCapacity <= 0) {
+                    if (residentType instanceof PlantType) {
+                        int a = 8-3;
+                    }
+                    int maxAvailableCapacity = island.getMaximumCapacityFor(residentType) - residents.size();
+                    if (maxAvailableCapacity <= 0 || residents.isEmpty()) {
                         return;
                     }
                     List<Organism> newborns = new ArrayList<>();
-
                     Organism organism = null;
+
                     for (Organism resident : residents) {
+
                         organism = resident;
                         newborns.addAll(organism.reproduce());
-                        if (newborns.size() > maximumAvailableCapacity) {
-                            newborns = newborns.subList(0, maximumAvailableCapacity);
+                        if (newborns.size() > maxAvailableCapacity) {
+                            newborns = newborns.subList(0, maxAvailableCapacity);
                             break;
                         }
                     }
-                    if (organism == null) return;
+
                     residents.addAll(newborns);
-                    StatisticsCollector.addNewbornStatistic(organism.getType(), newborns.size());
+                    StatisticsCollector.registerNewbornCount(organism.getType(), newborns.size());
                 });
-}
+    }
 
 
     public static void allMove(Territory island) {
@@ -88,7 +84,6 @@ public class Main {
         });
         island.finishTravel();
     }
-
     public static void allEat(Territory island) {
         island.getCells().forEach(cell -> {
             Arrays.stream(AnimalType.values())
