@@ -62,10 +62,10 @@ public class Island extends Territory {
                             .forEach(type -> {
 
                                 Cell destinationCell = getCellAtCoordinate(onTravelCell.getX(), onTravelCell.getY());
-                                if (destinationCell.getResidentsByType(type) == null) {
+                                if (destinationCell.getResidentsCopyByType(type).isEmpty()) {
                                     destinationCell.initializeOrganismListByType(type);
                                 }
-                                destinationCell.getResidentsMap().get(type).addAll(onTravelCell.getResidentsByType(type));
+                                destinationCell.getResidentsMap().get(type).addAll(onTravelCell.getResidentsCopyByType(type));
                             });
                     onTravelCell.getResidentsMap().clear();
                 });

@@ -30,10 +30,10 @@ public class Cell {
         residents.put(type, newcomers);
     }
 
-    public List<Organism> getResidentsByType(OrganismType type) {
+    public List<Organism> getResidentsCopyByType(OrganismType type) {
         return Optional.ofNullable(residents.get(type))
                 .map(ArrayList::new)
-                .orElse(null);
+                .orElse(new ArrayList<>());
     }
 
     public void addResident(Organism organism) {
@@ -80,9 +80,9 @@ public class Cell {
         if (getResidentCountByType(type) <= 0) {
             return null;
         }
+
         List<Organism> requestedResidents = residents.get(type);
         StatisticsCollector.registerPredationCount(type);
-        
         return requestedResidents.remove(requestedResidents.size() - 1);
     }
 

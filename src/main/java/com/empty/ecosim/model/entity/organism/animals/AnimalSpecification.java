@@ -21,7 +21,6 @@ public record AnimalSpecification(
             throw new IllegalArgumentException("Fields of AnimalSpec must be positive");
         }
     }
-
     public AnimalSpecification cleanAndSortEdibleTypes() {
         var sortedEdibleTypes = edibleTypes.entrySet().stream()
                 .filter(e -> e.getKey() != null)

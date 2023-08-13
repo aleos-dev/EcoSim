@@ -11,15 +11,13 @@ import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
 
-
 public abstract class Animal extends Organism implements Movable, Eater {
-
     public enum Gender {MALE, FEMALE}
 
-    protected double speed;
+    private int speed;
     protected double satiety;
     protected Gender gender;
-    protected AnimalSpecification baseSpecification;
+    private AnimalSpecification baseSpecification;
     protected List<OrganismType> edibleTypes;
 
     public void move(Territory territory, Cell currentCell) {
@@ -30,7 +28,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
             return;
         }
 
-        Cell destinationCell = territory.getRandomPossibleDestination(currentCell, (int) speed);
+        Cell destinationCell = territory.getRandomPossibleDestination(currentCell, speed);
         if (destinationCell == null || destinationCell == currentCell) {
             return;
         }
@@ -38,7 +36,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         territory.beginTravel(this, currentCell, destinationCell);
     }
 
-    public abstract boolean findFoodAt(Cell cell);
+    public abstract void findFoodAt(Cell cell);
 
     public abstract Set<? extends Animal> reproduce();
 
@@ -46,11 +44,11 @@ public abstract class Animal extends Organism implements Movable, Eater {
     @Override
     public abstract AnimalType getType();
 
-    public double getSpeed() {
+    public int getSpeed() {
         return speed;
     }
 
-    public void setSpeed(double speed) {
+    public void setSpeed(int speed) {
         this.speed = speed;
     }
 

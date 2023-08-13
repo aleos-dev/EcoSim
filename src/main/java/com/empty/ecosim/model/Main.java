@@ -26,7 +26,7 @@ public class Main {
         statColl.calculateTerritoryStatistics(island);
         initiateIsland(island);
 
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 10; i++) {
             statColl.calculateTerritoryStatistics(island);
 
             allEat(island);
@@ -44,9 +44,6 @@ public class Main {
                 .forEach(entry -> {
                     OrganismType residentType = entry.getKey();
                     List<Organism> residents = entry.getValue();
-                    if (residentType instanceof PlantType) {
-                        int a = 8-3;
-                    }
                     int maxAvailableCapacity = island.getMaximumCapacityFor(residentType) - residents.size();
                     if (maxAvailableCapacity <= 0 || residents.isEmpty()) {
                         return;
@@ -73,7 +70,7 @@ public class Main {
     public static void allMove(Territory island) {
         island.getCells().forEach(cell -> {
             Arrays.stream(AnimalType.values())
-                    .map(cell::getResidentsByType)
+                    .map(cell::getResidentsCopyByType)
                     .filter(Objects::nonNull)
                     .forEach(list -> list.stream()
                             .filter(o -> o instanceof Animal)
@@ -87,7 +84,7 @@ public class Main {
     public static void allEat(Territory island) {
         island.getCells().forEach(cell -> {
             Arrays.stream(AnimalType.values())
-                    .map(cell::getResidentsByType)
+                    .map(cell::getResidentsCopyByType)
                     .filter(Objects::nonNull)
                     .forEach(list -> list.stream()
                             .filter(o -> o instanceof Animal)

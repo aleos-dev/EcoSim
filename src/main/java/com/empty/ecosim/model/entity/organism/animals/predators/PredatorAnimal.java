@@ -14,19 +14,17 @@ public abstract class PredatorAnimal extends Animal {
     private static final double HUNGER_THRESHOLD = 0.95;
     private static final int MAX_OFFSPRING = 2;
     private static final int FERTILE_PERIOD = 5;
-    public boolean findFoodAt(Cell cell) {
-        if (satiety > baseSpecification.maxSatiety() * HUNGER_THRESHOLD) {
-            return false;
+    public void findFoodAt(Cell cell) {
+        if (satiety > getBaseSpecification().maxSatiety() * HUNGER_THRESHOLD) {
+            return;
         }
 
         Organism prey = getPreyToHunt(cell);
         if (prey == null) {
-            return false;
+            return;
         }
 
         consume(prey);
-
-        return true;
     }
 
     @Override
@@ -53,12 +51,10 @@ public abstract class PredatorAnimal extends Animal {
 
     protected void consume(Organism food) {
         if (food == null) return;
-        satiety = Math.min(satiety + food.getWeight(), baseSpecification.maxSatiety());
+        satiety = Math.min(satiety + food.getWeight(), getBaseSpecification().maxSatiety());
     }
 
     private boolean isHuntFailed(OrganismType targetType) {
-        return RandomGenerator.isHuntFailed(baseSpecification.getChanceToHunt(targetType));
+        return RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
     }
-
-
 }
