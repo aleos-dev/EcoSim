@@ -17,7 +17,7 @@ public abstract class HerbivoreAnimal extends Animal {
     private static final int FERTILE_PERIOD = 10;
 
     @Override
-    public void findFoodAt(Cell cell) {
+    public void eat(Cell cell) {
         if (!isHungry()) return;
 
         var edibleTypesPresent = getEdibleTypesInCell(cell);
@@ -26,22 +26,21 @@ public abstract class HerbivoreAnimal extends Animal {
         var targetType = RandomGenerator.getRandomOrganismType(edibleTypesPresent);
 
         if (cell.getResidentCountByType(targetType) > 0) {
-            consumeFood(cell, targetType);
+            determineFoodType(cell, targetType);
         }
     }
 
-    private void consumeFood(Cell cell, OrganismType targetType) {
+    private void determineFoodType(Cell cell, OrganismType targetType) {
         if (targetType instanceof PlantType plantType) {
             consumePlant(cell, plantType);
         } else if (!isHuntFailed(targetType)) {
-            Organism prey = cell.handlePredationProcess(targetType);
-            consume(prey);
+            consumeAnimal(cell, targetType);
         }
-
     }
+
     private void consumePlant(Cell cell, PlantType plantType) {
         List<Organism> targetList = cell.getResidentsCopyByType(plantType);
-        double nutritionalValue = targetList.stream().findFirst().get().getWeight();
+        double nutritionalValue = targetList.stream().findFirst().map(Organism::getWeight).orElse(0.0);
         double maxSatiety = getBaseSpecification().maxSatiety();
         int numberToIntakeToGetFull = (int) ((maxSatiety - getSatiety()) / nutritionalValue) + 1;
         int managedToEatNumber = cell.handleConsumptionProcess(numberToIntakeToGetFull, plantType);
@@ -50,9 +49,11 @@ public abstract class HerbivoreAnimal extends Animal {
         StatisticsCollector.registerPredationCount(plantType, managedToEatNumber);
     }
 
-    protected void consume(Organism food) {
-        if (food == null) return;
-        setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
+    private void consumeAnimal(Cell cell, OrganismType animalType) {
+        Organism prey = cell.getOrganismForConsumption(animalType);
+        if (prey == null) return;
+
+        setSatiety(Math.min(getSatiety() + prey.getWeight(), getBaseSpecification().maxSatiety()));
     }
 
     private boolean isHungry() {

@@ -1,7 +1,9 @@
 package com.empty.ecosim.model;
 
+import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Island;
 import com.empty.ecosim.model.entity.island.Territory;
+import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
@@ -15,6 +17,7 @@ import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -82,16 +85,22 @@ public class Main {
         island.finishTravel();
     }
     public static void allEat(Territory island) {
-        island.getCells().forEach(cell -> {
+     /*   island.getCells().forEach(cell -> {
             Arrays.stream(AnimalType.values())
                     .map(cell::getResidentsCopyByType)
                     .filter(Objects::nonNull)
                     .forEach(list -> list.stream()
                             .filter(o -> o instanceof Animal)
                             .map(o -> (Animal) o)
-                            .forEach(animal -> animal.findFoodAt(cell))
+                            .forEach(animal -> animal.eat(cell))
                     );
-        });
+        });*/
+        List<Eater> allEaters = island.getCells().stream().flatMap(Cell::getAllEaters).toList();
+
+        allEaters.forEach(eater -> eater.eat(eater.getCurrentCell()));
+
+//        island.getCells().forEach(cell -> cell.getAllEaters().forEach(s -> s.eat(cell)));
+
     }
 
     public static void initiateIsland(Territory island) {

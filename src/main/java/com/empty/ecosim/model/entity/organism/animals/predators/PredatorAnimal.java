@@ -11,20 +11,9 @@ import java.util.ArrayList;
 import static com.empty.ecosim.utils.RandomGenerator.getRandomOrganismType;
 
 public abstract class PredatorAnimal extends Animal {
-    private static final double HUNGER_THRESHOLD = 0.95;
+    private static final double HUNGER_THRESHOLD = 0.8;
     private static final int MAX_OFFSPRING = 2;
     private static final int FERTILE_PERIOD = 5;
-    public void findFoodAt(Cell cell) {
-        if (satiety > getBaseSpecification().maxSatiety() * HUNGER_THRESHOLD) {
-            return;
-        }
-        Organism prey = getPreyToHunt(cell);
-        if (prey == null) {
-            return;
-        }
-
-        consume(prey);
-    }
 
     @Override
     public int getFertilePeriod() {
@@ -35,8 +24,15 @@ public abstract class PredatorAnimal extends Animal {
     public int maxOffspring() {
         return MAX_OFFSPRING;
     }
+    public void eat(Cell cell) {
+        if (satiety > getBaseSpecification().maxSatiety() * HUNGER_THRESHOLD) {
+            return;
+        }
+        Organism prey = huntForPreyAt(cell);
+        consumeFood(prey);
+    }
 
-    protected Organism getPreyToHunt(Cell cell) {
+    private Organism huntForPreyAt(Cell cell) {
         var presentTypes = new ArrayList<>(cell.getPresentTypes());
         presentTypes.retainAll(getEdibleTypes());
 
@@ -45,10 +41,10 @@ public abstract class PredatorAnimal extends Animal {
         }
 
         var targetType = getRandomOrganismType(presentTypes);
-        return isHuntFailed(targetType) ? null : cell.handlePredationProcess(targetType);
+        return isHuntFailed(targetType) ? null : cell.getOrganismForConsumption(targetType);
     }
 
-    protected void consume(Organism food) {
+    private void consumeFood(Organism food) {
         if (food == null) return;
         satiety = Math.min(satiety + food.getWeight(), getBaseSpecification().maxSatiety());
     }
@@ -56,4 +52,7 @@ public abstract class PredatorAnimal extends Animal {
     private boolean isHuntFailed(OrganismType targetType) {
         return RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
     }
+
+
+
 }

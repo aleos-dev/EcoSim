@@ -28,7 +28,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
             return;
         }
 
-        Cell destinationCell = territory.getRandomPossibleDestination(currentCell, speed);
+        Cell destinationCell = territory.getRandomAdjacentCell(currentCell, speed);
         if (destinationCell == null || destinationCell == currentCell) {
             return;
         }
@@ -36,7 +36,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         territory.beginTravel(this, currentCell, destinationCell);
     }
 
-    public abstract void findFoodAt(Cell cell);
+    public abstract void eat(Cell cell);
 
     public abstract Set<? extends Animal> reproduce();
 

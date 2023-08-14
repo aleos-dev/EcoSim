@@ -1,11 +1,13 @@
 package com.empty.ecosim.model.entity.island;
 
+import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.statistics.StatisticsCollector;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
 
 public class Cell {
     private final int x;
@@ -39,6 +41,17 @@ public class Cell {
     public void addResident(Organism organism) {
         residents.computeIfAbsent(organism.getType(), k -> new ArrayList<>()).add(organism);
 
+    }
+
+    public Stream<Eater> getAllEaters() {
+//        return residents.values().stream()
+//                .filter(organisms -> organisms.stream().anyMatch(organism -> organism instanceof Eater))
+//                .flatMap(Collection::stream)
+//                .map(a -> (Eater) a);
+        return residents.values().stream()
+                .filter(organisms -> organisms.stream().anyMatch(organism -> organism instanceof Eater))
+                .flatMap(Collection::stream)
+                .map(a -> (Eater) a);
     }
 
     public boolean removeResidentFromCell(Organism organism) {
@@ -76,7 +89,7 @@ public class Cell {
     }
 
     // good
-    public Organism handlePredationProcess(OrganismType type) {
+    public Organism getOrganismForConsumption(OrganismType type) {
         if (getResidentCountByType(type) <= 0) {
             return null;
         }

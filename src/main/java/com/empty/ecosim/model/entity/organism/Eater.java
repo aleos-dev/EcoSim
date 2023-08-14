@@ -3,5 +3,5 @@ package com.empty.ecosim.model.entity.organism;
 import com.empty.ecosim.model.entity.island.Cell;
 
 public interface Eater {
-    void findFoodAt(Cell cell);
+    void eat(Cell cell);
 }
