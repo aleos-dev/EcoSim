@@ -18,7 +18,6 @@ public abstract class PredatorAnimal extends Animal {
         if (satiety > getBaseSpecification().maxSatiety() * HUNGER_THRESHOLD) {
             return;
         }
-
         Organism prey = getPreyToHunt(cell);
         if (prey == null) {
             return;

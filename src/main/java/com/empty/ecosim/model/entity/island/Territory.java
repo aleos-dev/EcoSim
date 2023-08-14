@@ -21,7 +21,7 @@ public abstract class Territory {
     public int getMaximumCapacityFor(OrganismType organismType) {
         return TERRITORY_SPECIFICATION.getSpecificationForType(this.getType()).organismCapacity().get(organismType);
     }
-    public abstract Cell getRandomPossibleDestination(Cell cell, int speed);
+    public abstract Cell getRandomAdjacentCell(Cell cell, int speed);
 
     public abstract void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell);
 
@@ -37,6 +37,5 @@ public abstract class Territory {
     public abstract void finishTravel();
 
     public abstract TerritoryType getType();
-
 
 }

@@ -8,6 +8,7 @@ import com.empty.ecosim.utils.RandomGenerator;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.empty.ecosim.model.entity.island.TerritoryType.ISLAND;
 
@@ -78,18 +79,14 @@ public class Island extends Territory {
 
 
     @Override
-    public Cell getRandomPossibleDestination(Cell cell, int speed) {
+    public Cell getRandomAdjacentCell(Cell cell, int speed) {
+
         int bound = speed * 2 + 1;
         int x = speed - RandomGenerator.getRandomInt(bound);
         bound = Math.abs((speed - Math.abs(x))) * 2 + 1;
         int y = speed - RandomGenerator.getRandomInt(bound);
 
-
-        Cell newCell = getCellAtCoordinate(x + cell.getX(), y + cell.getY());
-        if (newCell != null && newCell.getY() == 20) {
-            System.out.println("ALERT");
-        }
-        return newCell;
+        return getCellAtCoordinate(x + cell.getX(), y + cell.getY());
     }
 
     @Override
@@ -110,9 +107,6 @@ public class Island extends Territory {
         }
         return y >= 0 && y < height;
     }
-
-
-
 
     public Set<OrganismType> getResidentsTypes() {
         return TERRITORY_SPECIFICATION.getSpecificationForType(ISLAND).organismCapacity().keySet();
