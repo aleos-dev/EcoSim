@@ -1,6 +1,7 @@
 package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.Eater;
+import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.statistics.StatisticsCollector;
@@ -54,7 +55,7 @@ public class Cell {
                 .map(a -> (Eater) a);
     }
 
-    public boolean removeResidentFromCell(Organism organism) {
+    public boolean removeResident(Organism organism) {
         List<Organism> residentsOfType = residents.get(organism.getType());
         boolean result = false;
         if (residentsOfType != null) {
@@ -67,6 +68,7 @@ public class Cell {
 
         return result;
     }
+
 
     // good
     public int handleConsumptionProcess(int amountOfFood, OrganismType typeOfFood) {

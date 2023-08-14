@@ -23,7 +23,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public void move(Territory territory, Cell currentCell) {
         sufferFromHunger();
         if(!isAlive()) {
-            currentCell.removeResidentFromCell(this);
+            currentCell.removeResident(this);
             StatisticsCollector.registerStarvingCount(this.getType());
             return;
         }

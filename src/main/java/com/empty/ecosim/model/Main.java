@@ -70,20 +70,6 @@ public class Main {
     }
 
 
-    public static void allMove(Territory island) {
-        island.getCells().forEach(cell -> {
-            Arrays.stream(AnimalType.values())
-                    .map(cell::getResidentsCopyByType)
-                    .filter(Objects::nonNull)
-                    .forEach(list -> list.stream()
-                            .filter(o -> o instanceof Animal)
-                            .map(o -> (Animal) o)
-                            .forEach(animal -> animal.move(island, cell))
-                    );
-
-        });
-        island.finishTravel();
-    }
     public static void allEat(Territory island) {
      /*   island.getCells().forEach(cell -> {
             Arrays.stream(AnimalType.values())

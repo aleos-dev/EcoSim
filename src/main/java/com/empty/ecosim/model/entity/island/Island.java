@@ -8,7 +8,6 @@ import com.empty.ecosim.utils.RandomGenerator;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.empty.ecosim.model.entity.island.TerritoryType.ISLAND;
 
@@ -48,7 +47,7 @@ public class Island extends Territory {
             return;
         }
 
-        if (from.removeResidentFromCell(resident)) {
+        if (from.removeResident(resident)) {
             onTravelGrid[to.getY()][to.getX()].addResident(resident);
 
         }
