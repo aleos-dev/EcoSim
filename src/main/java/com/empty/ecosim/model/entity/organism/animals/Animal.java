@@ -10,90 +10,60 @@ import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class Animal extends Organism implements Movable, Eater {
     public enum Gender {MALE, FEMALE}
 
-    private int speed;
-    protected double satiety;
-    protected Gender gender;
-    private AnimalSpecification baseSpecification;
-    protected List<OrganismType> edibleTypes;
+    private static final double HUNGER_THRESHOLD = 0.8;
 
-    public void move(Territory territory, Cell currentCell) {
+    private int speed;
+    private double satiety;
+    private Gender gender;
+    private AnimalSpecification baseSpecification;
+    private List<OrganismType> edibleTypes;
+
+    @Override
+    public abstract AnimalType getType();
+    public abstract void eat(Cell cell);
+    public abstract Set<? extends Animal> reproduce();
+
+    public boolean move(Territory territory, Cell currentCell) {
         sufferFromHunger();
-        if(!isAlive()) {
-            currentCell.removeResident(this);
-            StatisticsCollector.registerStarvingCount(this.getType());
-            return;
-        }
+        if (!isAlive()) return false;
 
         Cell destinationCell = territory.getRandomAdjacentCell(currentCell, speed);
         if (destinationCell == null || destinationCell == currentCell) {
-            return;
+            return false;
         }
 
-        territory.beginTravel(this, currentCell, destinationCell);
+        territory.travelFromTo(this, currentCell, destinationCell);
+        return true;
     }
 
-    public abstract void eat(Cell cell);
-
-    public abstract Set<? extends Animal> reproduce();
-
-    public abstract int maxOffspring();
-    @Override
-    public abstract AnimalType getType();
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
-    public double getSatiety() {
-        return satiety;
-    }
-
-    public void setSatiety(double satiety) {
-        this.satiety = satiety;
-    }
-
-    public List<OrganismType> getEdibleTypes() {
-        return edibleTypes;
-    }
-
-    public void setEdibleTypes(Map<OrganismType, Double> edibleTypes) {
-        this.edibleTypes = new ArrayList<>(edibleTypes.keySet());
-    }
-
-    public AnimalSpecification getBaseSpecification() {
-        return baseSpecification;
-    }
-
-    public void setBaseSpecification(AnimalSpecification baseSpecification) {
-        this.baseSpecification = baseSpecification;
-    }
-
-    public abstract int getFertilePeriod();
+    
 
     protected void sufferFromHunger() {
 
         satiety -= baseSpecification.maxSatiety() / 10;
-        if (satiety <= 0) {
-            isAlive.set(false);
+        if (satiety <= 0.000001) {
+            markAsDead();
+            StatisticsCollector.registerStarvingCount(this.getType());
         }
     }
-
-    public Gender getGender() {
-        return gender;
+    
+    protected boolean isHungry() {
+        return getSatiety() < getBaseSpecification().maxSatiety() * HUNGER_THRESHOLD;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
+    protected boolean isEdible(OrganismType type) {
+        return getEdibleTypes().contains(type);
     }
-
+    protected List<OrganismType> filterEdibleTypesInCell(Cell cell) {
+        return cell.getPresentTypes().stream()
+                .filter(this::isEdible)
+                .collect(Collectors.toList());
+    }
     protected <T extends Animal> Animal copyGenesTo(T child) {
         child.setWeight(baseSpecification.weight());
         child.setSpeed(baseSpecification.speed());
@@ -113,5 +83,40 @@ public abstract class Animal extends Organism implements Movable, Eater {
                 ", isAlive=" + isAlive +
                 ", weight=" + weight +
                 '}';
+    }
+
+    public AnimalSpecification getBaseSpecification() {
+        return baseSpecification;
+    }
+
+    public void setBaseSpecification(AnimalSpecification baseSpecification) {
+        this.baseSpecification = baseSpecification;
+    }
+    public abstract int getFertilePeriod();
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public double getSatiety() {
+        return satiety;
+    }
+
+    public void setSatiety(double satiety) {
+        this.satiety = satiety;
+    }
+
+    public List<OrganismType> getEdibleTypes() {
+        return edibleTypes;
+    }
+
+    public void setEdibleTypes(Map<OrganismType, Double> edibleTypes) {
+        this.edibleTypes = new ArrayList<>(edibleTypes.keySet());
     }
 }

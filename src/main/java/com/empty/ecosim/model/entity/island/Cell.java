@@ -1,10 +1,8 @@
 package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.Eater;
-import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.statistics.StatisticsCollector;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,6 +13,7 @@ public class Cell {
     private final int y;
     private final ReentrantLock lock = new ReentrantLock();
     private final Map<OrganismType, List<Organism>> residents = new HashMap<>();
+    private Map<OrganismType, Integer> indexOfLastDeadMap = new HashMap<>();
 
     public Cell(int x, int y) {
         this.x = x;
@@ -25,17 +24,8 @@ public class Cell {
         return residents;
     }
 
-    public void initializeOrganismListByType(OrganismType type) {
-        residents.put(type, new ArrayList<>());
-    }
-
-    public void addAllResidents(OrganismType type, List<Organism> newcomers) {
-        residents.put(type, newcomers);
-    }
-
-    public List<Organism> getResidentsCopyByType(OrganismType type) {
+    public List<Organism> getResidentsByType(OrganismType type) {
         return Optional.ofNullable(residents.get(type))
-                .map(ArrayList::new)
                 .orElse(new ArrayList<>());
     }
 
@@ -45,10 +35,6 @@ public class Cell {
     }
 
     public Stream<Eater> getAllEaters() {
-//        return residents.values().stream()
-//                .filter(organisms -> organisms.stream().anyMatch(organism -> organism instanceof Eater))
-//                .flatMap(Collection::stream)
-//                .map(a -> (Eater) a);
         return residents.values().stream()
                 .filter(organisms -> organisms.stream().anyMatch(organism -> organism instanceof Eater))
                 .flatMap(Collection::stream)
@@ -69,36 +55,16 @@ public class Cell {
         return result;
     }
 
-
     // good
-    public int handleConsumptionProcess(int amountOfFood, OrganismType typeOfFood) {
-        lock.lock();
-        int inStock = getResidentCountByType(typeOfFood);
-        if (inStock == 0) {
-            return 0;
-        }
-
-        if (inStock <= amountOfFood) {
-            residents.remove(typeOfFood);
-            return inStock;
-        }
-
-        List<Organism> sublist = residents.get(typeOfFood).subList(0, inStock - amountOfFood);
-        residents.put(typeOfFood, sublist);
-        lock.unlock();
-
-        return amountOfFood;
-    }
-
-    // good
-    public Organism getOrganismForConsumption(OrganismType type) {
-        if (getResidentCountByType(type) <= 0) {
-            return null;
-        }
-
+    public Organism getAliveOrganism(OrganismType type) {
         List<Organism> requestedResidents = residents.get(type);
-        StatisticsCollector.registerPredationCount(type);
-        return requestedResidents.remove(requestedResidents.size() - 1);
+
+        Integer indexOfLastDead = indexOfLastDeadMap.getOrDefault(type, 0);
+        if (indexOfLastDead + 1 < requestedResidents.size()) {
+            indexOfLastDeadMap.compute(type, (k, v) -> v == null ? 0 : v + 1);
+            return requestedResidents.get(indexOfLastDead);
+        }
+        return null;
     }
 
     // good
@@ -109,7 +75,17 @@ public class Cell {
 
     // good
     public Set<OrganismType> getPresentTypes() {
-        return residents.keySet();
+        return new HashSet<>(residents.keySet());
+    }
+
+    public void clearDead() {
+        residents.values().forEach(organisms -> organisms.removeIf(organism -> !organism.isAlive()));
+        residents.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+        indexOfLastDeadMap = new HashMap<>();
+    }
+
+    public boolean hasType(OrganismType type) {
+        return residents.containsKey(type);
     }
 
     public int getX() {

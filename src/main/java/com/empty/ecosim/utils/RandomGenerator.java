@@ -11,9 +11,6 @@ public class RandomGenerator {
     private static final Random random = new Random();
 
     public static <T extends OrganismType> T getRandomOrganismType(List<T> types) {
-        if (types.size() <= 0) {
-            System.out.println("ALERT");
-        }
         int index = random.nextInt(types.size());
         return types.get(index);
     }

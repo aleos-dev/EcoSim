@@ -21,7 +21,11 @@ public class EcosystemSimulationController {
     }
 
     public void doEat() {
-        locations.forEach(cell -> cell.getAllEaters().forEach(s -> s.eat(cell)));
+        locations.forEach(location -> location.getAllEaters().forEach(s -> s.eat(location)));
+    }
+
+    public void doMove() {
+
     }
 
 }

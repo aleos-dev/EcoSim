@@ -13,7 +13,7 @@ public class Horse extends HerbivoreAnimal {
     @Override
     public Set<? extends Animal> reproduce() {
 
-        if (gender == Gender.MALE || RandomGenerator.getRandomInt(getFertilePeriod()) > 0) {
+        if (getGender() == Gender.MALE || RandomGenerator.getRandomInt(getFertilePeriod()) > 0) {
             return Collections.emptySet();
         }
 
@@ -21,7 +21,7 @@ public class Horse extends HerbivoreAnimal {
                     Horse child = new Horse();
                     return copyGenesTo(child);
                 })
-                .limit(RandomGenerator.getRandomInt(maxOffspring()))
+                .limit(RandomGenerator.getRandomInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());
     }
 

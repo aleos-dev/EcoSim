@@ -1,21 +1,22 @@
 package com.empty.ecosim.model.entity.organism;
 
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public abstract class Organism implements Reproducible {
 
-    protected AtomicBoolean isAlive;
+    protected boolean isAlive;
     protected double weight;
 
     protected Organism() {
-        isAlive = new AtomicBoolean(true);
+        isAlive = true;
     }
 
     public abstract OrganismType getType();
 
     public boolean isAlive() {
-        return isAlive.get();
+        return isAlive;
+    }
+    public void markAsDead() {
+        isAlive = false;
     }
 
     public double getWeight() {

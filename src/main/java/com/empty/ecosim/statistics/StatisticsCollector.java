@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class StatisticsCollector {
     private static Map<OrganismType, Integer> predationCountCollector = new HashMap<>();
-    private static Map<OrganismType, Integer> starvingCountCollector = new HashMap<>();
+    public static Map<OrganismType, Integer> starvingCountCollector = new HashMap<>();
     private static Map<OrganismType, Integer> newbornCountCollector = new HashMap<>();
     
 

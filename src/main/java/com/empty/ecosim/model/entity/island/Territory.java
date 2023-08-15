@@ -23,7 +23,7 @@ public abstract class Territory {
     }
     public abstract Cell getRandomAdjacentCell(Cell cell, int speed);
 
-    public abstract void moveOrganismFromSourceToDestination(Organism resident, Cell sourceCell, Cell destinationCell);
+    public abstract void travelFromTo(Organism resident, Cell sourceCell, Cell destinationCell);
 
     public List<Cell> getCells() {
         return cells;
@@ -31,10 +31,6 @@ public abstract class Territory {
 
     public abstract Set<OrganismType> getResidentsTypes();
     public abstract int getMaxResidentCountForOrganismType(OrganismType type);
-
-
-    public abstract void beginTravel(Organism organism, Cell from, Cell to);
-    public abstract void finishTravel();
 
     public abstract TerritoryType getType();
 

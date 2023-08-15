@@ -1,9 +1,10 @@
 package com.empty.ecosim.model;
 
-import com.empty.ecosim.model.entity.island.Cell;
+import com.empty.ecosim.model.entity.controller.EatController;
+import com.empty.ecosim.model.entity.controller.MoveController;
+import com.empty.ecosim.model.entity.controller.ReproduceController;
 import com.empty.ecosim.model.entity.island.Island;
 import com.empty.ecosim.model.entity.island.Territory;
-import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
@@ -17,7 +18,6 @@ import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Main {
 
@@ -26,67 +26,22 @@ public class Main {
 
         StatisticsCollector statColl = new StatisticsCollector();
         Territory island = new Island();
+        MoveController mc = new MoveController(island);
+        EatController ec = new EatController(island);
+        ReproduceController rc = new ReproduceController(island);
+
         statColl.calculateTerritoryStatistics(island);
         initiateIsland(island);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 300; i++) {
             statColl.calculateTerritoryStatistics(island);
 
-            allEat(island);
-            allReproduce(island);
-            allMove(island);
+            ec.runEatCycle();
+            mc.runMoveCycle();
+            rc.runReproduceCycle();
 
             System.out.println(statColl);
-
         }
-    }
-
-    public static void allReproduce(Territory island) {
-        island.getCells().stream()
-                .flatMap(cell -> cell.getResidentsMap().entrySet().stream())
-                .forEach(entry -> {
-                    OrganismType residentType = entry.getKey();
-                    List<Organism> residents = entry.getValue();
-                    int maxAvailableCapacity = island.getMaximumCapacityFor(residentType) - residents.size();
-                    if (maxAvailableCapacity <= 0 || residents.isEmpty()) {
-                        return;
-                    }
-                    List<Organism> newborns = new ArrayList<>();
-                    Organism organism = null;
-
-                    for (Organism resident : residents) {
-
-                        organism = resident;
-                        newborns.addAll(organism.reproduce());
-                        if (newborns.size() > maxAvailableCapacity) {
-                            newborns = newborns.subList(0, maxAvailableCapacity);
-                            break;
-                        }
-                    }
-
-                    residents.addAll(newborns);
-                    StatisticsCollector.registerNewbornCount(organism.getType(), newborns.size());
-                });
-    }
-
-
-    public static void allEat(Territory island) {
-     /*   island.getCells().forEach(cell -> {
-            Arrays.stream(AnimalType.values())
-                    .map(cell::getResidentsCopyByType)
-                    .filter(Objects::nonNull)
-                    .forEach(list -> list.stream()
-                            .filter(o -> o instanceof Animal)
-                            .map(o -> (Animal) o)
-                            .forEach(animal -> animal.eat(cell))
-                    );
-        });*/
-        List<Eater> allEaters = island.getCells().stream().flatMap(Cell::getAllEaters).toList();
-
-        allEaters.forEach(eater -> eater.eat(eater.getCurrentCell()));
-
-//        island.getCells().forEach(cell -> cell.getAllEaters().forEach(s -> s.eat(cell)));
-
     }
 
     public static void initiateIsland(Territory island) {
@@ -115,7 +70,6 @@ public class Main {
                     cell.addResident(plantFactory.create(plantType));
                 }
             });
-
         });
     }
 
