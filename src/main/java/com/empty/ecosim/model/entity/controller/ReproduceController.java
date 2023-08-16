@@ -5,8 +5,8 @@ import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.statistics.StatisticsCollector;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 
 public class ReproduceController {
     private final Territory territory;
@@ -15,38 +15,34 @@ public class ReproduceController {
         this.territory = territory;
     }
 
-    public void runReproduceCycle() {
+    public void initiateReproduction() {
         territory.getCells().forEach(this::runReproduceForCell);
     }
 
     private void runReproduceForCell(Cell cell) {
         cell.getResidentsMap().forEach((residentType, residents) -> {
-            int maxAvailableCapacity = territory.getMaximumCapacityFor(residentType) - residents.size();
-            if (maxAvailableCapacity <= 0) return;
+            int maxAvailableCapacity = Math.max(territory.getMaximumCapacityFor(residentType) - residents.size(), 0);
 
-            reproduceResidents(residents, maxAvailableCapacity);
+            List<Organism> newborns = generateNewborns(residents, maxAvailableCapacity);
+            residents.addAll(newborns);
+
+            StatisticsCollector.registerNewbornCount(residentType, newborns.size());
         });
     }
 
-    private void reproduceResidents(List<Organism> residents, int maxCapacity) {
-        List<Organism> newborns = new ArrayList<>(maxCapacity);
+    private List<Organism> generateNewborns(Set<Organism> organisms, int maxCapacity) {
+        List<Organism> newborns = new ArrayList<>();
 
-        for (Organism resident : residents) {
-            newborns.addAll(resident.reproduce());
-
-            if (newborns.size() > maxCapacity) {
-                newborns = newborns.subList(0, maxCapacity);
-                break;
-            }
+        for (Organism organism : organisms) {
+            if (newborns.size() >= maxCapacity) break;
+            newborns.addAll(organism.reproduce());
         }
-        mergeResidentsWithNewborn(residents, newborns);
-    }
 
-    private void mergeResidentsWithNewborn(List<Organism> residents, List<Organism> newborns) {
-        if (!newborns.isEmpty()) {
-            Organism representativeOrganism = newborns.get(0);
-            residents.addAll(newborns);
-            StatisticsCollector.registerNewbornCount(representativeOrganism.getType(), newborns.size());
+        if (newborns.size() > maxCapacity) {
+            newborns.subList(maxCapacity, newborns.size()).clear();
         }
+
+        return newborns;
     }
 }
+

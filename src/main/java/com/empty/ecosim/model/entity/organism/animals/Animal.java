@@ -1,6 +1,5 @@
 package com.empty.ecosim.model.entity.organism.animals;
 
-import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
@@ -17,6 +16,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
     private static final double HUNGER_THRESHOLD = 0.8;
 
+
     private int speed;
     private double satiety;
     private Gender gender;
@@ -28,14 +28,11 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public abstract void eat(Cell cell);
     public abstract Set<? extends Animal> reproduce();
 
-    public int move() {
-        sufferFromHunger();
-        return speed;
+    public void move() {
+        spendEnergy();
     }
 
-    
-
-    protected void sufferFromHunger() {
+    public void spendEnergy() {
 
         satiety -= baseSpecification.maxSatiety() / 10;
         if (satiety <= 0.000001) {
@@ -91,6 +88,11 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    @Override
+    public int getSpeed() {
+        return speed;
     }
     public void setSpeed(int speed) {
         this.speed = speed;

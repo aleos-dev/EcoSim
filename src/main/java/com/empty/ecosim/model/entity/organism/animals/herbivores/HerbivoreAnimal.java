@@ -7,13 +7,17 @@ import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
+import java.util.Set;
+
 public abstract class HerbivoreAnimal extends Animal {
     private static final int MAX_OFFSPRING = 5;
     private static final int FERTILE_PERIOD = 10;
 
+
     @Override
     public void eat(Cell cell) {
-        if (!isHungry()) return;
+        spendEnergy();
+        if (!isHungry() || !isAlive()) return;
 
         var edibleTypesPresent = filterEdibleTypesInCell(cell);
         if (edibleTypesPresent.isEmpty()) return;
@@ -26,19 +30,17 @@ public abstract class HerbivoreAnimal extends Animal {
     }
 
     private void tryToConsume(Cell cell, OrganismType targetType) {
-        if (!isHuntFailed(targetType)) {
-            consume(cell, targetType);
+        if (!isConsumeFailed(targetType)) {
+            consumeFood(cell, targetType);
         }
     }
 
-    private void consume(Cell cell, OrganismType animalType) {
-        Organism prey = cell.getAliveOrganism(animalType);
-        if (prey == null) return;
+    private void consumeFood(Cell cell, OrganismType animalType) {
+        Organism food = cell.extractAnyOrganismByType(animalType);
+        if (food == null) return;
 
-        prey.markAsDead();
         StatisticsCollector.registerPredationCount(animalType);
-
-        setSatiety(Math.min(getSatiety() + prey.getWeight(), getBaseSpecification().maxSatiety()));
+        setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
     }
 
     public int getOffspringsNumber() {
@@ -49,7 +51,7 @@ public abstract class HerbivoreAnimal extends Animal {
         return FERTILE_PERIOD;
     }
 
-    private boolean isHuntFailed(OrganismType targetType) {
+    private boolean isConsumeFailed(OrganismType targetType) {
         return RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
     }
 }

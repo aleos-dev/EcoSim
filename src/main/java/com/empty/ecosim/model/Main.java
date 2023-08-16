@@ -31,11 +31,14 @@ public class Main {
         initIsland(island);
 
         for (int i = 0; i < 300; i++) {
+             if(i == 290) {
+                 System.out.println();
+             }
             statColl.calculateTerritoryStatistics(island);
 
             fc.executeFeedingCycle();
             mc.executeMovementCycle();
-            rc.runReproduceCycle();
+            rc.initiateReproduction();
 
             System.out.println(statColl);
         }

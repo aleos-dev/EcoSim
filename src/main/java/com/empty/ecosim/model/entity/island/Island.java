@@ -55,11 +55,11 @@ public class Island extends Territory {
         return getCellAtCoordinate(x + cell.getX(), y + cell.getY());
     }
 
-    @Override
-    public void travelFromTo(Organism resident, Cell sourceCell, Cell destinationCell) {
+//    @Override
+ /*   public void travelFromTo(Organism resident, Cell sourceCell, Cell destinationCell) {
         sourceCell.removeResident(resident);
         destinationCell.addResident(resident);
-    }
+    }*/
     private Cell getCellAtCoordinate(int x, int y) {
         if (isCoordinateValid(x, y)) {
             return grid[y][x];

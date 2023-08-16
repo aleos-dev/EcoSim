@@ -23,7 +23,7 @@ public abstract class Territory {
     }
     public abstract Cell getRandomAdjacentCell(Cell cell, int speed);
 
-    public abstract void travelFromTo(Organism resident, Cell sourceCell, Cell destinationCell);
+//    public abstract void travelFromTo(Organism resident, Cell sourceCell, Cell destinationCell);
 
     public List<Cell> getCells() {
         return cells;

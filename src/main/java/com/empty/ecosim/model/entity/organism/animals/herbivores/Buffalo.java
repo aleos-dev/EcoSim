@@ -22,7 +22,7 @@ public class Buffalo extends HerbivoreAnimal {
                     Buffalo child = new Buffalo();
                     return copyGenesTo(child);
                 })
-                .limit(5)
+                .limit(RandomGenerator.getRandomInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());
     }
 

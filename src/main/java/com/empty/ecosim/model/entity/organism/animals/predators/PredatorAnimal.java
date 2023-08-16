@@ -14,10 +14,11 @@ public abstract class PredatorAnimal extends Animal {
     private static final int FERTILE_PERIOD = 5;
 
     public void eat(Cell cell) {
-        if (!isHungry()) return;
+        spendEnergy();
+        if (!isHungry() || !isAlive()) return;
 
         Organism prey = huntForPreyAt(cell);
-        consumeFood(prey);
+        if (prey != null) { consumeFood(prey); }
     }
 
     private Organism huntForPreyAt(Cell cell) {
@@ -25,13 +26,11 @@ public abstract class PredatorAnimal extends Animal {
         if (availablePreyTypes.isEmpty()) return null;
 
         var targetType = getRandomOrganismType(availablePreyTypes);
-        return isHuntFailed(targetType) ? null : cell.getAliveOrganism(targetType);
+        return isHuntFailed(targetType) ? null : cell.extractAnyOrganismByType(targetType);
     }
 
 
     private void consumeFood(Organism prey) {
-        if (prey == null) return;
-        prey.markAsDead();
         StatisticsCollector.registerPredationCount(prey.getType());
         setSatiety(Math.min(getSatiety() + prey.getWeight(), getBaseSpecification().maxSatiety()));
     }
