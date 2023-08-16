@@ -24,7 +24,7 @@ public class Cell {
         return residents;
     }
 
-    public List<Organism> getResidentsByType(OrganismType type) {
+    public List<Organism> getOrganismsByType(OrganismType type) {
         return Optional.ofNullable(residents.get(type))
                 .orElse(new ArrayList<>());
     }
@@ -74,11 +74,11 @@ public class Cell {
     }
 
     // good
-    public Set<OrganismType> getPresentTypes() {
+    public Set<OrganismType> getPresentOrganismTypes() {
         return new HashSet<>(residents.keySet());
     }
 
-    public void clearDead() {
+    public void removeDeadOrganisms() {
         residents.values().forEach(organisms -> organisms.removeIf(organism -> !organism.isAlive()));
         residents.entrySet().removeIf(entry -> entry.getValue().isEmpty());
         indexOfLastDeadMap = new HashMap<>();

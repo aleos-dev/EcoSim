@@ -1,13 +1,10 @@
 package com.empty.ecosim.model;
 
-import com.empty.ecosim.model.entity.controller.EatController;
-import com.empty.ecosim.model.entity.controller.MoveController;
+import com.empty.ecosim.model.entity.controller.FeedingController;
+import com.empty.ecosim.model.entity.controller.MovementController;
 import com.empty.ecosim.model.entity.controller.ReproduceController;
 import com.empty.ecosim.model.entity.island.Island;
 import com.empty.ecosim.model.entity.island.Territory;
-import com.empty.ecosim.model.entity.organism.Organism;
-import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.model.entity.organism.animals.factory.AnimalFactory;
 import com.empty.ecosim.model.entity.organism.animals.factory.SimpleAnimalFactory;
@@ -26,25 +23,25 @@ public class Main {
 
         StatisticsCollector statColl = new StatisticsCollector();
         Territory island = new Island();
-        MoveController mc = new MoveController(island);
-        EatController ec = new EatController(island);
+        MovementController mc = new MovementController(island);
+        FeedingController fc = new FeedingController(island);
         ReproduceController rc = new ReproduceController(island);
 
         statColl.calculateTerritoryStatistics(island);
-        initiateIsland(island);
+        initIsland(island);
 
         for (int i = 0; i < 300; i++) {
             statColl.calculateTerritoryStatistics(island);
 
-            ec.runEatCycle();
-            mc.runMoveCycle();
+            fc.executeFeedingCycle();
+            mc.executeMovementCycle();
             rc.runReproduceCycle();
 
             System.out.println(statColl);
         }
     }
 
-    public static void initiateIsland(Territory island) {
+    public static void initIsland(Territory island) {
         AnimalFactory animalFactory = new SimpleAnimalFactory();
         PlantFactory plantFactory = new SimplePlantFactory();
 

@@ -28,17 +28,9 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public abstract void eat(Cell cell);
     public abstract Set<? extends Animal> reproduce();
 
-    public boolean move(Territory territory, Cell currentCell) {
+    public int move() {
         sufferFromHunger();
-        if (!isAlive()) return false;
-
-        Cell destinationCell = territory.getRandomAdjacentCell(currentCell, speed);
-        if (destinationCell == null || destinationCell == currentCell) {
-            return false;
-        }
-
-        territory.travelFromTo(this, currentCell, destinationCell);
-        return true;
+        return speed;
     }
 
     
@@ -60,7 +52,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return getEdibleTypes().contains(type);
     }
     protected List<OrganismType> filterEdibleTypesInCell(Cell cell) {
-        return cell.getPresentTypes().stream()
+        return cell.getPresentOrganismTypes().stream()
                 .filter(this::isEdible)
                 .collect(Collectors.toList());
     }
