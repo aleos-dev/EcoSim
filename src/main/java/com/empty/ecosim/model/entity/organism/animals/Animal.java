@@ -1,5 +1,6 @@
 package com.empty.ecosim.model.entity.organism.animals;
 
+import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
@@ -31,6 +32,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public void move() {
         spendEnergy();
     }
+    
 
     public void spendEnergy() {
 
@@ -63,6 +65,8 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
         return child;
     }
+    
+
 
     @Override
     public String toString() {

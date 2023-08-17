@@ -1,12 +1,10 @@
 package com.empty.ecosim.model.entity.island;
 
-import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Stream;
 
 public class Cell {
     private final int x;
@@ -33,14 +31,6 @@ public class Cell {
 
     }
 
-    public Stream<Eater> getAllEaters() {
-        return residents.values().stream()
-                .filter(organisms -> organisms.stream().anyMatch(organism -> organism instanceof Eater))
-                .flatMap(Collection::stream)
-                .map(a -> (Eater) a);
-    }
-
-    // good
     public Organism extractAnyOrganismByType(OrganismType type) {
         LinkedHashSet<Organism> organismSet = residents.get(type);
 
@@ -67,7 +57,6 @@ public class Cell {
         residentsOfType.remove(organism);
     }
 
-    // good
     public Set<OrganismType> getPresentOrganismTypes() {
         return new HashSet<>(residents.keySet());
     }

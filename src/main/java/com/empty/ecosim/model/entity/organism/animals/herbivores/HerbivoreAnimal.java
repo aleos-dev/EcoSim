@@ -7,8 +7,6 @@ import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
-import java.util.Set;
-
 public abstract class HerbivoreAnimal extends Animal {
     private static final int MAX_OFFSPRING = 5;
     private static final int FERTILE_PERIOD = 10;
@@ -20,8 +18,6 @@ public abstract class HerbivoreAnimal extends Animal {
         if (!isHungry() || !isAlive()) return;
 
         var edibleTypesPresent = filterEdibleTypesInCell(cell);
-        if (edibleTypesPresent.isEmpty()) return;
-
         var targetType = RandomGenerator.getRandomOrganismType(edibleTypesPresent);
 
         if (cell.hasType(targetType)) {

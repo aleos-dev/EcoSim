@@ -7,66 +7,75 @@ import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class MovementController {
 
     private final Territory territory;
-    private Set<Movable> movedOrganisms = new HashSet<>();
+    private Set<Movable> movedOrganisms;
 
+    /**
+     * Creates a new instance of the MovementController for a given territory.
+     * @param territory the territory in which organisms will move.
+     */
     public MovementController(Territory territory) {
         this.territory = territory;
     }
 
+    /**
+     * Executes the movement cycle for the territory.
+     */
     public void executeMovementCycle() {
-        territory.getCells().forEach(this::processCellMovements);
         movedOrganisms = new HashSet<>();
+        territory.getCells().forEach(this::processCellMovements);
     }
 
     private void processCellMovements(Cell startCell) {
         for (OrganismType type : startCell.getPresentOrganismTypes()) {
             Set<Organism> residents = startCell.getOrganismsByType(type);
 
-            Iterator<Organism> iterator = residents.iterator();
-            while (iterator.hasNext()) {
-                Organism organism = iterator.next();
-                if (organism instanceof Movable movable && movable.getSpeed() != 0) {
-                    if(shouldMove(movable)){
-                        movable.move();
-                        if(!organism.isAlive()) {
-                            iterator.remove();
-                            continue;
-                        }
-                        Cell destination = getDestination(startCell, movable.getSpeed());
-                        if (destination == startCell) {
-                            continue;
-                        }
-                        if (territory.getMaximumCapacityFor(type) - destination.getResidentCountByType(type) > 0) {
-                            iterator.remove();
-                            destination.addResident(organism);
-                        }
-                    }
-                } else {
-                    break;
-                }
+            List<Movable> organismsToMove = residents.stream()
+                    .filter(Movable.class::isInstance)
+                    .map(Movable.class::cast)
+                    .filter(this::shouldBeMoved)
+                    .toList();
+
+            moveOrganisms(startCell, type, organismsToMove);
+        }
+    }
+
+    private void moveOrganisms(Cell currentCell, OrganismType type, List<Movable> organismsToMove) {
+        for (Movable movableOrganism : organismsToMove) {
+            movableOrganism.move();
+
+            Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
+            if (isValidDestination(destination, currentCell, type)) {
+                currentCell.remove((Organism) movableOrganism);
+                destination.addResident((Organism) movableOrganism);
             }
         }
     }
 
-    private Cell getDestination(Cell startCell, int speed) {
-        Cell destination = territory.getRandomAdjacentCell(startCell, speed);
-
-
-        return destination == null ? startCell : destination;
+    private boolean isValidDestination(Cell destination, Cell currentCell, OrganismType type) {
+        return destination != currentCell && canBeAccommodatedAtDestination(destination, type);
     }
 
-    private boolean shouldMove(Movable movable) {
-        if (movedOrganisms.contains(movable)) {
+    private boolean canBeAccommodatedAtDestination(Cell destination, OrganismType type) {
+        int availableSpace = territory.getMaximumCapacityFor(type) - destination.getResidentCountByType(type);
+        return availableSpace > 0;
+    }
+
+    private Cell determineDestination(Cell currentCell, int speed) {
+        Cell destination = territory.getRandomAdjacentCell(currentCell, speed);
+        return destination == null ? currentCell : destination;
+    }
+
+    private boolean shouldBeMoved(Movable movable) {
+        if (movedOrganisms.contains(movable) || movable.getSpeed() == 0) {
             return false;
         }
         movedOrganisms.add(movable);
         return true;
     }
-
 }

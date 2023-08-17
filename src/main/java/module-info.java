@@ -12,4 +12,5 @@ module com.empty.ecosim {
     opens com.empty.ecosim.model.entity.organism.animals.predators;
     opens com.empty.ecosim.model.entity.organism.animals.herbivores;
     opens com.empty.ecosim.model.entity.organism.animals.factory;
+    opens com.empty.ecosim.model.entity.organism;
 }

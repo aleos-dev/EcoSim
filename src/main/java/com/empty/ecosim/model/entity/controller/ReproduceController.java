@@ -3,9 +3,12 @@ package com.empty.ecosim.model.entity.controller;
 import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Organism;
+import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.model.entity.organism.Reproducible;
 import com.empty.ecosim.statistics.StatisticsCollector;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class ReproduceController {
@@ -16,33 +19,33 @@ public class ReproduceController {
     }
 
     public void initiateReproduction() {
-        territory.getCells().forEach(this::runReproduceForCell);
+        territory.getCells().parallelStream().forEach(this::runReproduceForCell);
     }
 
     private void runReproduceForCell(Cell cell) {
-        cell.getResidentsMap().forEach((residentType, residents) -> {
-            int maxAvailableCapacity = Math.max(territory.getMaximumCapacityFor(residentType) - residents.size(), 0);
-
-            List<Organism> newborns = generateNewborns(residents, maxAvailableCapacity);
-            residents.addAll(newborns);
-
-            StatisticsCollector.registerNewbornCount(residentType, newborns.size());
-        });
+        cell.getResidentsMap().entrySet().stream()
+                .filter(this::isReproducible)
+                .forEach(this::generateNewborns);
     }
 
-    private List<Organism> generateNewborns(Set<Organism> organisms, int maxCapacity) {
-        List<Organism> newborns = new ArrayList<>();
+    private void generateNewborns(Map.Entry<OrganismType, LinkedHashSet<Organism>> organisms) {
+        var residentType = organisms.getKey();
+        var residentSet = organisms.getValue();
+        int maxCapacity = Math.max(territory.getMaximumCapacityFor(residentType) - residentSet.size(), 0);
 
-        for (Organism organism : organisms) {
-            if (newborns.size() >= maxCapacity) break;
-            newborns.addAll(organism.reproduce());
-        }
+        Set<Organism> offspring = residentSet.stream()
+                .flatMap(organism -> organism.reproduce().stream())
+                .limit(maxCapacity)
+                .collect(Collectors.toSet());
 
-        if (newborns.size() > maxCapacity) {
-            newborns.subList(maxCapacity, newborns.size()).clear();
-        }
+        organisms.getValue().addAll(offspring);
+        StatisticsCollector.registerNewbornCount(residentType, offspring.size());
+    }
 
-        return newborns;
+    // TODO: SCHEDULED POOL FOR GRASS
+    private boolean isReproducible(Map.Entry<OrganismType, LinkedHashSet<Organism>> organisms) {
+        return organisms.getValue().stream()
+                .anyMatch(organism -> organism instanceof Reproducible);
     }
 }
 
