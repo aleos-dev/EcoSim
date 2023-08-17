@@ -30,18 +30,15 @@ public class StatisticsCollector {
     private int plantNewbornCount;
 
     
-    public static void registerPredationCount(OrganismType type) {
+    public synchronized static void registerPredationCount(OrganismType type) {
         predationCountCollector.merge(type, 1, Integer::sum);
     }
-    public static void registerPredationCount(OrganismType type, int count) {
-        predationCountCollector.merge(type, count, Integer::sum);
-    }
 
-    public static void registerStarvingCount(OrganismType type) {
+    public synchronized static void registerStarvingCount(OrganismType type) {
         starvingCountCollector.merge(type, 1, Integer::sum);
     }
 
-    public static void registerNewbornCount(OrganismType type, int numberOfNewborns) {
+    public synchronized static void registerNewbornCount(OrganismType type, int numberOfNewborns) {
         newbornCountCollector.merge(type, numberOfNewborns, Integer::sum);
     }
 

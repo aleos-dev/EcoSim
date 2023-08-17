@@ -6,7 +6,6 @@ import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,66 +13,69 @@ import java.util.Set;
 public class MovementController {
 
     private final Territory territory;
-    private Set<Movable> movedOrganisms = new HashSet<>();
+    private Set<Movable> movedOrganisms;
 
+    /**
+     * Creates a new instance of the MovementController for a given territory.
+     * @param territory the territory in which organisms will move.
+     */
     public MovementController(Territory territory) {
         this.territory = territory;
     }
 
+    /**
+     * Executes the movement cycle for the territory.
+     */
     public void executeMovementCycle() {
-        territory.getCells().forEach(this::processCellMovements);
         movedOrganisms = new HashSet<>();
+        territory.getCells().forEach(this::processCellMovements);
     }
 
-    /*  private void processCellMovements(Cell cell) {
-          for (OrganismType type : cell.getPresentOrganismTypes()) {
-              List<Organism> residents = cell.getOrganismsByType(type);
-
-              for (int i = 0; i < residents.size(); i++) {
-                  Organism resident = residents.get(i);
-                  if (resident instanceof Movable movableOrganism) {
-                      if (!movedOrganisms.contains(movableOrganism) && movableOrganism.move(territory, cell)) {
-                          i--;
-                          movedOrganisms.add(movableOrganism);
-                      }
-                  } else {
-                      break;
-                  }
-              }
-          }
-          cell.removeDeadOrganisms();
-      }*/
     private void processCellMovements(Cell startCell) {
         for (OrganismType type : startCell.getPresentOrganismTypes()) {
-            List<Organism> residents = startCell.getOrganismsByType(type);
+            Set<Organism> residents = startCell.getOrganismsByType(type);
 
-            for (Organism resident : new ArrayList<>(residents)) {
-                if (resident instanceof Movable movable && shouldMove(movable)) {
-                    int speed = movable.move();
-                    Cell destination = getDestination(startCell, speed);
-                    if (destination == startCell) {
-                        continue;
-                    }
-                        residents.remove(resident);
-                    destination.addResident(resident);
-//                    territory.travelFromTo(movable, startCell, destination);
-                    movedOrganisms.add(movable);
-                } else {
-                    break;
-                }
+            List<Movable> organismsToMove = residents.stream()
+                    .filter(Movable.class::isInstance)
+                    .map(Movable.class::cast)
+                    .filter(this::shouldBeMoved)
+                    .toList();
+
+            moveOrganisms(startCell, type, organismsToMove);
+        }
+    }
+
+    private void moveOrganisms(Cell currentCell, OrganismType type, List<Movable> organismsToMove) {
+        for (Movable movableOrganism : organismsToMove) {
+            movableOrganism.move();
+
+            Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
+            if (isValidDestination(destination, currentCell, type)) {
+                currentCell.remove((Organism) movableOrganism);
+                destination.addResident((Organism) movableOrganism);
             }
         }
-        startCell.removeDeadOrganisms();
     }
 
-    private Cell getDestination(Cell startCell, int speed) {
-        Cell destination = territory.getRandomAdjacentCell(startCell, speed);
-
-        return destination == null ? startCell : destination;
+    private boolean isValidDestination(Cell destination, Cell currentCell, OrganismType type) {
+        return destination != currentCell && canBeAccommodatedAtDestination(destination, type);
     }
 
-    private boolean shouldMove(Movable movable) {
-        return !movedOrganisms.contains(movable);
+    private boolean canBeAccommodatedAtDestination(Cell destination, OrganismType type) {
+        int availableSpace = territory.getMaximumCapacityFor(type) - destination.getResidentCountByType(type);
+        return availableSpace > 0;
     }
 
+    private Cell determineDestination(Cell currentCell, int speed) {
+        Cell destination = territory.getRandomAdjacentCell(currentCell, speed);
+        return destination == null ? currentCell : destination;
+    }
+
+    private boolean shouldBeMoved(Movable movable) {
+        if (movedOrganisms.contains(movable) || movable.getSpeed() == 0) {
+            return false;
+        }
+        movedOrganisms.add(movable);
+        return true;
+    }
 }

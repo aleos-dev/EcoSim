@@ -1,6 +1,5 @@
 package com.empty.ecosim.utils;
 
-import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
 
@@ -11,6 +10,8 @@ public class RandomGenerator {
     private static final Random random = new Random();
 
     public static <T extends OrganismType> T getRandomOrganismType(List<T> types) {
+        if (types.isEmpty()) return null;
+
         int index = random.nextInt(types.size());
         return types.get(index);
     }

@@ -13,7 +13,7 @@ public class Caterpillar extends HerbivoreAnimal {
     @Override
     public Set<? extends Animal> reproduce() {
 
-        if (getGender() == Gender.MALE || RandomGenerator.getRandomInt(getFertilePeriod()) > 0) {
+        if (getGender() == Gender.MALE || RandomGenerator.getRandomInt((int) (getFertilePeriod() * 1.5)) > 0) {
             return Collections.emptySet();
         }
 

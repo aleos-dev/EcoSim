@@ -37,12 +37,10 @@ public class Island extends Territory {
         }
     }
 
-
     @Override
     public TerritoryType getType() {
         return ISLAND;
     }
-
 
     @Override
     public Cell getRandomAdjacentCell(Cell cell, int speed) {
@@ -55,11 +53,6 @@ public class Island extends Territory {
         return getCellAtCoordinate(x + cell.getX(), y + cell.getY());
     }
 
-    @Override
-    public void travelFromTo(Organism resident, Cell sourceCell, Cell destinationCell) {
-        sourceCell.removeResident(resident);
-        destinationCell.addResident(resident);
-    }
     private Cell getCellAtCoordinate(int x, int y) {
         if (isCoordinateValid(x, y)) {
             return grid[y][x];
@@ -73,10 +66,6 @@ public class Island extends Territory {
             return false;
         }
         return y >= 0 && y < height;
-    }
-
-    public Set<OrganismType> getResidentsTypes() {
-        return TERRITORY_SPECIFICATION.getSpecificationForType(ISLAND).organismCapacity().keySet();
     }
 
     public int getMaxResidentCountForOrganismType(OrganismType type) {
