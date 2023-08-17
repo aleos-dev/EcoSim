@@ -10,10 +10,6 @@ public abstract class Plant extends Organism {
     @Override
     public abstract PlantType getType();
 
-    public double getWeight() {
-        return weight;
-    }
-
     public void setWeight(int weight) {
         this.weight = weight;
     }
