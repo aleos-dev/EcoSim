@@ -18,15 +18,18 @@ public class StatisticsCollector {
 
 
     private Map<OrganismType, Integer> populationCountMap = new HashMap<>();
+    private Map<OrganismType, Integer> populationCountOldMap = new HashMap<>();
     private Map<OrganismType, Integer> predationCountMap = new HashMap<>();
     private Map<OrganismType, Integer> starvingCountMap = new HashMap<>();
     private Map<OrganismType, Integer> newbornCountMap = new HashMap<>();
 
     private int animalCount;
+    private int animalCountOld;
     private int animalKillCount;
     private int animalNewbornCount;
     private int animalStarvingCount;
     private int plantCount;
+    private int plantCountOld;
     private int plantKillCount;
     private int plantNewbornCount;
 
@@ -75,6 +78,7 @@ public class StatisticsCollector {
 //    }
 
     private int calculateNumberOfAnimals() {
+        animalCountOld = animalCount;
         animalCount = populationCountMap.keySet().stream()
                 .filter(type -> type instanceof AnimalType)
                 .map(populationCountMap::get)
@@ -106,6 +110,7 @@ public class StatisticsCollector {
     }
 
     private int calculateNumberOfPlants() {
+        plantCountOld = plantCount;
         plantCount = populationCountMap.keySet().stream()
                 .filter(type -> type instanceof PlantType)
                 .map(populationCountMap::get)
@@ -129,54 +134,50 @@ public class StatisticsCollector {
 
 
     private void dumpCollectors() {
+        populationCountOldMap = new HashMap<>(populationCountMap);
+        populationCountMap = new HashMap<>(populationCountCollector);
         predationCountMap = predationCountCollector;
         starvingCountMap = starvingCountCollector;
         newbornCountMap = newbornCountCollector;
-        populationCountMap = populationCountCollector;
 
         predationCountCollector = new HashMap<>();
         starvingCountCollector = new HashMap<>();
         newbornCountCollector = new HashMap<>();
+
     }
-
-
-
 
     private String getOrganismTypeStatistics() {
         StringBuilder result = new StringBuilder();
 
-        result.append(String.format("%-20s %-15s %-15s %-15s %-15s%n",
-                "Type", "Population", "Killed", "Starving", "Newborn"));
-        result.append("===============================================================================\n");
+        result.append(String.format("%-20s %-12s %-12s %-15s %-15s %-15s%n",
+                "Type", "Start", "End", "Killed", "Starving", "Newborn"));
+        result.append("=".repeat(100)).append("\n");
 
         Stream.concat(Arrays.stream(AnimalType.values()), Arrays.stream(PlantType.values()))
                 .forEach(type -> {
-                    int population = populationCountMap.getOrDefault(type, 0);
+                    int populationBefore = populationCountOldMap.getOrDefault(type, 0);
+                    int populationAfter = populationCountMap.getOrDefault(type, 0);
                     int newbornCount = newbornCountMap.getOrDefault(type, 0);
                     int predationCount = predationCountMap.getOrDefault(type, 0);
                     int starvingCount = starvingCountMap.getOrDefault(type, 0);
-                    result.append(String.format("%-20s %-15d %-15d %-15d %-15d%n",
-                            type, population, predationCount, starvingCount, newbornCount));
+                    result.append(String.format("%-20s %-12d %-12d %-15d %-15d %-15d%n",
+                            type, populationBefore, populationAfter, predationCount, starvingCount, newbornCount));
                 });
 
-        result.append("===============================================================================\n");
+        result.append("=".repeat(100)).append("\n");
         return result.toString();
     }
 
     private String getTotalStatistics() {
-        String totalStatisticFormat = "%-20s %-15s %-15d %-15s %-15d%n";
-        return String.format(totalStatisticFormat, "Number of Animals:", animalCount, animalKillCount, animalStarvingCount, animalNewbornCount)
-                + String.format(totalStatisticFormat, "Number of Plants:", plantCount, plantKillCount, "-", plantNewbornCount);
+        String totalStatisticFormat = "%-20s %-12s %-12s %-15d %-15s %-15d%n";
+        return String.format(totalStatisticFormat, "Number of Animals:", animalCountOld, animalCount, animalKillCount, animalStarvingCount, animalNewbornCount)
+                + String.format(totalStatisticFormat, "Number of Plants:",plantCountOld, plantCount, plantKillCount, "-", plantNewbornCount);
     }
     
 
     @Override
     public String toString() {
-        return getOrganismTypeStatistics() +
-                "===============================================================================\n\n" +
-                getTotalStatistics() +
-                "===============================================================================\n\n";
+        String line = "=".repeat(100) + "\n";
+        return getOrganismTypeStatistics() + line + getTotalStatistics() + line;
     }
-
-
 }

@@ -6,7 +6,7 @@ public class Main {
 
         EcosystemSimulator simulator = new EcosystemSimulator();
 
-        for (int i = 0; i < 300; i++) {
+        for (int i = 0; i < 15; i++) {
             simulator.runCycle();
 
             simulator.printStatistic();

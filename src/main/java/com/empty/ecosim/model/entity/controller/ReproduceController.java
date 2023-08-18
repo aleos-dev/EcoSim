@@ -41,7 +41,7 @@ public class ReproduceController {
 
         entry.getValue().addAll(offspring);
         StatisticsCollector.registerNewbornCount(residentType, offspring.size());
-        StatisticsCollector.increasePopulationCount(residentType, entry.getValue().size());
+        StatisticsCollector.increasePopulationCount(residentType, offspring.size());
     }
 
     // TODO: SCHEDULED POOL FOR GRASS

@@ -25,19 +25,16 @@ public class EcosystemSimulator {
 
     public EcosystemSimulator() {
         init();
+        statisticsCollector.calculateTerritoryStatistics();
     }
 
     public void runCycle() {
-        statisticsCollector.calculateTerritoryStatistics(territory);
         controller.runCycle();
+        statisticsCollector.calculateTerritoryStatistics();
     }
 
     public void printStatistic() {
         System.out.println(statisticsCollector);
-    }
-
-    public void clearStatistic() {
-        statisticsCollector = new StatisticsCollector();
     }
 
     private void init() {
@@ -60,6 +57,7 @@ public class EcosystemSimulator {
 
             generateOrganisms(cell, new ArrayList<>(animalTypes), factory);
             generateOrganisms(cell, new ArrayList<>(plantTypes), factory);
+
         });
     }
 

@@ -20,9 +20,7 @@ public abstract class HerbivoreAnimal extends Animal {
         var edibleTypesPresent = filterEdibleTypesInCell(cell);
         var targetType = RandomGenerator.getRandomOrganismType(edibleTypesPresent);
 
-        if (cell.hasType(targetType)) {
             tryToConsume(cell, targetType);
-        }
     }
 
     private void tryToConsume(Cell cell, OrganismType targetType) {
@@ -31,12 +29,12 @@ public abstract class HerbivoreAnimal extends Animal {
         }
     }
 
-    private void consumeFood(Cell cell, OrganismType animalType) {
-        Organism food = cell.extractAnyOrganismByType(animalType);
+    private void consumeFood(Cell cell, OrganismType organismType) {
+        Organism food = cell.extractAnyOrganismByType(organismType);
         if (food == null) return;
 
-        StatisticsCollector.registerPredationCount(animalType);
-        StatisticsCollector.decreasePopulationCount(animalType, 1);
+        StatisticsCollector.registerPredationCount(organismType);
+        StatisticsCollector.decreasePopulationCount(organismType, 1);
         setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
     }
 

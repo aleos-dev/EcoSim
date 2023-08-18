@@ -1,7 +1,7 @@
 package com.empty.ecosim.model.entity.organism;
 
 
-public abstract class Organism implements Reproducible, OrganismType {
+public abstract class Organism implements Reproducible {
 
     protected boolean isAlive;
     protected double weight;

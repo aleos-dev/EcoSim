@@ -5,6 +5,7 @@ import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.model.entity.organism.animals.Animal;
 
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +49,12 @@ public class MovementController {
     private void moveOrganisms(Cell currentCell, OrganismType type, List<Movable> organismsToMove) {
         for (Movable movableOrganism : organismsToMove) {
             movableOrganism.move();
+
+            // TODO REDO IT
+            if (movableOrganism instanceof Animal animal && !animal.isAlive()) {
+                currentCell.remove(animal);
+                return;
+            }
 
             Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
             if (isValidDestination(destination, currentCell, type)) {

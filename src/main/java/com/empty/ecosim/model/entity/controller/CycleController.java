@@ -11,25 +11,15 @@ public class CycleController {
     private final ReproduceController rc;
 
     public CycleController(Territory territory) {
-        try {
-            sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         fc = new FeedingController(territory);
         mc = new MovementController(territory);
         rc = new ReproduceController(territory);
     }
 
     public void runCycle() {
-//        fc.executeFeedingCycle();
+        fc.executeFeedingCycle();
         mc.executeMovementCycle();
-//        rc.initiateReproduction();
+        rc.initiateReproduction();
     }
 
-    public void runCycle(int count) {
-        for (int i = 0; i < count; i++) {
-            runCycle();
-        }
-    }
 }
