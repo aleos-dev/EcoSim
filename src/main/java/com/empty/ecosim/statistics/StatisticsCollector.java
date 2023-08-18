@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class StatisticsCollector {
+public class StatisticsCollector implements Runnable {
     private static final Map<OrganismType, Integer> populationCountCollector = new HashMap<>();
     private static Map<OrganismType, Integer> predationCountCollector = new HashMap<>();
     private static Map<OrganismType, Integer> starvingCountCollector = new HashMap<>();
@@ -33,6 +33,13 @@ public class StatisticsCollector {
     private int plantKillCount;
     private int plantNewbornCount;
 
+    @Override
+    public void run() {
+        calculateTerritoryStatistics();
+        System.out.println(this);
+    }
+
+
     
     public synchronized static void registerPredationCount(OrganismType type) {
         predationCountCollector.merge(type, 1, Integer::sum);
@@ -53,6 +60,7 @@ public class StatisticsCollector {
     public synchronized static void decreasePopulationCount(OrganismType type, int numberOfPopulation) {
        populationCountCollector.merge(type, numberOfPopulation, (a, b) -> a - b);
     }
+
 
 
     public void calculateTerritoryStatistics() {
@@ -180,4 +188,5 @@ public class StatisticsCollector {
         String line = "=".repeat(100) + "\n";
         return getOrganismTypeStatistics() + line + getTotalStatistics() + line;
     }
+
 }

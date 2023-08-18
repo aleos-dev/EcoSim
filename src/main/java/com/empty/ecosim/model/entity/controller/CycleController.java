@@ -4,7 +4,7 @@ import com.empty.ecosim.model.entity.island.Territory;
 
 import static java.lang.Thread.sleep;
 
-public class CycleController {
+public class CycleController implements Runnable {
 
     private final FeedingController fc;
     private final MovementController mc;
@@ -22,4 +22,8 @@ public class CycleController {
         rc.initiateReproduction();
     }
 
+    @Override
+    public void run() {
+        runCycle();
+    }
 }

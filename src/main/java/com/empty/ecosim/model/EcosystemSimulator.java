@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class EcosystemSimulator {
@@ -22,15 +24,19 @@ public class EcosystemSimulator {
     private StatisticsCollector statisticsCollector;
     private Territory territory;
     private CycleController controller;
+    private ScheduledExecutorService executor;
 
-    public EcosystemSimulator() {
+    public EcosystemSimulator(ScheduledExecutorService executor) {
+        this.executor = executor;
         init();
-        statisticsCollector.calculateTerritoryStatistics();
+
     }
 
-    public void runCycle() {
-        controller.runCycle();
-        statisticsCollector.calculateTerritoryStatistics();
+    public void start() {
+        executor.scheduleAtFixedRate(controller, 0, 1, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(statisticsCollector, 1, 1, TimeUnit.SECONDS);
+//        controller.runCycle();
+//        statisticsCollector.calculateTerritoryStatistics();
     }
 
     public void printStatistic() {
