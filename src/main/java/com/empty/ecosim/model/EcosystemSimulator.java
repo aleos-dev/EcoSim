@@ -33,8 +33,9 @@ public class EcosystemSimulator {
     }
 
     public void start() {
-        executor.scheduleAtFixedRate(controller, 0, 1, TimeUnit.SECONDS);
-        executor.scheduleAtFixedRate(statisticsCollector, 1, 1, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(controller, 0, 500, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(statisticsCollector, 1, 500, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(() -> System.out.println(System.currentTimeMillis()), 0, 500, TimeUnit.MILLISECONDS);
 //        controller.runCycle();
 //        statisticsCollector.calculateTerritoryStatistics();
     }
