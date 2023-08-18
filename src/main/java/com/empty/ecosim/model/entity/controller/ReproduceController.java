@@ -28,7 +28,7 @@ public class ReproduceController {
                 .forEach(this::generateNewborns);
     }
 
-    private void generateNewborns(Map.Entry<OrganismType, LinkedHashSet<Organism>> organisms) {
+    private void generateNewborns(Map.Entry<OrganismType, Set<Organism>> organisms) {
         var residentType = organisms.getKey();
         var residentSet = organisms.getValue();
         int maxCapacity = Math.max(territory.getMaximumCapacityFor(residentType) - residentSet.size(), 0);
@@ -43,7 +43,7 @@ public class ReproduceController {
     }
 
     // TODO: SCHEDULED POOL FOR GRASS
-    private boolean isReproducible(Map.Entry<OrganismType, LinkedHashSet<Organism>> organisms) {
+    private boolean isReproducible(Map.Entry<OrganismType, Set<Organism>> organisms) {
         return organisms.getValue().stream()
                 .anyMatch(organism -> organism instanceof Reproducible);
     }

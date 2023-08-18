@@ -9,7 +9,7 @@ public class Main {
         for (int i = 0; i < 300; i++) {
             simulator.runCycle();
 
-            System.out.println(simulator.getStatisticCollector());
+            simulator.printStatistic();
         }
     }
 

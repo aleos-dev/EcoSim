@@ -128,13 +128,11 @@ public class StatisticsCollector {
 
     private void calculatePopulation(Territory island) {
         island.getCells()
-                .forEach(cell -> {
-                    Stream.concat(Arrays.stream(AnimalType.values()), Arrays.stream(PlantType.values()))
-                            .forEach(organismType -> {
-                                int residentCount = cell.getResidentCountByType(organismType);
-                                populationCountMap.merge(organismType, residentCount, Integer::sum);
-                            });
-                });
+                .forEach(cell -> Stream.concat(Arrays.stream(AnimalType.values()), Arrays.stream(PlantType.values()))
+                        .forEach(organismType -> {
+                            int residentCount = cell.getResidentCountByType(organismType);
+                            populationCountMap.merge(organismType, residentCount, Integer::sum);
+                        }));
     }
 
     private String getOrganismTypeStatistics() {

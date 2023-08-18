@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SimpleAnimalFactory extends AnimalFactory{
+public class SimpleAnimalFactory implements AnimalFactory{
     private static final EntitySpecificationLoader<AnimalType, AnimalSpecification> ANIMALS_SPECIFICATION = new EntitySpecificationLoader<>(
             ConfigurationManager.ResourceType.ANIMAL, new TypeReference<>(){}
     );

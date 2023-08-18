@@ -9,12 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Territory {
+    public enum Direction {
+        NORTH(0, -1), EAST(1, 0), SOUTH(0, 1), WEST(-1, 0);
+
+        private final int x;
+        private final int y;
+
+        Direction(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+    }
+
     protected static final EntitySpecificationLoader<TerritoryType, IslandSpecification> TERRITORY_SPECIFICATION = new EntitySpecificationLoader<>(
             ConfigurationManager.ResourceType.ISLAND, new TypeReference<>() {
-    }
+            }
     );
 
-    public abstract Cell getRandomAdjacentCell(Cell cell, int speed);
+    public abstract Cell getRandomDestination(Cell cell, int speed);
 
     public abstract int getMaxResidentCountForOrganismType(OrganismType type);
 

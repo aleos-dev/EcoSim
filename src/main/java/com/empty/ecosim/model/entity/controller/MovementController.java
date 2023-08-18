@@ -67,7 +67,7 @@ public class MovementController {
     }
 
     private Cell determineDestination(Cell currentCell, int speed) {
-        Cell destination = territory.getRandomAdjacentCell(currentCell, speed);
+        Cell destination = territory.getRandomDestination(currentCell, speed);
         return destination == null ? currentCell : destination;
     }
 

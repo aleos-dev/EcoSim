@@ -17,7 +17,7 @@ public class Grass extends Plant {
                     child.setWeight(weight);
                     return child;
                 })
-                .limit(RandomGenerator.getRandomInt(maxSeed))
+                .limit(RandomGenerator.getInt(maxSeed))
                 .collect(Collectors.toSet());
     }
 

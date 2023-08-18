@@ -11,10 +11,10 @@ import com.empty.ecosim.model.entity.organism.plants.PlantType;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.stream.Stream;
 
 public class EcosystemSimulator {
@@ -32,8 +32,8 @@ public class EcosystemSimulator {
         controller.runCycle();
     }
 
-    public StatisticsCollector getStatisticCollector() {
-        return statisticsCollector;
+    public void printStatistic() {
+        System.out.println(statisticsCollector);
     }
 
     public void clearStatistic() {
@@ -58,16 +58,16 @@ public class EcosystemSimulator {
             Collections.shuffle(animalTypes);
             Collections.shuffle(plantTypes);
 
-            generateOrganisms(cell, animalTypes, factory);
-            generateOrganisms(cell, plantTypes, factory);
+            generateOrganisms(cell, new ArrayList<>(animalTypes), factory);
+            generateOrganisms(cell, new ArrayList<>(plantTypes), factory);
         });
     }
 
     private void generateOrganisms(Cell currentLocation, List<? extends OrganismType> typesList, OrganismSuperFactory factory) {
         typesList.stream()
-                .limit(RandomGenerator.getRandomInt(typesList.size() + 1))
+                .limit(RandomGenerator.getIntRange(1, typesList.size() + 1))
                 .forEach(type -> Stream.generate(() -> factory.create(type))
-                        .limit(RandomGenerator.getRandomInt(territory.getMaxResidentCountForOrganismType(type)))
+                        .limit(RandomGenerator.getIntRange(1, territory.getMaxResidentCountForOrganismType(type)))
                         .forEach(currentLocation::addResident));
     }
 }
