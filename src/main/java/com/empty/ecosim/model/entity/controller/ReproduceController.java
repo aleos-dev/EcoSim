@@ -26,11 +26,12 @@ public class ReproduceController {
         cell.getResidentsMap().entrySet().stream()
                 .filter(this::isReproducible)
                 .forEach(this::generateNewborns);
+
     }
 
-    private void generateNewborns(Map.Entry<OrganismType, Set<Organism>> organisms) {
-        var residentType = organisms.getKey();
-        var residentSet = organisms.getValue();
+    private void generateNewborns(Map.Entry<OrganismType, Set<Organism>> entry) {
+        var residentType = entry.getKey();
+        var residentSet = entry.getValue();
         int maxCapacity = Math.max(territory.getMaximumCapacityFor(residentType) - residentSet.size(), 0);
 
         Set<Organism> offspring = residentSet.stream()
@@ -38,8 +39,9 @@ public class ReproduceController {
                 .limit(maxCapacity)
                 .collect(Collectors.toSet());
 
-        organisms.getValue().addAll(offspring);
+        entry.getValue().addAll(offspring);
         StatisticsCollector.registerNewbornCount(residentType, offspring.size());
+        StatisticsCollector.increasePopulationCount(residentType, entry.getValue().size());
     }
 
     // TODO: SCHEDULED POOL FOR GRASS

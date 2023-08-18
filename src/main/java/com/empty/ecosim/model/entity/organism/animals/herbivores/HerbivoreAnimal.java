@@ -36,6 +36,7 @@ public abstract class HerbivoreAnimal extends Animal {
         if (food == null) return;
 
         StatisticsCollector.registerPredationCount(animalType);
+        StatisticsCollector.decreasePopulationCount(animalType, 1);
         setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
     }
 

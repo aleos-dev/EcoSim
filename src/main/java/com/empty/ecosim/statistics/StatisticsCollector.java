@@ -11,10 +11,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class StatisticsCollector {
+    private static final Map<OrganismType, Integer> populationCountCollector = new HashMap<>();
     private static Map<OrganismType, Integer> predationCountCollector = new HashMap<>();
-    public static Map<OrganismType, Integer> starvingCountCollector = new HashMap<>();
+    private static Map<OrganismType, Integer> starvingCountCollector = new HashMap<>();
     private static Map<OrganismType, Integer> newbornCountCollector = new HashMap<>();
-    
+
 
     private Map<OrganismType, Integer> populationCountMap = new HashMap<>();
     private Map<OrganismType, Integer> predationCountMap = new HashMap<>();
@@ -42,10 +43,18 @@ public class StatisticsCollector {
         newbornCountCollector.merge(type, numberOfNewborns, Integer::sum);
     }
 
+    public synchronized static void increasePopulationCount(OrganismType type, int numberOfPopulation) {
+        populationCountCollector.merge(type, numberOfPopulation, Integer::sum);
+    }
 
-    public void calculateTerritoryStatistics(Territory island) {
-        getReady();
-        calculatePopulation(island);
+    public synchronized static void decreasePopulationCount(OrganismType type, int numberOfPopulation) {
+       populationCountCollector.merge(type, numberOfPopulation, (a, b) -> a - b);
+    }
+
+
+    public void calculateTerritoryStatistics() {
+        dumpCollectors();
+//        calculatePopulation(island);
 
         animalCount = calculateNumberOfAnimals();
         animalKillCount = calculateKilledAnimalCount();
@@ -55,6 +64,15 @@ public class StatisticsCollector {
         plantKillCount = calculateKilledPlantCount();
         plantNewbornCount = calculateNewbornPlantCount();
     }
+
+//    private void calculatePopulation(Territory island) {
+//        island.getCells()
+//                .forEach(cell -> Stream.concat(Arrays.stream(AnimalType.values()), Arrays.stream(PlantType.values()))
+//                        .forEach(organismType -> {
+//                            int residentCount = cell.getResidentCountByType(organismType);
+//                            populationCountMap.merge(organismType, residentCount, Integer::sum);
+//                        }));
+//    }
 
     private int calculateNumberOfAnimals() {
         animalCount = populationCountMap.keySet().stream()
@@ -109,16 +127,12 @@ public class StatisticsCollector {
                 .sum();
     }
 
-    private void getReady() {
-        populationCountMap = new HashMap<>();
-        dumpCollectors();
-
-    }
 
     private void dumpCollectors() {
         predationCountMap = predationCountCollector;
         starvingCountMap = starvingCountCollector;
         newbornCountMap = newbornCountCollector;
+        populationCountMap = populationCountCollector;
 
         predationCountCollector = new HashMap<>();
         starvingCountCollector = new HashMap<>();
@@ -126,14 +140,7 @@ public class StatisticsCollector {
     }
 
 
-    private void calculatePopulation(Territory island) {
-        island.getCells()
-                .forEach(cell -> Stream.concat(Arrays.stream(AnimalType.values()), Arrays.stream(PlantType.values()))
-                        .forEach(organismType -> {
-                            int residentCount = cell.getResidentCountByType(organismType);
-                            populationCountMap.merge(organismType, residentCount, Integer::sum);
-                        }));
-    }
+
 
     private String getOrganismTypeStatistics() {
         StringBuilder result = new StringBuilder();

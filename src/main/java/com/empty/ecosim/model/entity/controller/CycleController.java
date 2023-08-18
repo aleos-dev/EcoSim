@@ -2,6 +2,8 @@ package com.empty.ecosim.model.entity.controller;
 
 import com.empty.ecosim.model.entity.island.Territory;
 
+import static java.lang.Thread.sleep;
+
 public class CycleController {
 
     private final FeedingController fc;
@@ -9,15 +11,20 @@ public class CycleController {
     private final ReproduceController rc;
 
     public CycleController(Territory territory) {
-        mc = new MovementController(territory);
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         fc = new FeedingController(territory);
+        mc = new MovementController(territory);
         rc = new ReproduceController(territory);
     }
 
     public void runCycle() {
-        fc.executeFeedingCycle();
+//        fc.executeFeedingCycle();
         mc.executeMovementCycle();
-        rc.initiateReproduction();
+//        rc.initiateReproduction();
     }
 
     public void runCycle(int count) {

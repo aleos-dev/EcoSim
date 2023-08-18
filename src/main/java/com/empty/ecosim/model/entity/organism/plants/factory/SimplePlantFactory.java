@@ -6,6 +6,7 @@ import com.empty.ecosim.model.entity.organism.plants.Grass;
 import com.empty.ecosim.model.entity.organism.plants.Plant;
 import com.empty.ecosim.model.entity.organism.plants.PlantSpecification;
 import com.empty.ecosim.model.entity.organism.plants.PlantType;
+import com.empty.ecosim.statistics.StatisticsCollector;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class SimplePlantFactory implements PlantFactory {
@@ -19,6 +20,7 @@ public class SimplePlantFactory implements PlantFactory {
         };
         var spec = PLANTS_SPECIFICATION.getSpecificationForType(plantType);
         plant.setWeight(spec.weight());
+        StatisticsCollector.increasePopulationCount(plantType, 1);
 
         return plant;
     }

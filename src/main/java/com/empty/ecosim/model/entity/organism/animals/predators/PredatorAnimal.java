@@ -32,6 +32,7 @@ public abstract class PredatorAnimal extends Animal {
 
     private void consumeFood(Organism prey) {
         StatisticsCollector.registerPredationCount(prey.getType());
+        StatisticsCollector.decreasePopulationCount(prey.getType(), 1);
         setSatiety(Math.min(getSatiety() + prey.getWeight(), getBaseSpecification().maxSatiety()));
     }
 

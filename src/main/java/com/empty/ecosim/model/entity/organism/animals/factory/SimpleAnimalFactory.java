@@ -7,6 +7,7 @@ import com.empty.ecosim.model.entity.organism.animals.herbivores.*;
 import com.empty.ecosim.model.entity.organism.animals.predators.*;
 import com.empty.ecosim.model.configuration.ConfigurationManager;
 import com.empty.ecosim.model.configuration.EntitySpecificationLoader;
+import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -64,6 +65,7 @@ public class SimpleAnimalFactory implements AnimalFactory{
         animal.setBaseSpecification(spec);
 
         animal.setEdibleTypes(ANIMALS_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
+        StatisticsCollector.increasePopulationCount(animalType, 1);
 
         return animal;
     }

@@ -40,6 +40,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         if (satiety <= 0.000001) {
             markAsDead();
             StatisticsCollector.registerStarvingCount(this.getType());
+            StatisticsCollector.decreasePopulationCount(this.getType(), 1);
         }
     }
     
