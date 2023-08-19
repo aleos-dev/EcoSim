@@ -4,6 +4,7 @@ import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
+import com.empty.ecosim.model.entity.organism.plants.PlantType;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 

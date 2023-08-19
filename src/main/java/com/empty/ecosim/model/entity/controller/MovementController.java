@@ -33,18 +33,16 @@ public class MovementController {
      */
     public void executeMovement() {
         movedOrganisms = new HashSet<>();
-//        movedOrganisms = new ConcurrentSkipListSet<>();
-        // TODO WHY DONT WORK WITH PARALLEL STREAM
         try {
 //            territory.getCells().parallelStream().forEach(this::processCellMovements);
             territory.getCells().forEach(this::processCellMovements);
         } catch (Throwable e) {
             e.printStackTrace();
         }
-//        territory.getCells().forEach(this::processCellMovements);
     }
 
     private void processCellMovements(Cell startCell) {
+        startCell.lock();
         for (OrganismType type : startCell.getPresentOrganismTypes()) {
             Set<Organism> residents = startCell.getOrganismsByType(type);
 
@@ -56,6 +54,7 @@ public class MovementController {
 
             moveOrganisms(startCell, type, new ArrayList<>(organismsToMove));
         }
+        startCell.unlock();
     }
 
     private void moveOrganisms(Cell currentCell, OrganismType type, List<Movable> organismsToMove) {

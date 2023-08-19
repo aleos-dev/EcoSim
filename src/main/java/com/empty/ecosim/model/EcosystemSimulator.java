@@ -38,7 +38,7 @@ public class EcosystemSimulator implements Runnable {
     public void start() {
         executor.scheduleAtFixedRate(this, 0, 500, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(statisticsCollector, 1, 500, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 1000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 5000, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(() -> System.out.println(System.currentTimeMillis()), 0, 1000, TimeUnit.MILLISECONDS);
     }
 
@@ -85,5 +85,4 @@ public class EcosystemSimulator implements Runnable {
                         .limit(RandomGenerator.getIntRange(1, territory.getMaxResidentCountForOrganismType(type)))
                         .forEach(currentLocation::addResident));
     }
-
 }

@@ -40,15 +40,11 @@ public class Cell {
 
     public Organism getPrey(OrganismType type) {
 
-        Set<Organism> organisms = residents.get(type);
-        if (organisms.isEmpty()) return null;
-        return organisms.iterator().next();
+        return residents.get(type).stream().findAny().orElse(null);
+//        Set<Organism> organisms = residents.get(type);
+//        if (organisms.isEmpty()) return null;
+//        return organisms.iterator().next();
     }
-
-    public Set<Organism> getSetOfOrganism(OrganismType type) {
-        return residents.get(type);
-    }
-
 
 
     public int getResidentCountByType(OrganismType type) {
@@ -58,7 +54,6 @@ public class Cell {
 
 
     public void remove(Organism organism) {
-
         synchronized (residents) {
             Set<Organism> residentsOfType = residents.get(organism.getType());
             residentsOfType.remove(organism);

@@ -60,7 +60,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
 
     public boolean isFindFoodSucceeded(OrganismType targetType) {
-        return RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
+        return !RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
     }
 
     @Override

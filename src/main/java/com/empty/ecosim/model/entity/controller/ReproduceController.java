@@ -31,8 +31,8 @@ public class ReproduceController {
 
     public void runPlantsGrowth() {
         try {
-//            territory.getCells().parallelStream().forEach(this::runPlantsGrowthForCell);
-            territory.getCells().forEach(this::runPlantsGrowthForCell);
+            territory.getCells().parallelStream().forEach(this::runPlantsGrowthForCell);
+//            territory.getCells().forEach(this::runPlantsGrowthForCell);
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -53,7 +53,7 @@ public class ReproduceController {
     private final PlantFactory factory = new SimplePlantFactory();
 
     private void runPlantsGrowthForCell(Cell cell) {
-
+        cell.lock();
         Arrays.stream(PlantType.values()).forEach(type -> {
             List<Plant> plants = Stream.generate(() -> factory.create(type))
                     .limit(RandomGenerator.getIntRange(0, territory.getMaxResidentCountForOrganismType(type) - cell.getResidentCountByType(type)))
@@ -61,6 +61,7 @@ public class ReproduceController {
 
             cell.getResidentsMap().get(type).addAll(plants);
         });
+        cell.unlock();
 
     }
 
