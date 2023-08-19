@@ -1,7 +1,10 @@
 package com.empty.ecosim.model.entity.organism;
 
-import com.empty.ecosim.model.entity.island.Cell;
-
 public interface Eater {
-    void eat(Cell cell);
+    void eat(Organism food);
+
+    boolean isEdible(OrganismType food);
+
+    boolean isFindFoodSucceeded(OrganismType targetType);
+
 }

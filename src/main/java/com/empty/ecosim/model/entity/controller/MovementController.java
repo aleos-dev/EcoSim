@@ -7,17 +7,21 @@ import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.model.entity.organism.animals.Animal;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class MovementController {
 
     private final Territory territory;
+//    private Set<Movable> movedOrganisms = new ConcurrentSkipListSet<>();
     private Set<Movable> movedOrganisms;
 
     /**
      * Creates a new instance of the MovementController for a given territory.
+     *
      * @param territory the territory in which organisms will move.
      */
     public MovementController(Territory territory) {
@@ -27,9 +31,17 @@ public class MovementController {
     /**
      * Executes the movement cycle for the territory.
      */
-    public void executeMovementCycle() {
+    public void executeMovement() {
         movedOrganisms = new HashSet<>();
-        territory.getCells().forEach(this::processCellMovements);
+//        movedOrganisms = new ConcurrentSkipListSet<>();
+        // TODO WHY DONT WORK WITH PARALLEL STREAM
+        try {
+//            territory.getCells().parallelStream().forEach(this::processCellMovements);
+            territory.getCells().forEach(this::processCellMovements);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+//        territory.getCells().forEach(this::processCellMovements);
     }
 
     private void processCellMovements(Cell startCell) {
@@ -42,7 +54,7 @@ public class MovementController {
                     .filter(this::shouldBeMoved)
                     .toList();
 
-            moveOrganisms(startCell, type, organismsToMove);
+            moveOrganisms(startCell, type, new ArrayList<>(organismsToMove));
         }
     }
 
@@ -58,8 +70,10 @@ public class MovementController {
 
             Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
             if (isValidDestination(destination, currentCell, type)) {
-                currentCell.remove((Organism) movableOrganism);
-                destination.addResident((Organism) movableOrganism);
+                    currentCell.remove((Organism) movableOrganism);
+                    destination.lock();
+                    destination.addResident((Organism) movableOrganism);
+                    destination.unlock();
             }
         }
     }
@@ -79,10 +93,13 @@ public class MovementController {
     }
 
     private boolean shouldBeMoved(Movable movable) {
-        if (movedOrganisms.contains(movable) || movable.getSpeed() == 0) {
-            return false;
+
+        synchronized(movedOrganisms) {
+            if (movedOrganisms.contains(movable) || movable.getSpeed() == 0) {
+                return false;
+            }
+            movedOrganisms.add(movable);
         }
-        movedOrganisms.add(movable);
         return true;
     }
 }

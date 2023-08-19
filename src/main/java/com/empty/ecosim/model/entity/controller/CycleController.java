@@ -17,9 +17,9 @@ public class CycleController implements Runnable {
     }
 
     public void runCycle() {
-        fc.executeFeedingCycle();
-        mc.executeMovementCycle();
-        rc.initiateReproduction();
+        fc.executeFeeding();
+        mc.executeMovement();
+        rc.executeReproductionForAnimals();
     }
 
     @Override

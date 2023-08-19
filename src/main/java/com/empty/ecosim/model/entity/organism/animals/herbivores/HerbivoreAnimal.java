@@ -13,28 +13,16 @@ public abstract class HerbivoreAnimal extends Animal {
 
 
     @Override
-    public void eat(Cell cell) {
+    public void eat(Organism food) {
         spendEnergy();
-        if (!isHungry() || !isAlive()) return;
 
-        var edibleTypesPresent = filterEdibleTypesInCell(cell);
-        var targetType = RandomGenerator.getRandomOrganismType(edibleTypesPresent);
-
-            tryToConsume(cell, targetType);
+        consumeFood(food);
     }
 
-    private void tryToConsume(Cell cell, OrganismType targetType) {
-        if (!isConsumeFailed(targetType)) {
-            consumeFood(cell, targetType);
-        }
-    }
-
-    private void consumeFood(Cell cell, OrganismType organismType) {
-        Organism food = cell.extractAnyOrganismByType(organismType);
-        if (food == null) return;
-
-        StatisticsCollector.registerPredationCount(organismType);
-        StatisticsCollector.decreasePopulationCount(organismType, 1);
+    private void consumeFood(Organism food) {
+        food.markAsDead();
+        StatisticsCollector.registerPredationCount(food.getType());
+        StatisticsCollector.decreasePopulationCount(food.getType(), 1);
         setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
     }
 
@@ -46,7 +34,4 @@ public abstract class HerbivoreAnimal extends Animal {
         return FERTILE_PERIOD;
     }
 
-    private boolean isConsumeFailed(OrganismType targetType) {
-        return RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
-    }
 }

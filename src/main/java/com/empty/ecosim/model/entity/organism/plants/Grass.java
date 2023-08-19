@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Grass extends Plant {
-    private static final int maxSeed = 50;
+    private static int maxSeed = 10;
 
     @Override
     public Set<? extends Plant> reproduce() {
@@ -24,6 +24,14 @@ public class Grass extends Plant {
     @Override
     public PlantType getType() {
         return PlantType.GRASS;
+    }
+
+    public static int getMaxSeed() {
+        return maxSeed;
+    }
+
+    public static void setMaxSeed(int maxSeed) {
+        Grass.maxSeed = maxSeed;
     }
 
 }

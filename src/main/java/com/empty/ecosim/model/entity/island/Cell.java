@@ -4,6 +4,7 @@ import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Cell {
@@ -11,7 +12,7 @@ public class Cell {
     private final int x;
     private final int y;
     private final ReentrantLock lock = new ReentrantLock();
-    private final Map<OrganismType, Set<Organism>> residents = new HashMap<>();
+    private final Map<OrganismType, Set<Organism>> residents = new ConcurrentHashMap<>();
     private final Territory.Direction[] possibleDirections;
 
     public Cell(int x, int y, Territory.Direction[] possibleDirections) {
@@ -26,22 +27,26 @@ public class Cell {
 
     public Set<Organism> getOrganismsByType(OrganismType type) {
         return Optional.ofNullable(residents.get(type))
-                .orElse(new LinkedHashSet<>());
+                .orElse(new HashSet<>());
     }
 
     public void addResident(Organism organism) {
-        residents.computeIfAbsent(organism.getType(), k -> new LinkedHashSet<>()).add(organism);
-
+            residents.computeIfAbsent(organism.getType(), k -> new LinkedHashSet<>()).add(organism);
     }
 
     public Territory.Direction[] getPossibleDirections() {
         return possibleDirections;
     }
 
-    public Organism extractAnyOrganismByType(OrganismType type) {
-        Set<Organism> organismSet = residents.get(type);
+    public Organism getPrey(OrganismType type) {
 
-        return organismSet == null ? null : extractOrganism(organismSet);
+        Set<Organism> organisms = residents.get(type);
+        if (organisms.isEmpty()) return null;
+        return organisms.iterator().next();
+    }
+
+    public Set<Organism> getSetOfOrganism(OrganismType type) {
+        return residents.get(type);
     }
 
 
@@ -53,8 +58,11 @@ public class Cell {
 
 
     public void remove(Organism organism) {
-        Set<Organism> residentsOfType = residents.get(organism.getType());
-        residentsOfType.remove(organism);
+
+        synchronized (residents) {
+            Set<Organism> residentsOfType = residents.get(organism.getType());
+            residentsOfType.remove(organism);
+        }
     }
 
     public Set<OrganismType> getPresentOrganismTypes() {
@@ -65,15 +73,20 @@ public class Cell {
         return residents.containsKey(type);
     }
 
-    private Organism extractOrganism(Set<Organism> organismSet) {
-        Organism organism = null;
-        Iterator<Organism> iterator = organismSet.iterator();
-        if (iterator.hasNext()) {
-            organism = iterator.next();
-            iterator.remove();
-        }
+    public void clearDeadOfType(OrganismType type) {
+        residents.get(type).removeIf(x -> !x.isAlive());
+    }
 
-        return organism;
+    public void lock() {
+        lock.lock();
+    }
+
+    public void unlock() {
+        lock.unlock();
+    }
+
+    public boolean tryToLock() {
+        return lock.tryLock();
     }
 
     public int getX() {

@@ -21,6 +21,7 @@ public class SimplePlantFactory implements PlantFactory {
         var spec = PLANTS_SPECIFICATION.getSpecificationForType(plantType);
         plant.setWeight(spec.weight());
         StatisticsCollector.increasePopulationCount(plantType, 1);
+        StatisticsCollector.registerNewbornCount(plantType, 1);
 
         return plant;
     }

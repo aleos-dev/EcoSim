@@ -13,11 +13,14 @@ public class RandomGenerator {
     private static final Random random = ThreadLocalRandom.current();
 
     public static <T extends OrganismType> T getRandomOrganismType(List<T> types) {
+        // TODO WHAT THE HELL IS HAPPEN HERE
+        if (types.size() == 0) return null;
         int index = random.nextInt(types.size());
         return types.get(index);
     }
 
     public static boolean isHuntFailed(double chance) {
+
         return random.nextDouble(100) >= chance;
     }
 

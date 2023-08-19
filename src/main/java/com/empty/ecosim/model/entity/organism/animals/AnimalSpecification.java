@@ -33,6 +33,7 @@ public record AnimalSpecification(
     }
 
     public double getChanceToHunt(OrganismType organismType) {
-        return edibleTypes.get(organismType);
+        Double aDouble = edibleTypes.get(organismType);
+        return aDouble == null ? 0 : aDouble;
     }
 }

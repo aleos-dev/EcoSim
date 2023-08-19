@@ -1,6 +1,5 @@
 package com.empty.ecosim.model.entity.organism.animals;
 
-import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
@@ -26,7 +25,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
     @Override
     public abstract AnimalType getType();
-    public abstract void eat(Cell cell);
+    public abstract void eat(Organism food);
     public abstract Set<? extends Animal> reproduce();
 
     public void move() {
@@ -44,18 +43,10 @@ public abstract class Animal extends Organism implements Movable, Eater {
         }
     }
     
-    protected boolean isHungry() {
-        return getSatiety() < getBaseSpecification().maxSatiety() * HUNGER_THRESHOLD;
-    }
-
-    protected boolean isEdible(OrganismType type) {
+    public boolean isEdible(OrganismType type) {
         return getEdibleTypes().contains(type);
     }
-    protected List<OrganismType> filterEdibleTypesInCell(Cell cell) {
-        return cell.getPresentOrganismTypes().stream()
-                .filter(this::isEdible)
-                .collect(Collectors.toList());
-    }
+
     protected <T extends Animal> Animal copyGenesTo(T child) {
         child.setWeight(baseSpecification.weight());
         child.setSpeed(baseSpecification.speed());
@@ -66,8 +57,11 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
         return child;
     }
-    
 
+
+    public boolean isFindFoodSucceeded(OrganismType targetType) {
+        return RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
+    }
 
     @Override
     public String toString() {
