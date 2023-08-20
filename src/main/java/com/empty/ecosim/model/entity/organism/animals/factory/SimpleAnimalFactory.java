@@ -64,6 +64,10 @@ public class SimpleAnimalFactory implements AnimalFactory{
         animal.setGender(RandomGenerator.generateGender());
         animal.setBaseSpecification(spec);
 
+        if (animalType == AnimalType.WOLF) {
+            System.out.println();
+        }
+
         animal.setEdibleTypes(ANIMALS_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
         StatisticsCollector.registerNewbornCount(animalType, 1);
         return animal;

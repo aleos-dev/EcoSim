@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-
-import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
 
 public class MovementController {
 
@@ -64,7 +61,7 @@ public class MovementController {
             movableOrganism.move();
 
             // TODO REDO IT
-            if (movableOrganism instanceof Animal animal && !animal.isAlive()) {
+            if (movableOrganism instanceof Animal animal && animal.isDead()) {
                 currentCell.remove(animal);
                 return;
             }

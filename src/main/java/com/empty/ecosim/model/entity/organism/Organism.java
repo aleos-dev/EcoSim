@@ -12,8 +12,8 @@ public abstract class Organism implements Reproducible {
 
     public abstract OrganismType getType();
 
-    public boolean isAlive() {
-        return isAlive;
+    public boolean isDead() {
+        return !isAlive;
     }
     public void die() {
         isAlive = false;

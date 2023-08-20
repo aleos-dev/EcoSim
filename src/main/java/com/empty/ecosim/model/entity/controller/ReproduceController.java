@@ -23,6 +23,7 @@ import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
 public class ReproduceController {
     private final Territory territory;
 
+
     public ReproduceController(Territory territory) {
         this.territory = territory;
     }
@@ -54,18 +55,17 @@ public class ReproduceController {
 
     private void runPlantsGrowthAt(Cell cell) {
         cell.lock();
-
         AtomicInteger availableCellSpace = new AtomicInteger();
         try {
             Arrays.stream(PlantType.values()).forEach(type -> {
-                availableCellSpace.set(territory.getMaxResidentCountForOrganismType(type) - cell.getResidentCountByType(type));
-
-                int growthNumber = RandomGenerator.getIntRange(0, availableCellSpace.get()) / 2;
+                availableCellSpace.set(getMaxAvailableCapacityFor(type, cell.getOrganismsByType(type)));
+                int growthNumber = (int) (RandomGenerator.getIntRange(0, availableCellSpace.get()) * Plant.getPlantsGrowthMultiplier());
                 List<Plant> plants = Stream.generate(() -> factory.create(type))
                         .limit(growthNumber)
                         .toList();
 
                 cell.getResidentsMap().get(type).addAll(plants);
+
             });
         } catch (IllegalArgumentException e) {
             System.out.println(availableCellSpace.get());
@@ -77,20 +77,24 @@ public class ReproduceController {
     private void generateNewborns(Map.Entry<OrganismType, Set<Organism>> entry) {
         var residentType = entry.getKey();
         var residentSet = entry.getValue();
-        int maxCapacity = Math.max(territory.getMaximumCapacityFor(residentType) - residentSet.size(), 0);
 
         Set<Organism> offspring = residentSet.stream()
                 .flatMap(organism -> organism.reproduce().stream())
-                .limit(maxCapacity)
+                .limit(getMaxAvailableCapacityFor(residentType, residentSet))
                 .collect(Collectors.toSet());
 
-        entry.getValue().addAll(offspring);
+        residentSet.addAll(offspring);
 
         StatisticsCollector.registerNewbornCount(residentType, offspring.size());
     }
 
     private boolean isAnimalsCollection(Map.Entry<OrganismType, Set<Organism>> entry) {
         return entry.getKey() instanceof AnimalType;
+    }
+
+    private int getMaxAvailableCapacityFor(OrganismType organismType, Set<Organism> residents) {
+        return Math.max(territory.getMaximumCapacityFor(organismType) - residents.size(), 0);
+
     }
 }
 

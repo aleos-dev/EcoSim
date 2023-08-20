@@ -38,7 +38,7 @@ public class Cell {
         return possibleDirections;
     }
 
-    public Organism getPrey(OrganismType type) {
+    public Organism getOrganism(OrganismType type) {
 
         return residents.get(type).stream().findAny().orElse(null);
 //        Set<Organism> organisms = residents.get(type);
@@ -69,7 +69,7 @@ public class Cell {
     }
 
     public void clearDeadOfType(OrganismType type) {
-        residents.get(type).removeIf(x -> !x.isAlive());
+        residents.get(type).removeIf(Organism::isDead);
     }
 
     public void lock() {
