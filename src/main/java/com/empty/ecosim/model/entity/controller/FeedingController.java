@@ -5,12 +5,6 @@ import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.organism.animals.Animal;
-import com.empty.ecosim.model.entity.organism.animals.AnimalType;
-import com.empty.ecosim.model.entity.organism.animals.factory.AnimalFactory;
-import com.empty.ecosim.model.entity.organism.animals.factory.SimpleAnimalFactory;
-import com.empty.ecosim.model.entity.organism.animals.herbivores.Horse;
-import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
 
 import java.util.HashSet;
 import java.util.List;
@@ -81,7 +75,7 @@ public class FeedingController {
 
         Organism food = huntForPrey(cell, availablePreyTypes);
 
-        if (food == null || !((Eater) organism).isFindFoodSucceeded(food.getType())) return;
+        if (food == null || !((Eater) organism).canCaptureFood(food.getType())) return;
         ((Eater) organism).eat(food);
         cell.remove(food);
     }

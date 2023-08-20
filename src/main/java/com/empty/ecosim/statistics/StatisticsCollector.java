@@ -32,6 +32,12 @@ public class StatisticsCollector implements Runnable {
     private int plantKillCount;
     private int plantNewbornCount;
 
+    private int overallAnimalCount;
+    private int overallAnimalKillCount;
+    private int overallAnimalStarvingCount;
+    private int overallPlantCount;
+    private int overallPlantKillCount;
+
     @Override
     public void run() {
         try {
@@ -45,14 +51,17 @@ public class StatisticsCollector implements Runnable {
 
     public synchronized static void registerPredationCount(OrganismType type) {
         predationCountCollector.merge(type, 1, Integer::sum);
+        decreasePopulationCount(type, 1);
     }
 
     public synchronized static void registerStarvingCount(OrganismType type) {
         starvingCountCollector.merge(type, 1, Integer::sum);
+        decreasePopulationCount(type, 1);
     }
 
     public synchronized static void registerNewbornCount(OrganismType type, int numberOfNewborns) {
         newbornCountCollector.merge(type, numberOfNewborns, Integer::sum);
+        increasePopulationCount(type, numberOfNewborns);
     }
 
     public synchronized static void increasePopulationCount(OrganismType type, int numberOfPopulation) {
@@ -74,6 +83,12 @@ public class StatisticsCollector implements Runnable {
         plantCount = calculateNumberOfPlants();
         plantKillCount = calculateKilledPlantCount();
         plantNewbornCount = calculateNewbornPlantCount();
+
+        overallAnimalCount += animalNewbornCount;
+        overallAnimalKillCount += animalKillCount;
+        overallAnimalStarvingCount += animalStarvingCount;
+        overallPlantCount += plantNewbornCount;
+        overallPlantKillCount += plantKillCount;
     }
 
     private void dumpCollectors() {
@@ -176,11 +191,25 @@ public class StatisticsCollector implements Runnable {
                 + String.format(totalStatisticFormat, "Number of Plants:", plantCountOld, plantCount, plantKillCount, "-", plantNewbornCount);
     }
 
+    private String getOverallStatistics() {
+        StringBuilder result = new StringBuilder();
+        result.append(String.format("%-20s %-12s %-12s %-15s%n",
+                "", "Overall", "Killed", "Starving"));
+        String overallStatisticFormat = "%-20s %-12s %-12s %-15s%n";
+        return result.append(
+                String.format(overallStatisticFormat, "Animals:"
+                        , overallAnimalCount, overallAnimalKillCount, overallAnimalStarvingCount)
+        ).append(
+                String.format(overallStatisticFormat, "Plants:"
+                        , overallPlantCount, overallPlantKillCount, "-")
+        ).toString();
+    }
+
 
     @Override
     public String toString() {
         String line = "=".repeat(100) + "\n";
-        return getOrganismTypeStatistics() + line + getTotalStatistics() + line;
+        return getOrganismTypeStatistics() + line + getTotalStatistics() + line + getOverallStatistics() + line;
     }
 
 }

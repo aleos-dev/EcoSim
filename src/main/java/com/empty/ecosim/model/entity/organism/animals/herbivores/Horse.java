@@ -19,9 +19,9 @@ public class Horse extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Horse child = new Horse();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
-                .limit(RandomGenerator.getInt(getOffspringsNumber()))
+                .limit(RandomGenerator.getInt(getOffspringsNumber()) + 1)
                 .collect(Collectors.toSet());
     }
 

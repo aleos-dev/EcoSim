@@ -20,9 +20,9 @@ public class Boar extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Boar child = new Boar();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
-                .limit(RandomGenerator.getInt(getOffspringsNumber()))
+                .limit(RandomGenerator.getInt(getOffspringsNumber()) + 1)
                 .collect(Collectors.toSet());
     }
 

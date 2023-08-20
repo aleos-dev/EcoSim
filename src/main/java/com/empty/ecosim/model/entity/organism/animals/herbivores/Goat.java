@@ -19,9 +19,9 @@ public class Goat extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Goat child = new Goat();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
-                .limit(RandomGenerator.getInt(getOffspringsNumber()))
+                .limit(RandomGenerator.getInt(getOffspringsNumber()) + 1)
                 .collect(Collectors.toSet());
     }
 

@@ -21,6 +21,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
+
 public class EcosystemSimulator implements Runnable {
 
     private StatisticsCollector statisticsCollector;
@@ -37,8 +39,8 @@ public class EcosystemSimulator implements Runnable {
 
     public void start() {
         executor.scheduleAtFixedRate(this, 0, 500, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(statisticsCollector, 1, 500, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 5000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(statisticsCollector, 1, 1000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 500, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(() -> System.out.println(System.currentTimeMillis()), 0, 1000, TimeUnit.MILLISECONDS);
     }
 
@@ -75,6 +77,7 @@ public class EcosystemSimulator implements Runnable {
 
             generateOrganisms(cell, new ArrayList<>(animalTypes), factory);
             generateOrganisms(cell, new ArrayList<>(plantTypes), factory);
+
         });
     }
 

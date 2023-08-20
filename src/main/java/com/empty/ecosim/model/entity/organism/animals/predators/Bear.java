@@ -19,7 +19,7 @@ public class Bear extends PredatorAnimal {
 
         return Stream.generate(() -> {
                     Bear child = new Bear();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
                 .limit(RandomGenerator.getInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());

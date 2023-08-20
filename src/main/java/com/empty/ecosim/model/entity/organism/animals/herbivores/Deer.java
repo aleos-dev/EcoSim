@@ -19,9 +19,9 @@ public class Deer extends HerbivoreAnimal {
 
         return Stream.generate(() -> {
                     Deer child = new Deer();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
-                .limit(RandomGenerator.getInt(getOffspringsNumber()))
+                .limit(RandomGenerator.getInt(getOffspringsNumber()) + 1)
                 .collect(Collectors.toSet());
     }
 

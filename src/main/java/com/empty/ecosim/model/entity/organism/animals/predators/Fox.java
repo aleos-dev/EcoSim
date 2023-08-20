@@ -19,7 +19,7 @@ public class Fox extends PredatorAnimal {
 
         return Stream.generate(() -> {
                     Fox child = new Fox();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
                 .limit(RandomGenerator.getInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());

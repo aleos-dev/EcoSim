@@ -19,9 +19,8 @@ public class RandomGenerator {
         return types.get(index);
     }
 
-    public static boolean isHuntFailed(double chance) {
-
-        return random.nextDouble(100) >= chance;
+    public static boolean didHuntSuccesses(double chance) {
+        return random.nextDouble(100) < chance;
     }
 
     public static int getInt(int bound) {

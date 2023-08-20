@@ -3,25 +3,24 @@ package com.empty.ecosim.model.entity.organism.animals;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class Animal extends Organism implements Movable, Eater {
     public enum Gender {MALE, FEMALE}
 
     private static final double HUNGER_THRESHOLD = 0.8;
 
-
+    private static final double DEPLETE_SATIETY_MODIFICATION = 0.1;
     private int speed;
     private double satiety;
     private Gender gender;
     private AnimalSpecification baseSpecification;
     private List<OrganismType> edibleTypes;
+
 
     @Override
     public abstract AnimalType getType();
@@ -29,25 +28,31 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public abstract Set<? extends Animal> reproduce();
 
     public void move() {
-        spendEnergy();
+        depleteSatiety();
     }
-    
 
-    public void spendEnergy() {
+    public void depleteSatiety() {
 
-        satiety -= baseSpecification.maxSatiety() / 10;
+        satiety -= baseSpecification.maxSatiety() * DEPLETE_SATIETY_MODIFICATION;
         if (satiety <= 0.000001) {
-            markAsDead();
+            die();
             StatisticsCollector.registerStarvingCount(this.getType());
-            StatisticsCollector.decreasePopulationCount(this.getType(), 1);
         }
     }
-    
+
+    @Override
     public boolean isEdible(OrganismType type) {
         return getEdibleTypes().contains(type);
     }
+    public boolean canCaptureFood(OrganismType targetType) {
+        return RandomGenerator.didHuntSuccesses(getBaseSpecification().getChanceToHunt(targetType));
+    }
 
-    protected <T extends Animal> Animal copyGenesTo(T child) {
+    public AnimalSpecification getBaseSpecification() {
+        return baseSpecification;
+    }
+
+    protected <T extends Animal> T transferGeneticTraitsTo(T child) {
         child.setWeight(baseSpecification.weight());
         child.setSpeed(baseSpecification.speed());
         child.setSatiety(baseSpecification.maxSatiety());
@@ -56,25 +61,6 @@ public abstract class Animal extends Organism implements Movable, Eater {
         child.setEdibleTypes(baseSpecification.edibleTypes());
 
         return child;
-    }
-
-
-    public boolean isFindFoodSucceeded(OrganismType targetType) {
-        return !RandomGenerator.isHuntFailed(getBaseSpecification().getChanceToHunt(targetType));
-    }
-
-    @Override
-    public String toString() {
-        return "Animal{" +
-                "speed=" + speed +
-                ", satiety=" + satiety +
-                ", isAlive=" + isAlive +
-                ", weight=" + weight +
-                '}';
-    }
-
-    public AnimalSpecification getBaseSpecification() {
-        return baseSpecification;
     }
 
     public void setBaseSpecification(AnimalSpecification baseSpecification) {
@@ -105,6 +91,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         this.satiety = satiety;
     }
 
+    @Override
     public List<OrganismType> getEdibleTypes() {
         return edibleTypes;
     }

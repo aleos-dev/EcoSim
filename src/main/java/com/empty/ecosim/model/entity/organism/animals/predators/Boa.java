@@ -19,7 +19,7 @@ public class Boa extends PredatorAnimal {
 
         return Stream.generate(() -> {
                     Boa child = new Boa();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
                 .limit(RandomGenerator.getInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());

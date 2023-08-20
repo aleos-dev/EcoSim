@@ -19,7 +19,7 @@ public class Eagle extends PredatorAnimal {
 
         return Stream.generate(() -> {
                     Eagle child = new Eagle();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
                 .limit(RandomGenerator.getInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
+
 public class MovementController {
 
     private final Territory territory;
@@ -68,12 +70,12 @@ public class MovementController {
             }
 
             Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
+            destination.lock();
             if (isValidDestination(destination, currentCell, type)) {
                     currentCell.remove((Organism) movableOrganism);
-                    destination.lock();
                     destination.addResident((Organism) movableOrganism);
-                    destination.unlock();
             }
+            destination.unlock();
         }
     }
 

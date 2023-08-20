@@ -65,7 +65,6 @@ public class SimpleAnimalFactory implements AnimalFactory{
         animal.setBaseSpecification(spec);
 
         animal.setEdibleTypes(ANIMALS_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
-        StatisticsCollector.increasePopulationCount(animalType, 1);
         StatisticsCollector.registerNewbornCount(animalType, 1);
         return animal;
     }

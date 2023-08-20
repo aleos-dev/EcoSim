@@ -4,7 +4,6 @@ import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.organism.Reproducible;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 import com.empty.ecosim.model.entity.organism.plants.Plant;
 import com.empty.ecosim.model.entity.organism.plants.PlantType;
@@ -14,8 +13,11 @@ import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
 
 
 public class ReproduceController {
@@ -31,36 +33,43 @@ public class ReproduceController {
 
     public void runPlantsGrowth() {
         try {
-            territory.getCells().parallelStream().forEach(this::runPlantsGrowthForCell);
-//            territory.getCells().forEach(this::runPlantsGrowthForCell);
+            territory.getCells().parallelStream().forEach(this::runPlantsGrowthAt);
         } catch (Throwable e) {
+            System.out.println("RUN PLANTS GROWTH EXCEPTION");
             e.printStackTrace();
+            System.exit(21);
         }
     }
 
     private void runReproduceForAnimalsAt(Cell cell) {
-
         cell.lock();
         cell.getResidentsMap().entrySet().stream()
                 .filter(this::isAnimalsCollection)
-                .filter(this::isReproducible)
                 .forEach(this::generateNewborns);
-
         cell.unlock();
     }
 
 
     private final PlantFactory factory = new SimplePlantFactory();
 
-    private void runPlantsGrowthForCell(Cell cell) {
+    private void runPlantsGrowthAt(Cell cell) {
         cell.lock();
-        Arrays.stream(PlantType.values()).forEach(type -> {
-            List<Plant> plants = Stream.generate(() -> factory.create(type))
-                    .limit(RandomGenerator.getIntRange(0, territory.getMaxResidentCountForOrganismType(type) - cell.getResidentCountByType(type)))
-                    .toList();
 
-            cell.getResidentsMap().get(type).addAll(plants);
-        });
+        AtomicInteger availableCellSpace = new AtomicInteger();
+        try {
+            Arrays.stream(PlantType.values()).forEach(type -> {
+                availableCellSpace.set(territory.getMaxResidentCountForOrganismType(type) - cell.getResidentCountByType(type));
+
+                int growthNumber = RandomGenerator.getIntRange(0, availableCellSpace.get()) / 2;
+                List<Plant> plants = Stream.generate(() -> factory.create(type))
+                        .limit(growthNumber)
+                        .toList();
+
+                cell.getResidentsMap().get(type).addAll(plants);
+            });
+        } catch (IllegalArgumentException e) {
+            System.out.println(availableCellSpace.get());
+        }
         cell.unlock();
 
     }
@@ -78,21 +87,10 @@ public class ReproduceController {
         entry.getValue().addAll(offspring);
 
         StatisticsCollector.registerNewbornCount(residentType, offspring.size());
-        StatisticsCollector.increasePopulationCount(residentType, offspring.size());
     }
 
     private boolean isAnimalsCollection(Map.Entry<OrganismType, Set<Organism>> entry) {
         return entry.getKey() instanceof AnimalType;
-    }
-
-    private boolean isPlantsCollection(Map.Entry<OrganismType, Set<Organism>> entry) {
-        return entry.getKey() instanceof PlantType;
-    }
-
-    // TODO: SCHEDULED POOL FOR GRASS
-    private boolean isReproducible(Map.Entry<OrganismType, Set<Organism>> organisms) {
-        return organisms.getValue().stream()
-                .anyMatch(organism -> organism instanceof Reproducible);
     }
 }
 

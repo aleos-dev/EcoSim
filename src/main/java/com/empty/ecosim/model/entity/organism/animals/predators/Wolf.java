@@ -19,7 +19,7 @@ public class Wolf extends PredatorAnimal {
 
         return Stream.generate(() -> {
                     Wolf child = new Wolf();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
                 .limit(RandomGenerator.getInt(getOffspringsNumber()))
                 .collect(Collectors.toSet());

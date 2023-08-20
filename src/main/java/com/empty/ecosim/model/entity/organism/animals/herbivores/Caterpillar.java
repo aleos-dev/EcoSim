@@ -13,15 +13,15 @@ public class Caterpillar extends HerbivoreAnimal {
     @Override
     public Set<? extends Animal> reproduce() {
 
-        if (getGender() == Gender.MALE || RandomGenerator.getInt((int) (getFertilePeriod() * 1.5)) > 0) {
+        if (getGender() == Gender.MALE || RandomGenerator.getInt(getFertilePeriod()) > 0) {
             return Collections.emptySet();
         }
 
         return Stream.generate(() -> {
                     Caterpillar child = new Caterpillar();
-                    return copyGenesTo(child);
+                    return transferGeneticTraitsTo(child);
                 })
-                .limit(RandomGenerator.getInt(getOffspringsNumber() + 1))
+                .limit(RandomGenerator.getInt(getOffspringsNumber()) + 1)
                 .collect(Collectors.toSet());
     }
 
