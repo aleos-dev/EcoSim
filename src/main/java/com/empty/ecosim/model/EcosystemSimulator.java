@@ -45,7 +45,7 @@ public class EcosystemSimulator implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        System.out.println( );
+        System.out.println();
     }
 
     @Override
@@ -77,8 +77,6 @@ public class EcosystemSimulator implements Runnable {
         rc = new ReproduceController(territory);
         populateTerritory();
     }
-
-
 
     public void populateTerritory() {
         OrganismSuperFactory factory = new OrganismSuperFactory();

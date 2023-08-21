@@ -11,37 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigurationManager {
-    public enum ResourceType {
-        ANIMAL("animalsSpec.json", "com/empty/ecosim/model/entity/organism/animals/animalsSpec.json"),
-        PLANT("plantsSpec.json", "com/empty/ecosim/model/entity/organism/plants/plantsSpec.json"),
-
-        ISLAND("islandSpec.json", "com/empty/ecosim/model/entity/island/islandSpec.json");
-        //        CELL("cellsSpec.json", );
-        private final String configFileName;
-        private final String defaultResourcePath;
-
-        ResourceType(String configFileName, String defaultResourcePath) {
-            this.configFileName = configFileName;
-            this.defaultResourcePath = defaultResourcePath;
-        }
-
-        public String getConfigFileName() {
-            return configFileName;
-        }
-
-        public String getDefaultResourcePath() {
-            return defaultResourcePath;
-        }
-    }
-
     public static final ConfigurationManager INSTANCE = new ConfigurationManager();
-
     private static final String APP_NAME = "Eco-Sim";
-
     private static Path configFolderPath;
-
     private final Map<ResourceType, Path> resourceFileMapping = new HashMap<>();
-
 
     private ConfigurationManager() {
         ensureConfigDirectoryExists();
@@ -57,7 +30,7 @@ public class ConfigurationManager {
     }
 
     private void ensureConfigDirectoryExists() {
-        configFolderPath = determineConfigFolderPath();
+        configFolderPath = OSConfigPathStrategy.getConfigPathForCurrentOS();
 
         try {
             Files.createDirectories(configFolderPath);
@@ -92,19 +65,54 @@ public class ConfigurationManager {
         }
         return resourceStream;
     }
+    public enum OSConfigPathStrategy {
+        WINDOWS("win", "AppData", "Local"),
+        LINUX("nux", ".config"),
+        UNIX("nix", ".config"),
+        MAC("mac", "Library", "Application Support");
 
-    private static Path determineConfigFolderPath() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        String userHomeDir = System.getProperty("user.home");
+        private final String osIdentifier;
+        private final String[] pathComponents;
 
-        if (osName.contains("win")) {
-            return Paths.get(userHomeDir, "AppData", "Local", APP_NAME);
-        } else if (osName.contains("nux") || osName.contains("nix")) {
-            return Paths.get(userHomeDir, ".config", APP_NAME);
-        } else if (osName.contains("mac")) {
-            return Paths.get(userHomeDir, "Library", "Application Support", APP_NAME);
-        } else {
+        OSConfigPathStrategy(String osIdentifier, String... pathComponents) {
+            this.osIdentifier = osIdentifier;
+            this.pathComponents = pathComponents;
+        }
+
+        public static Path getConfigPathForCurrentOS() {
+            String osName = System.getProperty("os.name").toLowerCase();
+            String userHomeDir = System.getProperty("user.home");
+
+            for (OSConfigPathStrategy strategy : values()) {
+                if (osName.contains(strategy.osIdentifier)) {
+                    return Paths.get(userHomeDir, strategy.pathComponents).resolve(APP_NAME);
+                }
+            }
+
             throw new UnsupportedOperationException("Unsupported operating system: " + osName);
+        }
+    }
+
+    public enum ResourceType {
+        ANIMAL("animalsSpec.json", "com/empty/ecosim/model/entity/organism/animals/animalsSpec.json"),
+        PLANT("plantsSpec.json", "com/empty/ecosim/model/entity/organism/plants/plantsSpec.json"),
+
+        ISLAND("islandSpec.json", "com/empty/ecosim/model/entity/island/islandSpec.json");
+        //        CELL("cellsSpec.json", );
+        private final String configFileName;
+        private final String defaultResourcePath;
+
+        ResourceType(String configFileName, String defaultResourcePath) {
+            this.configFileName = configFileName;
+            this.defaultResourcePath = defaultResourcePath;
+        }
+
+        public String getConfigFileName() {
+            return configFileName;
+        }
+
+        public String getDefaultResourcePath() {
+            return defaultResourcePath;
         }
     }
 }

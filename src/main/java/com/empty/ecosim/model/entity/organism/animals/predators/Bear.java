@@ -1,32 +1,21 @@
 package com.empty.ecosim.model.entity.organism.animals.predators;
 
-import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
-import com.empty.ecosim.utils.RandomGenerator;
-
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Bear extends PredatorAnimal {
-    @Override
-    public Set<? extends Animal> reproduce() {
-
-        if (getGender() == Gender.MALE || RandomGenerator.getInt(getFertilePeriod()) > 0) {
-            return Collections.emptySet();
-        }
-
-        return Stream.generate(() -> {
-                    Bear child = new Bear();
-                    return transferGeneticTraitsTo(child);
-                })
-                .limit(RandomGenerator.getInt(getOffspringsNumber()))
-                .collect(Collectors.toSet());
-    }
+    private static final int MAX_OFFSPRING = 2;
+    private static final int FERTILE_PERIOD = 5;
 
     @Override
     public AnimalType getType() {
         return AnimalType.BEAR;
+    }
+    @Override
+    public int getFertilePeriod() {
+        return FERTILE_PERIOD;
+    }
+    @Override
+    public int getOffspringsNumber() {
+        return MAX_OFFSPRING;
     }
 }

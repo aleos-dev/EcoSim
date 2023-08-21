@@ -17,8 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-
 public class ReproduceController {
     private final Territory territory;
 
@@ -26,7 +24,6 @@ public class ReproduceController {
     public static double getPlantsGrowthMultiplier() {
         return PLANTS_GROWTH_MULTIPLIER;
     }
-
 
     public ReproduceController(Territory territory) {
         this.territory = territory;
@@ -55,7 +52,6 @@ public class ReproduceController {
                 .forEach(this::generateNewborns);
         cell.unlock();
     }
-
 
     private final PlantFactory factory = new SimplePlantFactory();
 

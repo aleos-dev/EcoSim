@@ -10,14 +10,18 @@ import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.empty.ecosim.utils.RandomGenerator.getRandomOrganismType;
 
 public abstract class Animal extends Organism implements Movable, Eater {
 
+    // Inner enums and constants
     public enum Gender {MALE, FEMALE}
 
-    private static final double DEPLETE_SATIETY_MODIFICATION = 0.1;
+    private static final double DEPLETE_SATIETY_MODIFICATION = 0.15;
+
+    // Member variables
     private int speed;
     private double satiety;
     private Gender gender;
@@ -25,21 +29,19 @@ public abstract class Animal extends Organism implements Movable, Eater {
     private List<OrganismType> edibleTypes;
 
 
-    @Override
+    // Abstract methods related to type and reproduction
     public abstract AnimalType getType();
 
-    public abstract Set<? extends Animal> reproduce();
+    public abstract int getFertilePeriod();
+
+    public abstract int getOffspringsNumber();
 
     @Override
     public void move(Cell cell) {
-
         Cell destination;
         do {
             destination = cell.chooseRandomAdjasentCell(speed);
         } while (!destination.tryToLock());
-
-//            Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
-//            destination.lock();
 
         if (canTravelTo(cell, destination)) {
             cell.removeOrganism(this);
@@ -48,34 +50,74 @@ public abstract class Animal extends Organism implements Movable, Eater {
         destination.unlock();
     }
 
-    private boolean canTravelTo(Cell from, Cell destination) {
-        return from != destination && destination.canAccommodate(this.getType());
-    }
-
     @Override
     public void eat(Cell cell) {
         depleteSatiety();
         if (isDead()) return;
 
-        Organism food = findFood(cell);
-        if (food == null) return;
-
-        consumeFood(food);
-        cell.removeOrganism(food);
-
+        Optional.ofNullable(findFood(cell)).ifPresent(this::consumeFood);
     }
 
-    protected Organism findFood(Cell cell) {
+    @Override
+    public Set<Animal> reproduce() {
+        if (!canReproduce()) {
+            return Collections.emptySet();
+        }
+
+        return Stream.generate(this::generateChild)
+                .limit(RandomGenerator.getIntRange(1, getOffspringsNumber()))
+                .collect(Collectors.toSet());
+    }
+
+    // Reproduction methods
+    private boolean canReproduce() {
+        return !(gender == Gender.MALE || RandomGenerator.getInt(getFertilePeriod()) > 0);
+    }
+
+    private Animal generateChild() {
+        return createChildInstance().map(this::transferGeneticTraitsTo)
+                .orElseThrow(() -> new RuntimeException("Failed to create a child instance."));
+    }
+
+    private Optional<Animal> createChildInstance() {
+        try {
+            return Optional.of(this.getClass().getDeclaredConstructor().newInstance());
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    private <T extends Animal> T transferGeneticTraitsTo(T child) {
+        child.setWeight(baseSpecification.weight());
+        child.setSpeed(baseSpecification.speed());
+        child.setSatiety(baseSpecification.maxSatiety() / 2);
+        child.setBaseSpecification(baseSpecification);
+        child.setGender(RandomGenerator.generateGender());
+        child.setEdibleTypes(baseSpecification.edibleTypes());
+
+        return child;
+    }
+
+    // Movement methods
+    private boolean canTravelTo(Cell from, Cell destination) {
+        return from != destination && destination.canAccommodate(this.getType());
+    }
+
+
+    // Eating methods
+
+    private Organism findFood(Cell cell) {
         Optional<Organism> food = chooseTargetFood(cell);
 
         if (food.isPresent() && canCaptureFood(food.get().getType())) {
+            cell.removeOrganism(food.get());
             return food.get();
         }
 
         return null;
     }
 
-    protected Optional<Organism> chooseTargetFood(Cell cell) {
+    private Optional<Organism> chooseTargetFood(Cell cell) {
         List<OrganismType> availableEdibleTypes = filterEdibleTypesInCell(cell);
         if (availableEdibleTypes.isEmpty()) {
             return Optional.empty();
@@ -86,14 +128,14 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return cell.getOrganism(targetType);
     }
 
-    protected List<OrganismType> filterEdibleTypesInCell(Cell cell) {
-        return cell.currentOrganismTypes().stream().filter(this::isEdible).collect(Collectors.toList());
-    }
-
     protected void consumeFood(Organism food) {
         food.die();
         StatisticsCollector.registerPredationCount(food.getType());
         setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
+    }
+
+    private List<OrganismType> filterEdibleTypesInCell(Cell cell) {
+        return cell.currentOrganismTypes().stream().filter(this::isEdible).collect(Collectors.toList());
     }
 
     protected void depleteSatiety() {
@@ -117,25 +159,9 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return baseSpecification;
     }
 
-    protected <T extends Animal> T transferGeneticTraitsTo(T child) {
-        child.setWeight(baseSpecification.weight());
-        child.setSpeed(baseSpecification.speed());
-        child.setSatiety(baseSpecification.maxSatiety() / 2);
-        child.setBaseSpecification(baseSpecification);
-        child.setGender(RandomGenerator.generateGender());
-        child.setEdibleTypes(baseSpecification.edibleTypes());
-
-        return child;
-    }
 
     public void setBaseSpecification(AnimalSpecification baseSpecification) {
         this.baseSpecification = baseSpecification;
-    }
-
-    public abstract int getFertilePeriod();
-
-    public Gender getGender() {
-        return gender;
     }
 
     public void setGender(Gender gender) {

@@ -15,25 +15,31 @@ public record AnimalSpecification(
         @JsonProperty("speed") int speed,
         @JsonProperty("maxSatiety") double maxSatiety,
         @JsonProperty("edibleTypes") Map<OrganismType, Double> edibleTypes
+
 ) implements EntitySpecification {
     public AnimalSpecification {
         if (weight < 0 || speed < 0 || maxSatiety < 0) {
             throw new IllegalArgumentException("Fields of AnimalSpec must be positive");
         }
     }
-    public AnimalSpecification cleanAndSortEdibleTypes() {
-        var sortedEdibleTypes = edibleTypes.entrySet().stream()
-                .filter(e -> e.getKey() != null)
-                .sorted(Entry.comparingByValue(Comparator.reverseOrder()))
-                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-        sortedEdibleTypes.entrySet().removeIf(e -> e == null || e.getValue() <= 0);
-
+    public EntitySpecification cleanAndSortEdibleTypes() {
+        Map<OrganismType, Double> sortedEdibleTypes = filterAndSortEdibleTypes();
         return new AnimalSpecification(weight, speed, maxSatiety, sortedEdibleTypes);
     }
 
+    private Map<OrganismType, Double> filterAndSortEdibleTypes() {
+        return edibleTypes.entrySet().stream()
+                .filter(this::isValidEntry)
+                .sorted(Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+    }
+
+    private boolean isValidEntry(Map.Entry<OrganismType, Double> entry) {
+        return entry.getKey() != null && entry.getValue() > 0;
+    }
+
     public double getChanceToHunt(OrganismType organismType) {
-        Double aDouble = edibleTypes.get(organismType);
-        return aDouble == null ? 0 : aDouble;
+        return edibleTypes.getOrDefault(organismType, 0.0);
     }
 }

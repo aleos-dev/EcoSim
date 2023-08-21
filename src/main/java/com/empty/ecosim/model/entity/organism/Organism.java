@@ -19,8 +19,6 @@ public abstract class Organism implements Reproducible {
         isAlive = false;
     }
 
-//    public abstract void getCellCapacityMultiplier();
-
     public double getWeight() {
         return weight;
     }
@@ -28,7 +26,4 @@ public abstract class Organism implements Reproducible {
     public void setWeight(double weight) {
         this.weight = weight;
     }
-
-
-
 }

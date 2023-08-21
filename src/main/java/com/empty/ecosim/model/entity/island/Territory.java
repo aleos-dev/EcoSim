@@ -51,6 +51,4 @@ public abstract class Territory {
     public int getMaximumCapacityFor(OrganismType organismType) {
         return TERRITORY_SPECIFICATION.getSpecificationForType(this.getType()).organismCapacity().get(organismType);
     }
-
-
 }
