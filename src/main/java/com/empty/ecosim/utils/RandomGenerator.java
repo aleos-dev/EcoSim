@@ -19,9 +19,8 @@ public class RandomGenerator {
         return types.get(index);
     }
 
-    public static boolean isHuntFailed(double chance) {
-
-        return random.nextDouble(100) >= chance;
+    public static boolean didHuntSuccesses(double chance) {
+        return random.nextDouble(100) < chance;
     }
 
     public static int getInt(int bound) {
@@ -38,9 +37,8 @@ public class RandomGenerator {
     }
 
     public static Territory.Direction getRandomDirection(Cell startCell) {
-        Territory.Direction[] directions = startCell.getPossibleDirections();
-        Territory.Direction nextDirection = directions[random.nextInt(directions.length)];
+        Territory.Direction[] directions = startCell.getAllowedDirections();
 
-        return nextDirection;
+        return directions[random.nextInt(directions.length)];
     }
 }

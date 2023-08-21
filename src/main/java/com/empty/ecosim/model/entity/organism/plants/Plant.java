@@ -6,6 +6,7 @@ import java.util.Set;
 
 public abstract class Plant extends Organism {
 
+
     public abstract Set<? extends Plant> reproduce();
     @Override
     public abstract PlantType getType();
@@ -21,4 +22,6 @@ public abstract class Plant extends Organism {
                 ", weight=" + weight +
                 '}';
     }
+
+
 }

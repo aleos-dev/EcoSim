@@ -38,6 +38,8 @@ public abstract class Territory {
 
     public abstract int getMaxResidentCountForOrganismType(OrganismType type);
 
+    public abstract void updateCellCapacityFor(OrganismType type, double multiplier);
+
     public abstract TerritoryType getType();
 
     List<Cell> cells = new ArrayList<>();
@@ -49,6 +51,4 @@ public abstract class Territory {
     public int getMaximumCapacityFor(OrganismType organismType) {
         return TERRITORY_SPECIFICATION.getSpecificationForType(this.getType()).organismCapacity().get(organismType);
     }
-
-
 }

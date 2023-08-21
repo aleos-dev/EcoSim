@@ -21,7 +21,6 @@ public class SimpleAnimalFactory implements AnimalFactory{
 
     private final Map<AnimalType, AnimalCreator> animalCreators = new HashMap<>();
 
-    // Interface for animal creators
     private interface AnimalCreator {
         Animal create();
     }
@@ -63,9 +62,8 @@ public class SimpleAnimalFactory implements AnimalFactory{
         animal.setSatiety(spec.maxSatiety() / 2);
         animal.setGender(RandomGenerator.generateGender());
         animal.setBaseSpecification(spec);
-
         animal.setEdibleTypes(ANIMALS_SPECIFICATION.getSpecificationForType(animalType).edibleTypes());
-        StatisticsCollector.increasePopulationCount(animalType, 1);
+
         StatisticsCollector.registerNewbornCount(animalType, 1);
         return animal;
     }

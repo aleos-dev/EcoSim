@@ -30,6 +30,7 @@ public class EntitySpecificationLoader<EntityTypeKey, SpecType extends EntitySpe
 
             if (resourceType == ResourceType.ANIMAL) {
                 map = map.entrySet().stream()
+                        .filter(entry -> entry.getValue() instanceof AnimalSpecification)
                         .collect(Collectors.toMap(
                                 Map.Entry::getKey,
                                 entry -> (SpecType) ((AnimalSpecification) entry.getValue()).cleanAndSortEdibleTypes(),

@@ -38,16 +38,32 @@ public class EcosystemSimulator implements Runnable {
     public void start() {
         executor.scheduleAtFixedRate(this, 0, 500, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(statisticsCollector, 1, 500, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 5000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 500, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(() -> System.out.println(System.currentTimeMillis()), 0, 1000, TimeUnit.MILLISECONDS);
+        try {
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println();
     }
 
     @Override
     public void run() {
         try {
+
+            long t1 = System.currentTimeMillis();
             fc.executeFeeding();
+            long t2 = System.currentTimeMillis();
+            System.out.println("feed: " + (t2 - t1));
+            t1 = System.currentTimeMillis();
             mc.executeMovement();
+            t2 = System.currentTimeMillis();
+            System.out.println("move: " + (t2 - t1));
+            t1 = System.currentTimeMillis();
             rc.executeReproductionForAnimals();
+            t2 = System.currentTimeMillis();
+            System.out.println("reproduce: " + (t2 - t1));
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -60,7 +76,6 @@ public class EcosystemSimulator implements Runnable {
         mc = new MovementController(territory);
         rc = new ReproduceController(territory);
         populateTerritory();
-
     }
 
     public void populateTerritory() {
@@ -75,6 +90,7 @@ public class EcosystemSimulator implements Runnable {
 
             generateOrganisms(cell, new ArrayList<>(animalTypes), factory);
             generateOrganisms(cell, new ArrayList<>(plantTypes), factory);
+
         });
     }
 
@@ -83,6 +99,6 @@ public class EcosystemSimulator implements Runnable {
                 .limit(RandomGenerator.getIntRange(1, typesList.size() + 1))
                 .forEach(type -> Stream.generate(() -> factory.create(type))
                         .limit(RandomGenerator.getIntRange(1, territory.getMaxResidentCountForOrganismType(type)))
-                        .forEach(currentLocation::addResident));
+                        .forEach(currentLocation::addOrganism));
     }
 }
