@@ -39,9 +39,15 @@ public class EcosystemSimulator implements Runnable {
 
     public void start() {
         executor.scheduleAtFixedRate(this, 0, 500, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(statisticsCollector, 1, 1000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(statisticsCollector, 1, 500, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 500, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(() -> System.out.println(System.currentTimeMillis()), 0, 1000, TimeUnit.MILLISECONDS);
+        try {
+            Thread.sleep(30000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println( );
     }
 
     @Override
@@ -64,6 +70,8 @@ public class EcosystemSimulator implements Runnable {
         populateTerritory();
 
     }
+
+
 
     public void populateTerritory() {
         OrganismSuperFactory factory = new OrganismSuperFactory();

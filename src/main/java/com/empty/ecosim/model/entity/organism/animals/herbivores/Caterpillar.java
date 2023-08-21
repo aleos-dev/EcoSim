@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Caterpillar extends HerbivoreAnimal {
+
     @Override
     public Set<? extends Animal> reproduce() {
 
@@ -29,4 +30,5 @@ public class Caterpillar extends HerbivoreAnimal {
     public AnimalType getType() {
         return AnimalType.CATERPILLAR;
     }
+
 }

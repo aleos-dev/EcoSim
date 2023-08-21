@@ -1,6 +1,7 @@
 package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.OrganismType;
+import com.empty.ecosim.model.entity.organism.animals.herbivores.Caterpillar;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.Arrays;
@@ -24,6 +25,11 @@ public class Island extends Territory {
         initializeCellGrids();
         super.cells = Arrays.stream(grid).flatMap(Arrays::stream).collect(Collectors.toList());
 
+    }
+
+
+    public void updateCellCapacityFor(OrganismType type, double multiplier) {
+        islandSpecification.organismCapacity().compute(type, (k, v) -> (int) (v * multiplier));
     }
 
     private void initializeCellGrids() {

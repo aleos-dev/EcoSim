@@ -2,22 +2,23 @@ package com.empty.ecosim.model.entity.organism.animals;
 
 import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.organism.Eater;
+import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.organism.Movable;
-import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.empty.ecosim.utils.RandomGenerator.getRandomOrganismType;
 
 public abstract class Animal extends Organism implements Movable, Eater {
-    public enum Gender {MALE, FEMALE}
 
-    private static double hungerThreshold = 0.8;
+    public enum Gender {MALE, FEMALE}
 
     private static final double DEPLETE_SATIETY_MODIFICATION = 0.1;
     private int speed;
@@ -33,19 +34,20 @@ public abstract class Animal extends Organism implements Movable, Eater {
     public abstract Set<? extends Animal> reproduce();
 
     public void move() {
-        depleteSatiety();
+//        depleteSatiety();
     }
 
     @Override
     public void eat(Cell cell) {
-        Organism food = findFood(cell);
+        depleteSatiety();
+        if (isDead()) return;
 
+        Organism food = findFood(cell);
         if (food == null) return;
 
         consumeFood(food);
         cell.remove(food);
 
-        depleteSatiety();
     }
 
     protected Organism findFood(Cell cell) {
@@ -103,7 +105,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
     protected <T extends Animal> T transferGeneticTraitsTo(T child) {
         child.setWeight(baseSpecification.weight());
         child.setSpeed(baseSpecification.speed());
-        child.setSatiety(baseSpecification.maxSatiety());
+        child.setSatiety(baseSpecification.maxSatiety() / 2);
         child.setBaseSpecification(baseSpecification);
         child.setGender(RandomGenerator.generateGender());
         child.setEdibleTypes(baseSpecification.edibleTypes());
@@ -114,7 +116,6 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
     public void setBaseSpecification(AnimalSpecification baseSpecification) {
         this.baseSpecification = baseSpecification;
-        hungerThreshold = baseSpecification.maxSatiety() * hungerThreshold;
     }
 
     public abstract int getFertilePeriod();
@@ -147,11 +148,6 @@ public abstract class Animal extends Organism implements Movable, Eater {
     @Override
     public List<OrganismType> getEdibleTypes() {
         return edibleTypes;
-    }
-
-    @Override
-    public boolean isHungry() {
-        return satiety < hungerThreshold;
     }
 
     public void setEdibleTypes(Map<OrganismType, Double> edibleTypes) {

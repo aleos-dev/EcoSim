@@ -8,8 +8,6 @@ public interface Eater {
     void eat(Cell cell);
 
     boolean isEdible(OrganismType food);
-    boolean isHungry();
-
     boolean canCaptureFood(OrganismType targetType);
 
     List<OrganismType> getEdibleTypes();

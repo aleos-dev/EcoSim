@@ -4,6 +4,7 @@ import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
+import com.empty.ecosim.model.entity.organism.animals.herbivores.Mouse;
 import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
 
 import java.util.HashSet;
@@ -32,7 +33,10 @@ public class FeedingController {
     private void feedAllOrganisms(Set<Organism> organisms, Cell cell) {
 
             for (Organism organism : organisms) {
-                if (organism instanceof Eater eater && eater.isHungry()) {
+                if (organism instanceof Eater eater) {
+                    if (organism instanceof Mouse) {
+                        System.out.print("");
+                    }
                     eater.eat(cell);
                 }
 

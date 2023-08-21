@@ -19,6 +19,8 @@ public abstract class Organism implements Reproducible {
         isAlive = false;
     }
 
+//    public abstract void getCellCapacityMultiplier();
+
     public double getWeight() {
         return weight;
     }

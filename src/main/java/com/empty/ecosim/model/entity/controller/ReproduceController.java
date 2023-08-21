@@ -17,15 +17,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
 
 
 public class ReproduceController {
     private final Territory territory;
 
+    private static final double PLANTS_GROWTH_MULTIPLIER = 0.2;
+    public static double getPlantsGrowthMultiplier() {
+        return PLANTS_GROWTH_MULTIPLIER;
+    }
+
 
     public ReproduceController(Territory territory) {
         this.territory = territory;
+
+        territory.updateCellCapacityFor(AnimalType.CATERPILLAR, 0.6);
     }
 
     public void executeReproductionForAnimals() {
@@ -59,7 +65,7 @@ public class ReproduceController {
         try {
             Arrays.stream(PlantType.values()).forEach(type -> {
                 availableCellSpace.set(getMaxAvailableCapacityFor(type, cell.getOrganismsByType(type)));
-                int growthNumber = (int) (RandomGenerator.getIntRange(0, availableCellSpace.get()) * Plant.getPlantsGrowthMultiplier());
+                int growthNumber = (int) (RandomGenerator.getIntRange(0, availableCellSpace.get()) * getPlantsGrowthMultiplier());
                 List<Plant> plants = Stream.generate(() -> factory.create(type))
                         .limit(growthNumber)
                         .toList();
