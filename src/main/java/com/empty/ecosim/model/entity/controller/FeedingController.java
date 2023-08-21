@@ -4,8 +4,6 @@ import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Eater;
 import com.empty.ecosim.model.entity.organism.Organism;
-import com.empty.ecosim.model.entity.organism.animals.herbivores.Mouse;
-import com.empty.ecosim.model.entity.organism.animals.predators.Wolf;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,20 +32,15 @@ public class FeedingController {
 
             for (Organism organism : organisms) {
                 if (organism instanceof Eater eater) {
-                    if (organism instanceof Mouse) {
-                        System.out.print("");
-                    }
                     eater.eat(cell);
+                } else {
+                    break;
                 }
 
                 if (organism.isDead()) {
-                    cell.remove(organism);
+                    cell.removeOrganism(organism);
                 }
             }
-    }
-    private boolean isEaters(Set<Organism> organisms) {
-        return organisms.stream()
-                .anyMatch(organism -> organism instanceof Eater);
     }
 }
 

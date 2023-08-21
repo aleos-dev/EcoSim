@@ -1,7 +1,6 @@
 package com.empty.ecosim.model.entity.island;
 
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.organism.animals.herbivores.Caterpillar;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.Arrays;
@@ -21,26 +20,8 @@ public class Island extends Territory {
     public Island() {
         this.width = islandSpecification.width();
         this.height = islandSpecification.height();
-
         initializeCellGrids();
         super.cells = Arrays.stream(grid).flatMap(Arrays::stream).collect(Collectors.toList());
-
-    }
-
-
-    public void updateCellCapacityFor(OrganismType type, double multiplier) {
-        islandSpecification.organismCapacity().compute(type, (k, v) -> (int) (v * multiplier));
-    }
-
-    private void initializeCellGrids() {
-        grid = new Cell[height][width];
-
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                grid[i][j] = new Cell(j, i, calculateExistedRoutes(j, i));
-
-            }
-        }
     }
 
     @Override
@@ -48,72 +29,62 @@ public class Island extends Territory {
         return ISLAND;
     }
 
-    @Override
-    public Cell getRandomDestination(Cell cell, int speed) {
-        Cell destination = getNextDestination(cell);
-
-        if (speed < 2) return destination;
-
-        return getRandomDestination(destination, speed - 1);
+    public void updateCellCapacityFor(OrganismType type, double multiplier) {
+        islandSpecification.organismCapacity().compute(type, (k, v) -> {
+            return v == null ? 0 : (int) (v * multiplier);
+        });
     }
-
     public int getMaxResidentCountForOrganismType(OrganismType type) {
         return islandSpecification.organismCapacity().get(type);
     }
 
-    private Direction[] calculateExistedRoutes(int x, int y) {
+    @Override
+    public Cell getRandomDestination(Cell cell, int speed) {
+        Cell destination = getNextDestination(cell);
+        return speed < 2 ? destination : getRandomDestination(destination, speed - 1);
+    }
+
+    private void initializeCellGrids() {
+        grid = new Cell[height][width];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                grid[i][j] = new Cell(this, j, i, calculateAvailableDirections(j, i));
+            }
+        }
+    }
+
+
+    private Direction[] calculateAvailableDirections(int x, int y) {
         Set<Direction> directions = EnumSet.noneOf(Direction.class);
 
-        checkWestDirection(x, directions);
-        checkEastDirection(x, directions);
-        checkNorthDirection(y, directions);
-        checkSouthDirection(y, directions);
+        if (isWestAvailable(x)) directions.add(Direction.WEST);
+        if (isEastAvailable(x)) directions.add(Direction.EAST);
+        if (isNorthAvailable(y)) directions.add(Direction.NORTH);
+        if (isSouthAvailable(y)) directions.add(Direction.SOUTH);
 
         return directions.toArray(new Direction[0]);
     }
 
-    private boolean isCoordinateValid(int x, int y) {
-        return isXCoordinateValid(x) && isYCoordinateValid(y);
+    private boolean isWestAvailable(int x) {
+        return x > 0;
     }
 
-    private void checkWestDirection(int x, Set<Direction> directions) {
-        if (x != 0) {
-            directions.add(Direction.WEST);
-        }
+    private boolean isEastAvailable(int x) {
+        return x < width - 1;
     }
 
-    private void checkEastDirection(int x, Set<Direction> directions) {
-        if (x != width -1) {
-            directions.add(Direction.EAST);
-        }
+    private boolean isNorthAvailable(int y) {
+        return y > 0;
     }
 
-    private void checkNorthDirection(int y, Set<Direction> directions) {
-        if (y != 0) {
-            directions.add(Direction.NORTH);
-        }
-    }
-
-    private void checkSouthDirection(int y, Set<Direction> directions) {
-        if (y != height -1) {
-            directions.add(Direction.SOUTH);
-        }
-    }
-
-    private boolean isXCoordinateValid(int x) {
-        return x >= 0 && x < width;
-    }
-
-    private boolean isYCoordinateValid(int y) {
-        return y >= 0 && y < height;
+    private boolean isSouthAvailable(int y) {
+        return y < height - 1;
     }
 
     private Cell getNextDestination(Cell start) {
         Direction nextDirection = RandomGenerator.getRandomDirection(start);
         int x = start.getX() + nextDirection.getX();
         int y = start.getY() + nextDirection.getY();
-
         return grid[y][x];
     }
-
 }

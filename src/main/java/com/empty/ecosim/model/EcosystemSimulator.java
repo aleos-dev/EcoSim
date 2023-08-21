@@ -21,8 +21,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static com.empty.ecosim.model.entity.organism.plants.PlantType.GRASS;
-
 public class EcosystemSimulator implements Runnable {
 
     private StatisticsCollector statisticsCollector;
@@ -53,9 +51,19 @@ public class EcosystemSimulator implements Runnable {
     @Override
     public void run() {
         try {
+
+            long t1 = System.currentTimeMillis();
             fc.executeFeeding();
+            long t2 = System.currentTimeMillis();
+            System.out.println("feed: " + (t2 - t1));
+            t1 = System.currentTimeMillis();
             mc.executeMovement();
+            t2 = System.currentTimeMillis();
+            System.out.println("move: " + (t2 - t1));
+            t1 = System.currentTimeMillis();
             rc.executeReproductionForAnimals();
+            t2 = System.currentTimeMillis();
+            System.out.println("reproduce: " + (t2 - t1));
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -68,7 +76,6 @@ public class EcosystemSimulator implements Runnable {
         mc = new MovementController(territory);
         rc = new ReproduceController(territory);
         populateTerritory();
-
     }
 
 
@@ -94,6 +101,6 @@ public class EcosystemSimulator implements Runnable {
                 .limit(RandomGenerator.getIntRange(1, typesList.size() + 1))
                 .forEach(type -> Stream.generate(() -> factory.create(type))
                         .limit(RandomGenerator.getIntRange(1, territory.getMaxResidentCountForOrganismType(type)))
-                        .forEach(currentLocation::addResident));
+                        .forEach(currentLocation::addOrganism));
     }
 }

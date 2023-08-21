@@ -12,64 +12,60 @@ public class Cell {
     private final int x;
     private final int y;
     private final ReentrantLock lock = new ReentrantLock();
-    private final Map<OrganismType, Set<Organism>> residents = new ConcurrentHashMap<>();
-    private final Territory.Direction[] possibleDirections;
+    private final Map<OrganismType, Set<Organism>> organisms = new ConcurrentHashMap<>();
+    private final Territory.Direction[] allowedDirections;
+    private final Territory territory;
 
-    public Cell(int x, int y, Territory.Direction[] possibleDirections) {
+    public Cell(Territory territory, int x, int y, Territory.Direction[] allowedDirections) {
+        this.territory = territory;
         this.x = x;
         this.y = y;
-        this.possibleDirections = possibleDirections;
-    }
-
-    public Map<OrganismType, Set<Organism>> getResidentsMap() {
-        return residents;
+        this.allowedDirections = allowedDirections;
     }
 
     public Set<Organism> getOrganismsByType(OrganismType type) {
-        return Optional.ofNullable(residents.get(type))
-                .orElse(new HashSet<>());
+        return organisms.getOrDefault(type, Collections.emptySet());
     }
 
-    public void addResident(Organism organism) {
-            residents.computeIfAbsent(organism.getType(), k -> new LinkedHashSet<>()).add(organism);
-    }
-
-    public Territory.Direction[] getPossibleDirections() {
-        return possibleDirections;
-    }
-
-    public Organism getOrganism(OrganismType type) {
-
-        return residents.get(type).stream().findAny().orElse(null);
-//        Set<Organism> organisms = residents.get(type);
-//        if (organisms.isEmpty()) return null;
-//        return organisms.iterator().next();
+    public Map<OrganismType, Set<Organism>> getResidentsMap() {
+        return organisms;
     }
 
 
-    public int getResidentCountByType(OrganismType type) {
-        Set<Organism> residentsOfType = residents.get(type);
-        return residentsOfType == null ? 0 : residentsOfType.size();
+    public Cell chooseRandomAdjasentCell(int speed) {
+        Cell destination = territory.getRandomDestination(this, speed);
+        return destination == null ? this : destination;
+    }
+
+    public boolean canAccommodate(OrganismType type) {
+        int availableSpace = territory.getMaximumCapacityFor(type) - getResidentsCountFor(type);
+        return availableSpace > 0;
+    }
+
+    public void addOrganism(Organism organism) {
+        organisms.computeIfAbsent(organism.getType(), k -> new LinkedHashSet<>()).add(organism);
+    }
+
+    public Territory.Direction[] getAllowedDirections() {
+        return allowedDirections;
+    }
+
+    public Optional<Organism> getOrganism(OrganismType type) {
+        return organisms.getOrDefault(type, Collections.emptySet()).stream().findAny();
+    }
+
+    public int getResidentsCountFor(OrganismType type) {
+        return getOrganismsByType(type).size();
     }
 
 
-    public void remove(Organism organism) {
-        synchronized (residents) {
-            Set<Organism> residentsOfType = residents.get(organism.getType());
-            residentsOfType.remove(organism);
-        }
+    public void removeOrganism(Organism organism) {
+        Set<Organism> residentsOfType = organisms.get(organism.getType());
+        residentsOfType.remove(organism);
     }
 
-    public Set<OrganismType> getPresentOrganismTypes() {
-        return new HashSet<>(residents.keySet());
-    }
-
-    public boolean hasType(OrganismType type) {
-        return residents.containsKey(type);
-    }
-
-    public void clearDeadOfType(OrganismType type) {
-        residents.get(type).removeIf(Organism::isDead);
+    public Set<OrganismType> currentOrganismTypes() {
+        return organisms.keySet();
     }
 
     public void lock() {
@@ -91,12 +87,4 @@ public class Cell {
     public int getY() {
         return y;
     }
-
-    @Override
-    public String toString() {
-        return "Cell{" +
-                "map=" + residents +
-                '}';
-    }
-
 }

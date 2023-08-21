@@ -8,10 +8,7 @@ import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.statistics.StatisticsCollector;
 import com.empty.ecosim.utils.RandomGenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.empty.ecosim.utils.RandomGenerator.getRandomOrganismType;
@@ -33,8 +30,26 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
     public abstract Set<? extends Animal> reproduce();
 
-    public void move() {
-//        depleteSatiety();
+    @Override
+    public void move(Cell cell) {
+
+        Cell destination;
+        do {
+            destination = cell.chooseRandomAdjasentCell(speed);
+        } while (!destination.tryToLock());
+
+//            Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
+//            destination.lock();
+
+        if (canTravelTo(cell, destination)) {
+            cell.removeOrganism(this);
+            destination.addOrganism(this);
+        }
+        destination.unlock();
+    }
+
+    private boolean canTravelTo(Cell from, Cell destination) {
+        return from != destination && destination.canAccommodate(this.getType());
     }
 
     @Override
@@ -46,23 +61,25 @@ public abstract class Animal extends Organism implements Movable, Eater {
         if (food == null) return;
 
         consumeFood(food);
-        cell.remove(food);
+        cell.removeOrganism(food);
 
     }
 
     protected Organism findFood(Cell cell) {
-        Organism food = chooseTargetFood(cell);
-        if (food != null && canCaptureFood(food.getType())) {
-            return food;
+        Optional<Organism> food = chooseTargetFood(cell);
+
+        if (food.isPresent() && canCaptureFood(food.get().getType())) {
+            return food.get();
         }
 
         return null;
     }
 
-    protected Organism chooseTargetFood(Cell cell) {
+    protected Optional<Organism> chooseTargetFood(Cell cell) {
         List<OrganismType> availableEdibleTypes = filterEdibleTypesInCell(cell);
-
-        if (availableEdibleTypes.isEmpty()) return null;
+        if (availableEdibleTypes.isEmpty()) {
+            return Optional.empty();
+        }
 
         var targetType = getRandomOrganismType(availableEdibleTypes);
 
@@ -70,9 +87,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
     }
 
     protected List<OrganismType> filterEdibleTypesInCell(Cell cell) {
-        return cell.getPresentOrganismTypes().stream()
-                .filter(this::isEdible)
-                .collect(Collectors.toList());
+        return cell.currentOrganismTypes().stream().filter(this::isEdible).collect(Collectors.toList());
     }
 
     protected void consumeFood(Organism food) {
@@ -112,7 +127,6 @@ public abstract class Animal extends Organism implements Movable, Eater {
 
         return child;
     }
-
 
     public void setBaseSpecification(AnimalSpecification baseSpecification) {
         this.baseSpecification = baseSpecification;

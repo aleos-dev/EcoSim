@@ -37,9 +37,8 @@ public class RandomGenerator {
     }
 
     public static Territory.Direction getRandomDirection(Cell startCell) {
-        Territory.Direction[] directions = startCell.getPossibleDirections();
-        Territory.Direction nextDirection = directions[random.nextInt(directions.length)];
+        Territory.Direction[] directions = startCell.getAllowedDirections();
 
-        return nextDirection;
+        return directions[random.nextInt(directions.length)];
     }
 }

@@ -5,18 +5,16 @@ import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Movable;
 import com.empty.ecosim.model.entity.organism.Organism;
 import com.empty.ecosim.model.entity.organism.OrganismType;
-import com.empty.ecosim.model.entity.organism.animals.Animal;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class MovementController {
 
     private final Territory territory;
-//    private Set<Movable> movedOrganisms = new ConcurrentSkipListSet<>();
-    private Set<Movable> movedOrganisms;
+    private Set<Movable> alreadyMovedOrganisms = ConcurrentHashMap.newKeySet();
 
     /**
      * Creates a new instance of the MovementController for a given territory.
@@ -31,73 +29,34 @@ public class MovementController {
      * Executes the movement cycle for the territory.
      */
     public void executeMovement() {
-        movedOrganisms = new HashSet<>();
+        alreadyMovedOrganisms = ConcurrentHashMap.newKeySet();
         try {
-//            territory.getCells().parallelStream().forEach(this::processCellMovements);
-            territory.getCells().forEach(this::processCellMovements);
+            territory.getCells().parallelStream().forEach(this::processCellMovements);
         } catch (Throwable e) {
+
+            System.exit(21);
+            System.out.println("MOVEMENT CONTROLLER EXCEPTION");
             e.printStackTrace();
         }
     }
 
-    private void processCellMovements(Cell startCell) {
-        startCell.lock();
-        for (OrganismType type : startCell.getPresentOrganismTypes()) {
-            Set<Organism> residents = startCell.getOrganismsByType(type);
+    private void processCellMovements(Cell cell) {
+        cell.lock();
+        try {
+            List<Movable> organismsToMove = cell.getResidentsMap().values().stream().flatMap(Set::stream).filter(Movable.class::isInstance).map(Movable.class::cast).filter(this::shouldBeMoved).toList();
 
-            List<Movable> organismsToMove = residents.stream()
-                    .filter(Movable.class::isInstance)
-                    .map(Movable.class::cast)
-                    .filter(this::shouldBeMoved)
-                    .toList();
-
-            moveOrganisms(startCell, type, new ArrayList<>(organismsToMove));
+            organismsToMove.forEach(movable -> movable.move(cell));
+        } finally {
+            cell.unlock();
         }
-        startCell.unlock();
-    }
-
-    private void moveOrganisms(Cell currentCell, OrganismType type, List<Movable> organismsToMove) {
-        for (Movable movableOrganism : organismsToMove) {
-            movableOrganism.move();
-
-            // TODO REDO IT
-            if (movableOrganism instanceof Animal animal && animal.isDead()) {
-                currentCell.remove(animal);
-                return;
-            }
-
-            Cell destination = determineDestination(currentCell, movableOrganism.getSpeed());
-            destination.lock();
-            if (isValidDestination(destination, currentCell, type)) {
-                    currentCell.remove((Organism) movableOrganism);
-                    destination.addResident((Organism) movableOrganism);
-            }
-            destination.unlock();
-        }
-    }
-
-    private boolean isValidDestination(Cell destination, Cell currentCell, OrganismType type) {
-        return destination != currentCell && canBeAccommodatedAtDestination(destination, type);
-    }
-
-    private boolean canBeAccommodatedAtDestination(Cell destination, OrganismType type) {
-        int availableSpace = territory.getMaximumCapacityFor(type) - destination.getResidentCountByType(type);
-        return availableSpace > 0;
-    }
-
-    private Cell determineDestination(Cell currentCell, int speed) {
-        Cell destination = territory.getRandomDestination(currentCell, speed);
-        return destination == null ? currentCell : destination;
     }
 
     private boolean shouldBeMoved(Movable movable) {
-
-        synchronized(movedOrganisms) {
-            if (movedOrganisms.contains(movable) || movable.getSpeed() == 0) {
-                return false;
-            }
-            movedOrganisms.add(movable);
+        if (alreadyMovedOrganisms.contains(movable) || movable.getSpeed() == 0) {
+            return false;
         }
+
+        alreadyMovedOrganisms.add(movable);
         return true;
     }
 }
