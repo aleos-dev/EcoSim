@@ -4,22 +4,32 @@ import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 
 public class Horse extends HerbivoreAnimal {
 
-    private static final int MAX_OFFSPRING = 2;
-    private static final int FERTILE_PERIOD = 5;
+    private static int offspringCount = 2;
+    private static int fertilePeriod = 5;
 
     @Override
-    public AnimalType getType() {
-        return AnimalType.HORSE;
+    public int getOffspringCount() {
+        return offspringCount;
+    }
+
+    @Override
+    public void setOffspringCount(int offspringCount) {
+        Horse.offspringCount = offspringCount;
     }
 
     @Override
     public int getFertilePeriod() {
-        return FERTILE_PERIOD;
+        return fertilePeriod;
     }
 
     @Override
-    public int getOffspringsNumber() {
-        return MAX_OFFSPRING;
+    public void setFertilePeriod(int fertilePeriod) {
+        Horse.fertilePeriod = fertilePeriod;
+    }
+
+    @Override
+    public AnimalType getType() {
+        return AnimalType.HORSE;
     }
 }
 

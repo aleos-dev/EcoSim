@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Collects and calculates various statistics related to organisms in an ecosystem.
+ */
 public class StatisticsCollector implements Runnable {
     private static final Map<OrganismType, Integer> populationCountCollector = new HashMap<>();
     private static Map<OrganismType, Integer> predationCountCollector = new HashMap<>();
@@ -49,30 +52,68 @@ public class StatisticsCollector implements Runnable {
     }
 
 
+    /**
+     * Registers a predation count for a given organism type.
+     *
+     * @param type The type of organism that was predated.
+     */
     public synchronized static void registerPredationCount(OrganismType type) {
         predationCountCollector.merge(type, 1, Integer::sum);
         decreasePopulationCount(type, 1);
     }
 
+    /**
+     * Registers a starving count for a given organism type.
+     *
+     * @param type The type of organism that starved.
+     */
     public synchronized static void registerStarvingCount(OrganismType type) {
         starvingCountCollector.merge(type, 1, Integer::sum);
         decreasePopulationCount(type, 1);
     }
 
+    /**
+     * Registers a newborn count for a given organism type.
+     *
+     * @param type             The type of organism that was born.
+     * @param numberOfNewborns The count of newborn organisms of that type.
+     */
     public synchronized static void registerNewbornCount(OrganismType type, int numberOfNewborns) {
         newbornCountCollector.merge(type, numberOfNewborns, Integer::sum);
         increasePopulationCount(type, numberOfNewborns);
     }
 
+    /**
+     * Resets the newborn count to its default state.
+     */
+    public synchronized static void resetNewbornCount() {
+        newbornCountCollector = new HashMap<>();
+    }
+
+    /**
+     * Increases the population count for a given organism type.
+     *
+     * @param type               The type of organism.
+     * @param numberOfPopulation The count by which to increase the population.
+     */
     public synchronized static void increasePopulationCount(OrganismType type, int numberOfPopulation) {
         populationCountCollector.merge(type, numberOfPopulation, Integer::sum);
     }
 
+    /**
+     * Decreases the population count for a given organism type.
+     *
+     * @param type               The type of organism.
+     * @param numberOfPopulation The count by which to decrease the population.
+     */
     public synchronized static void decreasePopulationCount(OrganismType type, int numberOfPopulation) {
         populationCountCollector.merge(type, numberOfPopulation, (a, b) -> a - b);
     }
 
 
+    /**
+     * Calculates statistics for organisms in the territory.
+     */
     public void calculateTerritoryStatistics() {
         dumpCollectors();
 
@@ -91,6 +132,10 @@ public class StatisticsCollector implements Runnable {
         overallPlantKillCount += plantKillCount;
     }
 
+    /**
+     * Transfers statistics from the collectors to the local maps and resets the collectors.
+     * This ensures that data is saved and the collectors are ready to collect new data.
+     */
     private void dumpCollectors() {
         populationCountOldMap = new HashMap<>(populationCountMap);
 
@@ -106,6 +151,11 @@ public class StatisticsCollector implements Runnable {
         }
     }
 
+    /**
+     * Calculates the total number of animals in the current territory.
+     *
+     * @return the total count of animals.
+     */
     private int calculateNumberOfAnimals() {
         animalCountOld = animalCount;
         animalCount = populationCountMap.keySet().stream()
@@ -117,6 +167,11 @@ public class StatisticsCollector implements Runnable {
     }
 
 
+    /**
+     * Calculates the total number of animals that have been killed.
+     *
+     * @return the total count of killed animals.
+     */
     private int calculateKilledAnimalCount() {
         return predationCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey() instanceof AnimalType)
@@ -124,6 +179,11 @@ public class StatisticsCollector implements Runnable {
                 .sum();
     }
 
+    /**
+     * Calculates the total number of animals that have starved.
+     *
+     * @return the total count of starving animals.
+     */
     private int calculateStarvingAnimalCount() {
         return starvingCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey() instanceof AnimalType)
@@ -131,6 +191,11 @@ public class StatisticsCollector implements Runnable {
                 .sum();
     }
 
+    /**
+     * Calculates the total number of newborn animals.
+     *
+     * @return the total count of newborn animals.
+     */
     private int calculateNewbornAnimalCount() {
         return newbornCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey() instanceof AnimalType)
@@ -138,6 +203,11 @@ public class StatisticsCollector implements Runnable {
                 .sum();
     }
 
+    /**
+     * Calculates the total number of plants in the current territory.
+     *
+     * @return the total count of plants.
+     */
     private int calculateNumberOfPlants() {
         plantCountOld = plantCount;
         plantCount = populationCountMap.keySet().stream()
@@ -148,6 +218,11 @@ public class StatisticsCollector implements Runnable {
         return plantCount;
     }
 
+    /**
+     * Calculates the total number of plants that have been killed.
+     *
+     * @return the total count of killed plants.
+     */
     private int calculateKilledPlantCount() {
         return predationCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey() instanceof PlantType)
@@ -155,6 +230,11 @@ public class StatisticsCollector implements Runnable {
                 .sum();
     }
 
+    /**
+     * Calculates the total number of newborn plants.
+     *
+     * @return the total count of newborn plants.
+     */
     private int calculateNewbornPlantCount() {
         return newbornCountMap.entrySet().stream()
                 .filter(entry -> entry.getKey() instanceof PlantType)
@@ -163,6 +243,11 @@ public class StatisticsCollector implements Runnable {
     }
 
 
+    /**
+     * Generates a formatted string representing the statistics of each organism type.
+     *
+     * @return the string representation of organism type statistics.
+     */
     private String getOrganismTypeStatistics() {
         StringBuilder result = new StringBuilder();
 
@@ -185,27 +270,40 @@ public class StatisticsCollector implements Runnable {
         return result.toString();
     }
 
+    /**
+     * Generates a formatted string representing the total statistics of animals and plants.
+     *
+     * @return the string representation of total statistics.
+     */
     private String getTotalStatistics() {
         String totalStatisticFormat = "%-20s %-12s %-12s %-15d %-15s %-15d%n";
         return String.format(totalStatisticFormat, "Number of Animals:", animalCountOld, animalCount, animalKillCount, animalStarvingCount, animalNewbornCount)
                 + String.format(totalStatisticFormat, "Number of Plants:", plantCountOld, plantCount, plantKillCount, "-", plantNewbornCount);
     }
 
+    /**
+     * Generates a formatted string representing the overall statistics of animals and plants.
+     *
+     * @return the string representation of overall statistics.
+     */
     private String getOverallStatistics() {
-        StringBuilder result = new StringBuilder();
-        result.append(String.format("%-20s %-12s %-12s %-15s%n",
-                "", "Overall", "Killed", "Starving"));
         String overallStatisticFormat = "%-20s %-12s %-12s %-15s%n";
-        return result.append(
+
+        return String.format(overallStatisticFormat,
+                "", "Overall", "Killed", "Starving") +
                 String.format(overallStatisticFormat, "Animals:"
-                        , overallAnimalCount, overallAnimalKillCount, overallAnimalStarvingCount)
-        ).append(
+                        , overallAnimalCount, overallAnimalKillCount, overallAnimalStarvingCount) +
                 String.format(overallStatisticFormat, "Plants:"
-                        , overallPlantCount, overallPlantKillCount, "-")
-        ).toString();
+                        , overallPlantCount, overallPlantKillCount, "-");
     }
 
 
+    /**
+     * Overrides the {@code toString} method to provide a comprehensive representation
+     * of the territory statistics.
+     *
+     * @return a string representation of the territory statistics.
+     */
     @Override
     public String toString() {
         String line = "=".repeat(100) + "\n";

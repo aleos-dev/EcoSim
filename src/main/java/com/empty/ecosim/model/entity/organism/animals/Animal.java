@@ -14,6 +14,10 @@ import java.util.stream.Stream;
 
 import static com.empty.ecosim.utils.RandomGenerator.getRandomOrganismType;
 
+/**
+ * Represents a generic animal entity in the ecosystem simulation.
+ * Each animal can move, eat, and reproduce.
+ */
 public abstract class Animal extends Organism implements Movable, Eater {
 
     // Inner enums and constants
@@ -27,14 +31,6 @@ public abstract class Animal extends Organism implements Movable, Eater {
     private Gender gender;
     private AnimalSpecification baseSpecification;
     private List<OrganismType> edibleTypes;
-
-
-    // Abstract methods related to type and reproduction
-    public abstract AnimalType getType();
-
-    public abstract int getFertilePeriod();
-
-    public abstract int getOffspringsNumber();
 
     @Override
     public void move(Cell cell) {
@@ -65,20 +61,34 @@ public abstract class Animal extends Organism implements Movable, Eater {
         }
 
         return Stream.generate(this::generateChild)
-                .limit(RandomGenerator.getIntRange(1, getOffspringsNumber()))
+                .limit(getOffspringCount())
                 .collect(Collectors.toSet());
     }
 
-    // Reproduction methods
+    /**
+     * Checks if the animal can reproduce.
+     *
+     * @return true if the animal can reproduce, otherwise false.
+     */
     private boolean canReproduce() {
-        return !(gender == Gender.MALE || RandomGenerator.getInt(getFertilePeriod()) > 0);
+        return !(gender == Gender.MALE || RandomGenerator.nextInt(getFertilePeriod()) > 0);
     }
 
+    /**
+     * Generates a new child instance inheriting the traits of the parent.
+     *
+     * @return A new instance of Animal, which is the child.
+     */
     private Animal generateChild() {
         return createChildInstance().map(this::transferGeneticTraitsTo)
                 .orElseThrow(() -> new RuntimeException("Failed to create a child instance."));
     }
 
+    /**
+     * Creates a new child instance for the current animal type.
+     *
+     * @return An optional holding the new child instance, or empty if failed.
+     */
     private Optional<Animal> createChildInstance() {
         try {
             return Optional.of(this.getClass().getDeclaredConstructor().newInstance());
@@ -87,6 +97,13 @@ public abstract class Animal extends Organism implements Movable, Eater {
         }
     }
 
+    /**
+     * Transfers genetic traits from the parent animal to the child.
+     *
+     * @param child The child instance to which traits should be transferred.
+     * @param <T> The specific animal type.
+     * @return Child instance with inherited traits.
+     */
     private <T extends Animal> T transferGeneticTraitsTo(T child) {
         child.setWeight(baseSpecification.weight());
         child.setSpeed(baseSpecification.speed());
@@ -98,14 +115,24 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return child;
     }
 
-    // Movement methods
+    /**
+     * Determines if the animal can travel from one cell to another.
+     *
+     * @param from The starting cell.
+     * @param destination The target cell.
+     * @return true if the animal can move to the destination, otherwise false.
+     */
     private boolean canTravelTo(Cell from, Cell destination) {
         return from != destination && destination.canAccommodate(this.getType());
     }
 
 
-    // Eating methods
-
+   /**
+     * Finds the target food organism within the given cell.
+     *
+     * @param cell The cell to search for food.
+     * @return The target food organism, or null if not found.
+     */
     private Organism findFood(Cell cell) {
         Optional<Organism> food = chooseTargetFood(cell);
 
@@ -117,6 +144,12 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return null;
     }
 
+    /**
+     * Chooses a target food type from the list of available edible types in a given cell.
+     *
+     * @param cell The cell to search for edible types.
+     * @return An optional holding the chosen organism type, or empty if none are available.
+     */
     private Optional<Organism> chooseTargetFood(Cell cell) {
         List<OrganismType> availableEdibleTypes = filterEdibleTypesInCell(cell);
         if (availableEdibleTypes.isEmpty()) {
@@ -128,16 +161,30 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return cell.getOrganism(targetType);
     }
 
+    /**
+     * Consumes the food organism and updates the satiety of the animal accordingly.
+     *
+     * @param food The organism to be consumed as food.
+     */
     protected void consumeFood(Organism food) {
         food.die();
         StatisticsCollector.registerPredationCount(food.getType());
         setSatiety(Math.min(getSatiety() + food.getWeight(), getBaseSpecification().maxSatiety()));
     }
 
+    /**
+     * Filters the list of edible organism types present in a given cell.
+     *
+     * @param cell The cell to filter edible types from.
+     * @return A list of organism types that are edible and present in the cell.
+     */
     private List<OrganismType> filterEdibleTypesInCell(Cell cell) {
         return cell.currentOrganismTypes().stream().filter(this::isEdible).collect(Collectors.toList());
     }
 
+    /**
+     * Decreases the satiety of the animal over time or due to certain actions.
+     */
     protected void depleteSatiety() {
         satiety -= baseSpecification.maxSatiety() * DEPLETE_SATIETY_MODIFICATION;
         if (satiety <= 0.000001) {

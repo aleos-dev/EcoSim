@@ -4,21 +4,31 @@ import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 
 public class Fox extends PredatorAnimal {
 
-    private static final int MAX_OFFSPRING = 2;
-    private static final int FERTILE_PERIOD = 5;
+    private static int offspringCount = 2;
+    private static int fertilePeriod = 5;
+    @Override
+    public int getOffspringCount() {
+        return offspringCount;
+    }
+
+    @Override
+    public void setOffspringCount(int offspringCount) {
+        Fox.offspringCount = offspringCount;
+    }
+
+    @Override
+    public int getFertilePeriod() {
+        return fertilePeriod;
+    }
+
+    @Override
+    public void setFertilePeriod(int fertilePeriod) {
+        Fox.fertilePeriod = fertilePeriod;
+    }
 
     @Override
     public AnimalType getType() {
         return AnimalType.FOX;
     }
 
-    @Override
-    public int getFertilePeriod() {
-        return FERTILE_PERIOD;
-    }
-
-    @Override
-    public int getOffspringsNumber() {
-        return MAX_OFFSPRING;
-    }
 }

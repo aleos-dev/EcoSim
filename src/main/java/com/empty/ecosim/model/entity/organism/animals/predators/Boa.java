@@ -3,18 +3,29 @@ package com.empty.ecosim.model.entity.organism.animals.predators;
 import com.empty.ecosim.model.entity.organism.animals.AnimalType;
 
 public class Boa extends PredatorAnimal {
-    private static final int MAX_OFFSPRING = 2;
-    private static final int FERTILE_PERIOD = 5;
-  @Override
-    public AnimalType getType() {
-        return AnimalType.BOA;
+
+    private static int offspringCount = 2;
+    private static int fertilePeriod = 5;
+
+    public int getOffspringCount() {
+        return offspringCount;
     }
+
+    public void setOffspringCount(int offspringCount) {
+        Boa.offspringCount = offspringCount;
+    }
+
     @Override
     public int getFertilePeriod() {
-        return FERTILE_PERIOD;
+        return fertilePeriod;
     }
+
+    public void setFertilePeriod(int fertilePeriod) {
+        Boa.fertilePeriod = fertilePeriod;
+    }
+
     @Override
-    public int getOffspringsNumber() {
-        return MAX_OFFSPRING;
+    public AnimalType getType() {
+        return AnimalType.BOA;
     }
 }

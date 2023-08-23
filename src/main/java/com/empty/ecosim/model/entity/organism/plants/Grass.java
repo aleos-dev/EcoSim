@@ -1,37 +1,33 @@
 package com.empty.ecosim.model.entity.organism.plants;
 
-import com.empty.ecosim.utils.RandomGenerator;
-
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class Grass extends Plant {
-    private static int maxSeed = 10;
+
+    private static int seedCount = 3;
+    private static int growthPeriod = 1;
 
     @Override
-    public Set<? extends Plant> reproduce() {
+    public int getFertilePeriod() {
+        return growthPeriod;
+    }
 
-        return Stream.generate(() -> {
-                    Grass child = new Grass();
-                    child.setWeight(weight);
-                    return child;
-                })
-                .limit(RandomGenerator.getInt(maxSeed))
-                .collect(Collectors.toSet());
+    @Override
+    public void setFertilePeriod(int growthPeriod) {
+        Grass.growthPeriod = growthPeriod;
+    }
+
+    @Override
+    public int getOffspringCount() {
+        return seedCount;
+    }
+
+    @Override
+    public void setOffspringCount(int offspringCount) {
+        Grass.seedCount = offspringCount;
     }
 
     @Override
     public PlantType getType() {
         return PlantType.GRASS;
-    }
-
-    public static int getMaxSeed() {
-        return maxSeed;
-    }
-
-    public static void setMaxSeed(int maxSeed) {
-        Grass.maxSeed = maxSeed;
     }
 
 }

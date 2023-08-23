@@ -1,15 +1,18 @@
 package com.empty.ecosim.model.entity.island;
 
+import com.empty.ecosim.model.configuration.userSetup.UserSetupManager;
 import com.empty.ecosim.model.entity.organism.OrganismType;
 import com.empty.ecosim.utils.RandomGenerator;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.empty.ecosim.model.entity.island.TerritoryType.ISLAND;
 
+/**
+ * Represents an Island which is a type of Territory. This class manages cells in a grid format that
+ * contains organisms and provides utility methods to interact with the island's ecosystem.
+ */
 public class Island extends Territory {
 
     private final int width;
@@ -17,33 +20,53 @@ public class Island extends Territory {
     private Cell[][] grid;
     private final IslandSpecification islandSpecification = TERRITORY_SPECIFICATION.getSpecificationForType(TerritoryType.ISLAND);
 
+    /**
+     * Constructor initializes the Island with specifications from UserSetupManager or default values.
+     */
     public Island() {
-        this.width = islandSpecification.width();
-        this.height = islandSpecification.height();
+        this.width = Optional.of(UserSetupManager.INSTANCE.get().width()).orElse(islandSpecification.width());
+        this.height = Optional.of(UserSetupManager.INSTANCE.get().height()).orElse(islandSpecification.height());
         initializeCellGrids();
         super.cells = Arrays.stream(grid).flatMap(Arrays::stream).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the type of the territory.
+     *
+     * @return the type of the territory.
+     */
     @Override
     public TerritoryType getType() {
         return ISLAND;
     }
 
-    public void updateCellCapacityFor(OrganismType type, double multiplier) {
-        islandSpecification.organismCapacity().compute(type, (k, v) -> {
-            return v == null ? 0 : (int) (v * multiplier);
-        });
-    }
+
+    /**
+     * Retrieves the maximum count of residents allowed for a given organism type.
+     *
+     * @param type the organism type.
+     * @return the maximum count of residents allowed for the given organism type.
+     */
     public int getMaxResidentCountForOrganismType(OrganismType type) {
         return islandSpecification.organismCapacity().get(type);
     }
 
+    /**
+     * Computes a random destination cell from the current cell considering the speed of movement.
+     *
+     * @param cell the starting cell.
+     * @param speed the speed indicating how many cells away from the starting cell the organism can move.
+     * @return a randomly determined destination cell.
+     */
     @Override
     public Cell getRandomDestination(Cell cell, int speed) {
         Cell destination = getNextDestination(cell);
         return speed < 2 ? destination : getRandomDestination(destination, speed - 1);
     }
 
+    /**
+     * Initializes the grid of cells based on width and height.
+     */
     private void initializeCellGrids() {
         grid = new Cell[height][width];
         for (int i = 0; i < height; i++) {
@@ -54,6 +77,13 @@ public class Island extends Territory {
     }
 
 
+    /**
+     * Calculates available directions for a cell based on its position.
+     *
+     * @param x the x-coordinate of the cell.
+     * @param y the y-coordinate of the cell.
+     * @return an array of available directions.
+     */
     private Direction[] calculateAvailableDirections(int x, int y) {
         Set<Direction> directions = EnumSet.noneOf(Direction.class);
 
@@ -81,10 +111,18 @@ public class Island extends Territory {
         return y < height - 1;
     }
 
+    /**
+     * Computes the next destination cell for a given starting cell.
+     *
+     * @param start the starting cell.
+     * @return the next destination cell.
+     */
     private Cell getNextDestination(Cell start) {
         Direction nextDirection = RandomGenerator.getRandomDirection(start);
         int x = start.getX() + nextDirection.getX();
         int y = start.getY() + nextDirection.getY();
         return grid[y][x];
     }
+
+
 }

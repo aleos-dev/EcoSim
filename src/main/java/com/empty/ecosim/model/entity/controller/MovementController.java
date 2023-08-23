@@ -3,14 +3,15 @@ package com.empty.ecosim.model.entity.controller;
 import com.empty.ecosim.model.entity.island.Cell;
 import com.empty.ecosim.model.entity.island.Territory;
 import com.empty.ecosim.model.entity.organism.Movable;
-import com.empty.ecosim.model.entity.organism.Organism;
-import com.empty.ecosim.model.entity.organism.OrganismType;
 
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
+/**
+ * Controller responsible for managing the movement of organisms
+ * within a given territory.
+ */
 public class MovementController {
 
     private final Territory territory;
@@ -27,19 +28,20 @@ public class MovementController {
 
     /**
      * Executes the movement cycle for the territory.
+     * This ensures that each organism moves once and only once within a cycle.
      */
     public void executeMovement() {
         alreadyMovedOrganisms = ConcurrentHashMap.newKeySet();
-        try {
-            territory.getCells().parallelStream().forEach(this::processCellMovements);
-        } catch (Throwable e) {
-
-            System.exit(21);
-            System.out.println("MOVEMENT CONTROLLER EXCEPTION");
-            e.printStackTrace();
-        }
+        territory.getCells().parallelStream().forEach(this::processCellMovements);
     }
 
+    /**
+     * Processes movements for all {@link Movable} organisms in a specific cell.
+     * If the organism hasn't moved in the current cycle and its speed is greater than zero,
+     * it is eligible to move.
+     *
+     * @param cell the cell whose residents are to be moved.
+     */
     private void processCellMovements(Cell cell) {
         cell.lock();
         try {
@@ -51,11 +53,17 @@ public class MovementController {
         }
     }
 
+    /**
+     * Determines if a {@link Movable} organism should be moved in the current cycle.
+     * If the organism has already moved or its speed is zero, it will not be moved.
+     *
+     * @param movable the organism to check.
+     * @return true if the organism should be moved, false otherwise.
+     */
     private boolean shouldBeMoved(Movable movable) {
         if (alreadyMovedOrganisms.contains(movable) || movable.getSpeed() == 0) {
             return false;
         }
-
         alreadyMovedOrganisms.add(movable);
         return true;
     }
