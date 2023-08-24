@@ -4,26 +4,43 @@ EcoSim is a Java-based simulation program that models an island ecosystem with a
 
 ## Table of Contents
 
-1. [Features](#features)
-2. [Installation](#installation)
-3. [Usage](#usage)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
 
 ## Features
 
 - **Dynamic Ecosystem**: Models a grid-based island ecosystem with plants, herbivores, and predators.
 - **Realistic Interactions**: Animals can eat, move, reproduce, or die based on the ecosystem's conditions.
-- **Statistics**: Real-time statistics on the number and types of species, helping users understand the balance of the ecosystem.
-- **Multi-threaded**: Utilizes multi-threading for simultaneous actions and interactions.
+- **Statistics**: Provides real-time statistics on the number and types of species, helping users understand the balance of the ecosystem.
+- **Multi-threaded**: Uses multi-threading for simultaneous actions and interactions.
 
 ## Installation
 
-**Prerequisites**: 
+### Prerequisites:
+
+- JRE (Java Runtime Environment) version 20 or higher. If you haven't installed it yet, download and install from the official [Java website](https://www.oracle.com/java/technologies/javase-jre-downloads.html).
+
+### Installation Steps:
+
+1. Download the `EcoSim-1.0-SNAPSHOT.jar` file.
+2. Store the JAR file in a convenient directory on your system.
 
 ## Usage
 
-Run the simulation:
+### Configuration:
+On the first run, the application will create a configuration directory specific to your OS:
 
+- **Windows**: `C:\Users\[YourUsername]\AppData\Local\EcosystemSimulator(aleos-dev)`
+- **Linux/Unix**: `/home/[YourUsername]/.config/EcosystemSimulator(aleos-dev)`
+- **Mac**: `/Users/[YourUsername]/Library/Application Support/EcosystemSimulator(aleos-dev)`
 
-You will see the statistics printed in the console after each cycle. 
+Ensure you have the necessary permissions to create and modify files in these directories.
 
-(Optional: You can explain more about any parameters, configuration options, or how to interpret the output here.)
+### Run the Simulation:
+
+1. Navigate to the directory containing the `EcoSim-1.0-SNAPSHOT.jar` file.
+2. Open a terminal or command prompt.
+3. Enter the following command:
+   ```bash
+   java -jar EcoSim-1.0-SNAPSHOT.jar
