@@ -61,7 +61,7 @@ public class RandomGenerator {
      * @param to Upper bound for the generated random number.
      * @return Generated random number.
      */
-    public static int nextIntRange(int from, int to) {
+    public static int nextInt(int from, int to) {
         return random.nextInt(from, to);
     }
 

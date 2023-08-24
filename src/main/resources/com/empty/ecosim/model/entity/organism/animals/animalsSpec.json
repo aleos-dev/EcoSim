@@ -134,7 +134,8 @@
       "BUFFALO": "0",
       "DUCK": "0",
       "CATERPILLAR": "0",
-      "GRASS": "100"
+      "GRASS": "100",
+      "CACTUS": "100"
     }
   },
   "DEER": {
@@ -157,7 +158,8 @@
       "BUFFALO": "0",
       "DUCK": "0",
       "CATERPILLAR": "0",
-      "GRASS": "100"
+      "GRASS": "100",
+      "CACTUS": "100"
     }
   },
   "RABBIT": {
@@ -226,7 +228,8 @@
       "BUFFALO": "0",
       "DUCK": "0",
       "CATERPILLAR": "0",
-      "GRASS": "100"
+      "GRASS": "100",
+      "CACTUS": "100"
     }
   },
   "SHEEP": {
@@ -249,7 +252,8 @@
       "BUFFALO": "0",
       "DUCK": "0",
       "CATERPILLAR": "0",
-      "GRASS": "100"
+      "GRASS": "100",
+      "CACTUS": "100"
     }
   },
   "BOAR": {

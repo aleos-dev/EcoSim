@@ -1,7 +1,6 @@
 package com.empty.ecosim.model.entity.organism.plants;
 
 import com.empty.ecosim.model.entity.organism.Organism;
-import com.empty.ecosim.model.entity.organism.animals.Animal;
 import com.empty.ecosim.utils.RandomGenerator;
 
 import java.util.Collections;

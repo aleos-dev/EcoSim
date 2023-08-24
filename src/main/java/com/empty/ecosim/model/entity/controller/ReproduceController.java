@@ -99,7 +99,7 @@ public class ReproduceController {
      */
     private int calculateGrowthNumber(PlantType type, Cell cell) {
         int availableCellSpace = getMaxAvailableCapacityFor(type, cell.getOrganismsByType(type));
-        return (int) (RandomGenerator.nextIntRange(0, availableCellSpace) * UserSetupManager.INSTANCE.get().plantGrowthThreshold());
+        return (int) (RandomGenerator.nextInt(0, availableCellSpace) * UserSetupManager.INSTANCE.get().plantGrowthThreshold());
     }
 
     /**

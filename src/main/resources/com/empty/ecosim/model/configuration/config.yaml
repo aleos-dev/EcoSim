@@ -1,5 +1,11 @@
 # Default values will be used for any unset properties.
 
+# Duration to execute the simulation before pausing for config edits, in seconds (simulation stop required to apply changes)
+timeToExecuteSimulation: 10
+
+# Time interval for printing statistics, in milliseconds (simulation stop required to apply changes)
+printStatisticInterval: 1000
+
 # Island size (Reload required to apply changes)
 width: 100
 height: 20
@@ -7,15 +13,15 @@ height: 20
 # Initial count of each organism type on a cell at simulation start.
 # Cannot exceed (maxCellCapacity * cellCount).
 startOrganismTypeCountOnCell:
-  WOLF: 20
+  WOLF: 10
 
 # Maximum count of organism type on a cell (simulation stop required to apply changes)
 maxOrganismTypeCountOnCell:
-  WOLF: 50
+  WOLF: 20
 
 # Reduction factor applied to maximum cell capacity for plant growth (simulation stop required to apply changes)
 # Range: [0, 1]
-plantGrowthThreshold: 0.5
+plantGrowthThreshold: 0.3
 
 # Fertility period for animal type (simulation stop required to apply changes)
 animalTypeFertilityPeriod:
@@ -23,14 +29,12 @@ animalTypeFertilityPeriod:
 
 # Maximum offspring count that can be born per species in a single cycle (simulation stop required to apply changes)
 animalTypeOffspringCount:
-  RABBIT: 7
+  MOUSE: 2
+#  RABBIT: 0
 
-# Time interval for printing statistics, in milliseconds (simulation stop required to apply changes)
-printStatisticInterval: 1000
 
-# Duration to execute the simulation before pausing for config edits, in seconds (simulation stop required to apply changes)
-timeToExecuteSimulation: 10
 
-# Conditions to terminate the simulation.  T O D O
-# Possible values: "AllDead", "WOLF DEAD", etc.
+# T O D O
+# Conditions to terminate the simulation.
+# Possible values: "Time" "AllDead", "WOLF DEAD", etc.
 # terminationCondition: [value]

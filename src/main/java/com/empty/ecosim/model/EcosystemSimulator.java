@@ -34,14 +34,14 @@ import java.util.stream.Stream;
 public class EcosystemSimulator implements Runnable {
 
     private final ScheduledExecutorService executor;
+    ScheduledFuture<?> mainExecutor;
+    ScheduledFuture<?> statisticCollectorExecutor;
+    ScheduledFuture<?> growPlantExecutor;
     private StatisticsCollector statisticsCollector;
     private Territory territory;
     private FeedingController fc;
     private MovementController mc;
     private ReproduceController rc;
-    ScheduledFuture<?> mainExecutor;
-    ScheduledFuture<?> statisticCollectorExecutor;
-    ScheduledFuture<?> growPlantExecutor;
 
     /**
      * Constructs a new EcosystemSimulator.
@@ -63,9 +63,10 @@ public class EcosystemSimulator implements Runnable {
      */
     public void start() {
         reloadUserConfiguration();
+        // TODO implements opportunity to set period for executor
         mainExecutor = executor.scheduleAtFixedRate(this, 0, 500, TimeUnit.MILLISECONDS);
         statisticCollectorExecutor = executor.scheduleAtFixedRate(statisticsCollector, 50, (long) Optional.of(UserSetupManager.INSTANCE.get().printStatisticInterval()).orElse(1000), TimeUnit.MILLISECONDS);
-        growPlantExecutor = executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 0, 500, TimeUnit.MILLISECONDS);
+        growPlantExecutor = executor.scheduleAtFixedRate(() -> rc.runPlantsGrowth(), 100, 500, TimeUnit.MILLISECONDS);
 
     }
 
@@ -77,7 +78,7 @@ public class EcosystemSimulator implements Runnable {
         statisticCollectorExecutor.cancel(false);
         growPlantExecutor.cancel(false);
 
-        System.out.println("Now you can correct configuration, continue : \"y/n\" ");
+        System.out.println("Now you can correct config.yaml, continue : \"y/n\" ");
     }
 
     /**
@@ -97,13 +98,12 @@ public class EcosystemSimulator implements Runnable {
      * creating controllers, setting up initial populations, and gathering first statistics.
      */
     private void init() {
-
         statisticsCollector = new StatisticsCollector();
         territory = new Island();
         fc = new FeedingController(territory);
         mc = new MovementController(territory);
         rc = new ReproduceController(territory);
-        initTerritoryPopulation();
+        generateTerritoryPopulation();
         statisticsCollector.calculateTerritoryStatistics();
         StatisticsCollector.resetNewbornCount();
     }
@@ -115,7 +115,7 @@ public class EcosystemSimulator implements Runnable {
      * within the territory.
      * </p>
      */
-    private void initTerritoryPopulation() {
+    private void generateTerritoryPopulation() {
         OrganismSuperFactory factory = new OrganismSuperFactory();
 
         List<AnimalType> animalTypes = Arrays.asList(AnimalType.values());
@@ -144,13 +144,15 @@ public class EcosystemSimulator implements Runnable {
      * @param type The type of organism.
      * @return The count of organisms of the specified type that should be on a cell.
      */
+
     private int organismCountOnCell(OrganismType type) {
-        int max = territory.getMaxResidentCountForOrganismType(type);
+
+        int max = UserSetupManager.INSTANCE.get().maxOrganismTypeCountOnCell().getOrDefault(type, territory.getMaxResidentCountForOrganismType(type));
         if (max == 0) {
             return 0;
         }
 
-        int count = UserSetupManager.INSTANCE.get().startOrganismTypeCountOnCell().getOrDefault(type, RandomGenerator.nextIntRange(1, territory.getMaxResidentCountForOrganismType(type)) / 2);
+        int count = UserSetupManager.INSTANCE.get().startOrganismTypeCountOnCell().getOrDefault(type, RandomGenerator.nextInt(1, territory.getMaxResidentCountForOrganismType(type)) / 2);
 
         return Math.min(count, max);
     }

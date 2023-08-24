@@ -1,5 +1,8 @@
 {
   "GRASS": {
     "weight": "1"
+  },
+  "CACTUS": {
+    "weight": "1"
   }
 }

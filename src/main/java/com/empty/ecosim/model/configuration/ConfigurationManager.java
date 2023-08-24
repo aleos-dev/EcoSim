@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ConfigurationManager {
     public static final ConfigurationManager INSTANCE = new ConfigurationManager();
-    private static final String APP_NAME = "Eco-Sim";
+    private static final String APP_NAME = "EcosystemSimulator(aleos-dev)";
     private static Path configFolderPath;
     private final Map<ResourceType, Path> resourceFileMapping = new HashMap<>();
 

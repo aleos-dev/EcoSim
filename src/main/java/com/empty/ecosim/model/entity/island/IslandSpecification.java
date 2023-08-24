@@ -8,7 +8,7 @@ import java.util.Map;
 
 /**
  * Represents the specification for an Island, including its dimensions and the capacity
- * for different organism types. This record ensures that the island has valid dimensions.
+ * for different organism types.
  */
 public record IslandSpecification(
         @JsonProperty("width") int width,
@@ -16,9 +16,5 @@ public record IslandSpecification(
         @JsonProperty("organismCapacity")
         Map<OrganismType, Integer> organismCapacity
 ) implements EntitySpecification {
-    public IslandSpecification {
-        if (width < 1 || height < 1) {
-            throw new IllegalArgumentException("Dimensions should be at least 10x10");
-        }
-    }
+
 }

@@ -198,7 +198,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         return getEdibleTypes().contains(type);
     }
 
-    public boolean canCaptureFood(OrganismType targetType) {
+    private boolean canCaptureFood(OrganismType targetType) {
         return RandomGenerator.didHuntSuccesses(getBaseSpecification().getChanceToHunt(targetType));
     }
 
@@ -232,8 +232,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         this.satiety = satiety;
     }
 
-    @Override
-    public List<OrganismType> getEdibleTypes() {
+    private List<OrganismType> getEdibleTypes() {
         return edibleTypes;
     }
 

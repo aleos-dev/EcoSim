@@ -41,17 +41,6 @@ public class StatisticsCollector implements Runnable {
     private int overallPlantCount;
     private int overallPlantKillCount;
 
-    @Override
-    public void run() {
-        try {
-            calculateTerritoryStatistics();
-            System.out.println(this);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
-
     /**
      * Registers a predation count for a given organism type.
      *
@@ -110,6 +99,15 @@ public class StatisticsCollector implements Runnable {
         populationCountCollector.merge(type, numberOfPopulation, (a, b) -> a - b);
     }
 
+    @Override
+    public void run() {
+        try {
+            calculateTerritoryStatistics();
+            System.out.println(this);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Calculates statistics for organisms in the territory.
@@ -252,7 +250,7 @@ public class StatisticsCollector implements Runnable {
         StringBuilder result = new StringBuilder();
 
         result.append(String.format("%-20s %-12s %-12s %-15s %-15s %-15s%n",
-                "Type", "Start", "End", "Killed", "Starving", "Newborn"));
+                "Organism Type", "Initial", "Final", "Predation", "Starvation", "Birth"));
         result.append("=".repeat(100)).append("\n");
 
         Stream.concat(Arrays.stream(AnimalType.values()), Arrays.stream(PlantType.values()))
@@ -290,13 +288,12 @@ public class StatisticsCollector implements Runnable {
         String overallStatisticFormat = "%-20s %-12s %-12s %-15s%n";
 
         return String.format(overallStatisticFormat,
-                "", "Overall", "Killed", "Starving") +
+                "Overall", "Count", "Killed", "Starving") +
                 String.format(overallStatisticFormat, "Animals:"
                         , overallAnimalCount, overallAnimalKillCount, overallAnimalStarvingCount) +
                 String.format(overallStatisticFormat, "Plants:"
                         , overallPlantCount, overallPlantKillCount, "-");
     }
-
 
     /**
      * Overrides the {@code toString} method to provide a comprehensive representation
@@ -309,5 +306,4 @@ public class StatisticsCollector implements Runnable {
         String line = "=".repeat(100) + "\n";
         return getOrganismTypeStatistics() + line + getTotalStatistics() + line + getOverallStatistics() + line;
     }
-
 }

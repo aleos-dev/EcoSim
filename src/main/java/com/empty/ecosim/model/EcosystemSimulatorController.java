@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * start and manage the simulation using a scheduled executor service.
  */
 public class EcosystemSimulatorController {
-    ScheduledExecutorService executor;
+    final ScheduledExecutorService executor;
 
     public EcosystemSimulatorController() {
         executor = Executors.newScheduledThreadPool(4);
