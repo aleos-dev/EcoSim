@@ -189,7 +189,7 @@ public abstract class Animal extends Organism implements Movable, Eater {
         satiety -= baseSpecification.maxSatiety() * DEPLETE_SATIETY_MODIFICATION;
         if (satiety <= 0.000001) {
             die();
-            StatisticsCollector.registerStarvingCount(this.getType());
+            StatisticsCollector.registerStarvationCount(this.getType());
         }
     }
 
