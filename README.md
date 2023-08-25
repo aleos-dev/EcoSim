@@ -53,7 +53,13 @@ Ensure you have adequate permissions to generate and modify files in these direc
 3. Type and run:
    ```bash
    java -jar EcoSim.jar
+
    ```
+   ![startCycleEsoSim](https://github.com/JR-Abstract/aleos-module-2-EcoSim/assets/121808229/bde6c400-daba-49f9-89e6-ff4868ca2521)
+   ![endCycleEcoSim](https://github.com/JR-Abstract/aleos-module-2-EcoSim/assets/121808229/7f49f170-9f5e-478a-97f1-03679780124e)
+   ![configEcoSim](https://github.com/JR-Abstract/aleos-module-2-EcoSim/assets/121808229/5929ab67-44e9-4140-b718-d3b9250755f8)
+
+
 
 ## Program Flow
 
@@ -106,7 +112,7 @@ Working on the EcoSim project has been an educational journey, one filled with b
 
 5. **Java Stream API**: Working on this project also provided me with a unique opportunity to delve deeper into Java's Stream API. Whether it was processing collections, filtering data, or implementing transformations, the Stream API proved to be an invaluable tool that enhanced code readability and efficiency.
 
-6. **Resource Management**: Delving into multiple resource types like ANIMAL, PLANT, ISLAND, and USER_SETUP underscored meticulous resource planning and execution's criticality.
+6. **Resource Management**: Delving into multiple resource types underscored meticulous resource planning and execution's criticality.
 
 EcoSim was more than a project; it was an enriching learning experience. It honed my skills as a coder, bolstered my problem-solving abilities, and reignited my fervor for software development.
 
